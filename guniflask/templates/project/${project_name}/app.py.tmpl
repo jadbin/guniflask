@@ -1,0 +1,48 @@
+# coding=utf-8
+
+import os
+from os.path import join
+
+from flask import Flask, Blueprint
+from flask_cors import CORS
+
+from ${project_name}.utils import load_config, walk_modules
+from ${project_name} import config
+
+
+def set_config(app):
+    conf_dir = os.environ['${PROJECT_NAME}_CONF_DIR']
+    c = load_config(join(conf_dir, '${project_name}.py'))
+    for name in c:
+        if not name.startswith('_') and hasattr(config, name):
+            setattr(config, name, c[name])
+
+    # database configuration
+    if config.database_uri:
+        app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
+        try:
+            from ${project_name}.db import db
+            db.init_app(app)
+        except (ModuleNotFoundError, ImportError):
+            pass
+
+
+def register_blueprints(app):
+    def iter_blueprints():
+        for module in walk_modules('${project_name}.blueprints'):
+            for obj in vars(module).values():
+                if isinstance(obj, Blueprint):
+                    yield obj
+
+    for b in iter_blueprints():
+        app.register_blueprint(b, url_prefix='/api')
+
+
+def create_app():
+    app = Flask(__name__)
+
+    CORS(app)
+    set_config(app)
+    register_blueprints(app)
+
+    return app

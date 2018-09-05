@@ -1,0 +1,15 @@
+*~
+.DS_Store
+*.pyc
+.cache
+*egg-info
+build
+dist
+docs/_build
+.tox
+.coverage
+.idea
+.pytest_cache
+
+.log
+.pid

@@ -1,0 +1,16 @@
+# coding=utf-8
+
+import os
+from os.path import join
+
+import multiprocessing
+
+bind = '0.0.0.0:${port}'
+
+workers = multiprocessing.cpu_count()
+worker_class = 'gevent'
+
+_id_string = os.environ['${PROJECT_NAME}_ID_STRING']
+pidfile = join(os.environ['${PROJECT_NAME}_PID_DIR'], '${project-name}-' + _id_string + '.pid')
+accesslog = join(os.environ['${PROJECT_NAME}_LOG_DIR'], '${project-name}-' + _id_string + '.access.log')
+errorlog = join(os.environ['${PROJECT_NAME}_LOG_DIR'], '${project-name}-' + _id_string + '.error.log')

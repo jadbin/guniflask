@@ -1,0 +1,8 @@
+include README.rst
+include LICENSE
+graft guniflask
+graft docs
+graft tests
+global-exclude *.pyc
+global-exclude *.pyo
+prune docs/_build
