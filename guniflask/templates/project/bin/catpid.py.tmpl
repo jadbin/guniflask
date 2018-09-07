@@ -1,7 +1,12 @@
 # coding=utf-8
 
 import sys
+import os
 from os.path import isfile
+
+_home_dir = os.environ['${PROJECT_NAME}_HOME']
+if _home_dir not in sys.path:
+    sys.path.append(_home_dir)
 
 
 def _get_config(fname):

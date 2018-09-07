@@ -1,30 +1,84 @@
 # coding=utf-8
 
 import os
-from os.path import join
+from os.path import join, exists
+import logging
+import inspect
+import tempfile
 
 from flask import Flask, Blueprint
-from flask_cors import CORS
 
-from ${project_name}.utils import load_config, walk_modules
+from ${project_name}.utils import load_config, load_profile_config, walk_modules
 from ${project_name} import config
+from ${project_name} import hook
+from ${project_name}.logging import configure_app_logger, configure_logger
+
+log = logging.getLogger(__name__)
 
 
-def set_config(app):
+def set_default_config():
+    # data dir
+    if hasattr(config, 'data_dir'):
+        if config.data_dir is None:
+            config.data_dir = join(os.environ['${PROJECT_NAME}_HOME'], '.data')
+        if not exists(config.data_dir):
+            os.makedirs(config.data_dir, 0o755)
+    # temp dir
+    if hasattr(config, 'temp_dir'):
+        if config.temp_dir is None:
+            config.temp_dir = join(tempfile.gettempdir(), '${project_name}')
+        if not exists(config.temp_dir):
+            os.makedirs(config.temp_dir, 0o755)
+
+
+def read_config():
     conf_dir = os.environ['${PROJECT_NAME}_CONF_DIR']
-    c = load_config(join(conf_dir, '${project_name}.py'))
+    c = {}
+    try:
+        c = load_config(join(conf_dir, '${project_name}.py'))
+    except FileNotFoundError as e:
+        log.warning(e)
+    active_profile = c.get('active_profile') or getattr(config, 'active_profile', None)
+    try:
+        pc = load_profile_config(conf_dir, '${project_name}', profile=active_profile)
+    except FileNotFoundError as e:
+        log.warning(e)
+    else:
+        c.update(pc)
     for name in c:
-        if not name.startswith('_') and hasattr(config, name):
+        if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
             setattr(config, name, c[name])
 
+
+def set_app_config(app):
+    set_default_config()
+    read_config()
+
+    make_settings = getattr(hook, 'make_settings', None)
+    if make_settings:
+        make_settings(app, config)
+
+
+def init_app(app):
+    # CORS
+    if hasattr(config, 'cors') and config.cors:
+        try:
+            from flask_cors import CORS
+            if isinstance(config.cors, dict):
+                CORS(app, **config.cors)
+            else:
+                CORS(app)
+        except (ModuleNotFoundError, ImportError) as e:
+            log.error('Failed to set CORS: %s', e)
+
     # database configuration
-    if config.database_uri:
+    if hasattr(config, 'database_uri') and config.database_uri:
         app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
         try:
             from ${project_name}.db import db
             db.init_app(app)
-        except (ModuleNotFoundError, ImportError):
-            pass
+        except (ModuleNotFoundError, ImportError) as e:
+            log.error('Failed to set database: %s', e)
 
 
 def register_blueprints(app):
@@ -40,9 +94,11 @@ def register_blueprints(app):
 
 def create_app():
     app = Flask(__name__)
-
-    CORS(app)
-    set_config(app)
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    configure_app_logger(app, gunicorn_logger)
+    configure_logger('${project_name}', gunicorn_logger)
     register_blueprints(app)
+    set_app_config(app)
+    init_app(app)
 
     return app

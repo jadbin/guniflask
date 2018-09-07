@@ -1,0 +1,19 @@
+language: python
+sudo: false
+matrix:
+  include:
+    - python: 3.4
+      env: TOXENV=py34
+    - python: 3.5
+      env: TOXENV=py35
+    - python: 3.6
+      env: TOXENV=py36
+cache:
+  directories:
+    - $HOME/.cache/pip
+install:
+  - pip install tox coveralls
+script:
+  - tox --recreate
+after_success:
+  - coveralls

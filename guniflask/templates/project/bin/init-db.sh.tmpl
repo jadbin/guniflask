@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+bin=$$(dirname $$0)
+bin=$$(cd "$$bin"; pwd)
+
+. "$$bin"/${project__name}-config.sh
+
+"$$PYTHON" "$$bin"/initdb.py $$@

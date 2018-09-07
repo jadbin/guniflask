@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
-bin=$$(dirname $0)
-bin=$$(cd "$bin"; pwd)
+bin=$$(dirname $$0)
+bin=$$(cd "$$bin"; pwd)
 
 export ${PROJECT_NAME}_HOME=$${${PROJECT_NAME}_HOME:-$$(cd "$$bin"/../; pwd)}
 export ${PROJECT_NAME}_CONF_DIR=$${${PROJECT_NAME}_CONF_DIR:-"$$${PROJECT_NAME}_HOME"/conf}
 
-if [ -f "$$${PROJECT_NAME}_CONF_DIR"/${project-name}-env.sh ]; then
-    . "$$${PROJECT_NAME}_CONF_DIR"/${project-name}-env.sh
+if [ -f "$$${PROJECT_NAME}_CONF_DIR"/${project__name}-env.sh ]; then
+    . "$$${PROJECT_NAME}_CONF_DIR"/${project__name}-env.sh
 fi
 
 export ${PROJECT_NAME}_LOG_DIR=$${${PROJECT_NAME}_LOG_DIR:-"$$${PROJECT_NAME}_HOME"/.log}

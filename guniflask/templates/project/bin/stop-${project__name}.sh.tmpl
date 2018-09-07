@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-bin=$$(dirname $0)
+bin=$$(dirname $$0)
 bin=$$(cd "$$bin"; pwd)
 
-. "$$bin"/${project-name}-config.sh
+. "$$bin"/${project__name}-config.sh
 
-gconf="$$${PROJECT_NAME}_CONF_DIR"/gunicorn.py
+gconf="$$${PROJECT_NAME}_CONF_DIR"/startup.py
 
 echo "stop ${project_name}"
 
-target_pid=$$("$$PYTHON" "$$bin"/cat_pid.py "$$gconf")
+target_pid=$$("$$PYTHON" "$$bin"/catpid.py "$$gconf")
 
 if kill -0 $$target_pid > /dev/null 2>&1; then
     echo "kill $$target_pid"

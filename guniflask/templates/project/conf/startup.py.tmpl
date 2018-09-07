@@ -1,0 +1,50 @@
+# coding=utf-8
+
+import os
+from os.path import join
+import multiprocessing
+import sys
+
+from gunicorn.config import KNOWN_SETTINGS
+
+from ${project_name}.utils import load_config, load_profile_config
+from ${project_name} import config as _config
+
+_conf_dir = os.environ['${PROJECT_NAME}_CONF_DIR']
+_pid_dir = os.environ['${PROJECT_NAME}_PID_DIR']
+_log_dir = os.environ['${PROJECT_NAME}_LOG_DIR']
+_id_string = os.environ['${PROJECT_NAME}_ID_STRING']
+
+
+def _make_profile_settings():
+    c = {}
+    try:
+        c = load_config(join(_conf_dir, '${project_name}.py'))
+    except FileNotFoundError as e:
+        print('Warning:', e, file=sys.stderr)
+    active_profile = c.get('active_profile') or getattr(_config, 'active_profile', None)
+    gc = {}
+    try:
+        gc = load_config(join(_conf_dir, 'gunicorn.py'))
+    except FileNotFoundError as e:
+        print('Warning:', e, file=sys.stderr)
+    try:
+        gpc = load_profile_config(_conf_dir, 'gunicorn', profile=active_profile)
+    except FileNotFoundError as e:
+        print('Warning:', e, file=sys.stderr)
+    else:
+        gc.update(gpc)
+    snames = set([i.name for i in KNOWN_SETTINGS])
+    for name in gc:
+        if name in snames:
+            globals()[name] = gc[name]
+
+
+workers = multiprocessing.cpu_count()
+worker_class = 'gevent'
+
+pidfile = join(_pid_dir, '${project_name}-' + _id_string + '.pid')
+accesslog = join(_log_dir, '${project_name}-' + _id_string + '.access.log')
+errorlog = join(_log_dir, '${project_name}-' + _id_string + '.error.log')
+
+_make_profile_settings()

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+bin=$$(dirname $$0)
+bin=$$(cd "$$bin"; pwd)
+
+. "$$bin"/${project__name}-config.sh
+
+if [ ! -d "$$${PROJECT_NAME}_LOG_DIR" ]; then
+    mkdir -p "$$${PROJECT_NAME}_LOG_DIR"
+fi
+if [ ! -d "$$${PROJECT_NAME}_PID_DIR" ]; then
+    mkdir -p "$$${PROJECT_NAME}_PID_DIR"
+fi
+
+gconf="$$${PROJECT_NAME}_CONF_DIR"/startup.py
+
+echo "start ${project_name}"
+
+cd "$$${PROJECT_NAME}_HOME"
+gunicorn -c "$$gconf" -D "${project_name}.app:create_app()" $$@
+cd - > /dev/null
+
+sleep 3
+target_pid=$$("$$PYTHON" "$$bin"/catpid.py "$$gconf")
+if ! ps -p $$target_pid > /dev/null 2>&1; then
+    echo "fail to start ${project_name}"
+    exit 1
+else
+    echo "${project_name} started"
+fi
