@@ -10,7 +10,7 @@ from flask import Flask, Blueprint
 
 from ${project_name}.utils import load_config, load_profile_config, walk_modules
 from ${project_name} import config
-from ${project_name} import hook
+from ${project_name} import hooks
 from ${project_name}.logging import configure_app_logger, configure_logger
 
 log = logging.getLogger(__name__)
@@ -54,7 +54,7 @@ def set_app_config(app):
     set_default_config()
     read_config()
 
-    make_settings = getattr(hook, 'make_settings', None)
+    make_settings = getattr(hooks, 'make_settings', None)
     if make_settings:
         make_settings(app, config)
 

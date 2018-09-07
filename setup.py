@@ -30,7 +30,7 @@ with open(join(dirname(__file__), 'requirements_test.txt'), 'r', encoding='utf-8
 install_requires = []
 
 extras_require = {
-    'app': ['Flask', 'gunicorn', 'gevent', 'Flask-SQLAlchemy', 'Flask-Cors'],
+    'app': ['Flask', 'gunicorn', 'gevent', 'Flask-SQLAlchemy', 'Flask-Cors']
 }
 
 
