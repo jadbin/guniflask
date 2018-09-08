@@ -27,6 +27,21 @@ def _make_profile_settings():
             globals()[name] = gc[name]
 
 
+def _make_debug_settings():
+    debug_settings = {
+        'pidfile': None,
+        'accesslog': '-',
+        'errorlog': '-',
+        'loglevel': 'debug',
+        'reload': True,
+        'workers': 1,
+        'daemon': False
+    }
+    for k, v in debug_settings.items():
+        globals()[k] = v
+
+
+daemon = True
 workers = multiprocessing.cpu_count()
 worker_class = 'gevent'
 
@@ -35,3 +50,7 @@ accesslog = join(_log_dir, '${project_name}-' + _id_string + '.access.log')
 errorlog = join(_log_dir, '${project_name}-' + _id_string + '.error.log')
 
 _make_profile_settings()
+
+# if debug
+if os.environ.get('${PROJECT_NAME}_DEBUG'):
+    _make_debug_settings()

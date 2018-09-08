@@ -17,7 +17,7 @@ gconf="$$${PROJECT_NAME}_CONF_DIR"/startup.py
 echo "start ${project_name}"
 
 cd "$$${PROJECT_NAME}_HOME"
-gunicorn -c "$$gconf" -D "${project_name}.app:create_app()" $$@
+gunicorn -c "$$gconf" "${project_name}.app:create_app()" $$@
 cd - > /dev/null
 
 sleep 3
