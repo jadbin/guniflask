@@ -7,10 +7,10 @@ import inspect
 
 from flask import Flask, Blueprint
 
-from ${project_name}.utils import load_config, load_profile_config, walk_modules
-from ${project_name} import config
-from ${project_name} import hooks
-from ${project_name}.logging import configure_app_logger, configure_logger
+from {{project_name}}.utils import load_config, load_profile_config, walk_modules
+from {{project_name}} import config
+from {{project_name}} import hooks
+from {{project_name}}.logging import configure_app_logger, configure_logger
 
 log = logging.getLogger(__name__)
 
@@ -19,9 +19,9 @@ def read_config():
     conf_dir = os.environ.get('GUNIFLASK_EXAMPLE_CONF_DIR')
     if conf_dir is None:
         return
-    c = load_config(join(conf_dir, '${project_name}.py'))
+    c = load_config(join(conf_dir, '{{project_name}}.py'))
     active_profiles = c.get('active_profiles') or getattr(config, 'active_profiles', None)
-    pc = load_profile_config(conf_dir, '${project_name}', profiles=active_profiles)
+    pc = load_profile_config(conf_dir, '{{project_name}}', profiles=active_profiles)
     c.update(pc)
     for name in c:
         if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
@@ -56,7 +56,7 @@ def init_app(app):
         app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         try:
-            from ${project_name}.db import db
+            from {{project_name}}.db import db
             db.init_app(app)
         except (ModuleNotFoundError, ImportError) as e:
             log.error('Failed to set database: %s', e)
@@ -64,7 +64,7 @@ def init_app(app):
 
 def register_blueprints(app):
     def iter_blueprints():
-        for module in walk_modules('${project_name}.blueprints'):
+        for module in walk_modules('{{project_name}}.blueprints'):
             for obj in vars(module).values():
                 if isinstance(obj, Blueprint):
                     yield obj
@@ -77,7 +77,7 @@ def create_app():
     app = Flask(__name__)
     gunicorn_logger = logging.getLogger('gunicorn.error')
     configure_app_logger(app, gunicorn_logger)
-    configure_logger('${project_name}', gunicorn_logger)
+    configure_logger('{{project_name}}', gunicorn_logger)
     register_blueprints(app)
     set_app_config(app)
     init_app(app)

@@ -3,7 +3,8 @@
 import os
 from os.path import exists, join, abspath, isdir, basename, dirname
 from shutil import copymode, ignore_patterns
-import string
+
+from jinja2 import Template
 
 from guniflask.errors import AbortedError
 from guniflask.utils import string_lowercase_underscore, string_uppercase_underscore, string_lowercase_hyphen
@@ -253,7 +254,7 @@ class InitCommand(Command):
 
     @staticmethod
     def render_string(raw, **kwargs):
-        return string.Template(raw).substitute(**kwargs)
+        return Template(raw, keep_trailing_newline=True).render(**kwargs)
 
     @staticmethod
     def print_request(question, option):

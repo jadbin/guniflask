@@ -27,7 +27,9 @@ class PyTest(TestCommand):
 with open(join(dirname(__file__), 'requirements_test.txt'), 'r', encoding='utf-8') as f:
     tests_require = [l.strip() for l in f]
 
-install_requires = []
+install_requires = [
+    'Jinja2>=2.10'
+]
 
 extras_require = {
     'app': ['Flask>=1.0.2',

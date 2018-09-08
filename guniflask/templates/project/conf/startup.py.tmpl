@@ -6,17 +6,17 @@ import multiprocessing
 
 from gunicorn.config import KNOWN_SETTINGS
 
-from ${project_name}.utils import load_config, load_profile_config
-from ${project_name} import config as _config
+from {{project_name}}.utils import load_config, load_profile_config
+from {{project_name}} import config as _config
 
-_conf_dir = os.environ['${PROJECT_NAME}_CONF_DIR']
-_pid_dir = os.environ['${PROJECT_NAME}_PID_DIR']
-_log_dir = os.environ['${PROJECT_NAME}_LOG_DIR']
-_id_string = os.environ['${PROJECT_NAME}_ID_STRING']
+_conf_dir = os.environ['{{PROJECT_NAME}}_CONF_DIR']
+_pid_dir = os.environ['{{PROJECT_NAME}}_PID_DIR']
+_log_dir = os.environ['{{PROJECT_NAME}}_LOG_DIR']
+_id_string = os.environ['{{PROJECT_NAME}}_ID_STRING']
 
 
 def _make_profile_settings():
-    c = load_config(join(_conf_dir, '${project_name}.py'))
+    c = load_config(join(_conf_dir, '{{project_name}}.py'))
     active_profiles = c.get('active_profiles') or getattr(_config, 'active_profiles', None)
     gc = load_config(join(_conf_dir, 'gunicorn.py'))
     gpc = load_profile_config(_conf_dir, 'gunicorn', profiles=active_profiles)
@@ -33,6 +33,7 @@ def _make_debug_settings():
         'accesslog': '-',
         'errorlog': '-',
         'loglevel': 'debug',
+        'disable_redirect_access_to_syslog': True,
         'reload': True,
         'workers': 1,
         'daemon': False
@@ -45,12 +46,12 @@ daemon = True
 workers = multiprocessing.cpu_count()
 worker_class = 'gevent'
 
-pidfile = join(_pid_dir, '${project_name}-' + _id_string + '.pid')
-accesslog = join(_log_dir, '${project_name}-' + _id_string + '.access.log')
-errorlog = join(_log_dir, '${project_name}-' + _id_string + '.error.log')
+pidfile = join(_pid_dir, '{{project_name}}-' + _id_string + '.pid')
+accesslog = join(_log_dir, '{{project_name}}-' + _id_string + '.access.log')
+errorlog = join(_log_dir, '{{project_name}}-' + _id_string + '.error.log')
 
 _make_profile_settings()
 
 # if debug
-if os.environ.get('${PROJECT_NAME}_DEBUG'):
+if os.environ.get('{{PROJECT_NAME}}_DEBUG'):
     _make_debug_settings()

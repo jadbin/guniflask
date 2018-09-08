@@ -4,11 +4,11 @@ import sys
 import os
 from os.path import isfile
 
-_home_dir = os.environ['${PROJECT_NAME}_HOME']
+_home_dir = os.environ['{{PROJECT_NAME}}_HOME']
 if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
-from ${project_name}.utils import load_config
+from {{project_name}}.utils import load_config
 
 
 def cat_pid(argv=None):
