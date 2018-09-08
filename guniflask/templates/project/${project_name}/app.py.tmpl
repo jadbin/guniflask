@@ -1,10 +1,9 @@
 # coding=utf-8
 
 import os
-from os.path import join, exists
+from os.path import join
 import logging
 import inspect
-import tempfile
 
 from flask import Flask, Blueprint
 
@@ -16,23 +15,10 @@ from ${project_name}.logging import configure_app_logger, configure_logger
 log = logging.getLogger(__name__)
 
 
-def set_default_config():
-    # data dir
-    if hasattr(config, 'data_dir'):
-        if config.data_dir is None:
-            config.data_dir = join(os.environ['${PROJECT_NAME}_HOME'], '.data')
-        if not exists(config.data_dir):
-            os.makedirs(config.data_dir, 0o755)
-    # temp dir
-    if hasattr(config, 'temp_dir'):
-        if config.temp_dir is None:
-            config.temp_dir = join(tempfile.gettempdir(), '${project_name}')
-        if not exists(config.temp_dir):
-            os.makedirs(config.temp_dir, 0o755)
-
-
 def read_config():
-    conf_dir = os.environ['${PROJECT_NAME}_CONF_DIR']
+    conf_dir = os.environ.get('GUNIFLASK_EXAMPLE_CONF_DIR')
+    if conf_dir is None:
+        return
     c = {}
     try:
         c = load_config(join(conf_dir, '${project_name}.py'))
@@ -51,7 +37,6 @@ def read_config():
 
 
 def set_app_config(app):
-    set_default_config()
     read_config()
     for k, v in vars(config).items():
         if k.isupper():
