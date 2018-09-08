@@ -53,6 +53,9 @@ def read_config():
 def set_app_config(app):
     set_default_config()
     read_config()
+    for k, v in vars(config).items():
+        if k.isupper():
+            app.config[k] = v
 
     make_settings = getattr(hooks, 'make_settings', None)
     if make_settings:
