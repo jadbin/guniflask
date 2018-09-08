@@ -19,18 +19,10 @@ def read_config():
     conf_dir = os.environ.get('GUNIFLASK_EXAMPLE_CONF_DIR')
     if conf_dir is None:
         return
-    c = {}
-    try:
-        c = load_config(join(conf_dir, '${project_name}.py'))
-    except FileNotFoundError as e:
-        log.warning(e)
-    active_profile = c.get('active_profile') or getattr(config, 'active_profile', None)
-    try:
-        pc = load_profile_config(conf_dir, '${project_name}', profile=active_profile)
-    except FileNotFoundError as e:
-        log.warning(e)
-    else:
-        c.update(pc)
+    c = load_config(join(conf_dir, '${project_name}.py'))
+    active_profiles = c.get('active_profiles') or getattr(config, 'active_profiles', None)
+    pc = load_profile_config(conf_dir, '${project_name}', profiles=active_profiles)
+    c.update(pc)
     for name in c:
         if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
             setattr(config, name, c[name])

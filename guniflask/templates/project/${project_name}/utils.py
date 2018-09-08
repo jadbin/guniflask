@@ -20,17 +20,18 @@ def load_config(fname):
     return cfg
 
 
-def load_profile_config(conf_dir, name, profile=None):
+def load_profile_config(conf_dir, name, profiles=None):
     pc = {}
-    if profile:
-        pc_file = join(conf_dir, name + '-' + profile + '.py')
-        if not isfile(pc_file):
-            pc_file = join(conf_dir, name + '_' + profile + '.py')
-        if isfile(pc_file):
-            pc = load_config(pc_file)
-        else:
-            raise FileNotFoundError("Cannot find the {} config in '{}' for profile: {}"
-                                    .format(name, conf_dir, profile))
+    if profiles:
+        profiles = profiles.split(',')
+        for profile in profiles:
+            if profile:
+                pc_file = join(conf_dir, name + '-' + profile + '.py')
+                if not isfile(pc_file):
+                    pc_file = join(conf_dir, name + '_' + profile + '.py')
+                if isfile(pc_file):
+                    c = load_config(pc_file)
+                    pc.update(c)
     return pc
 
 

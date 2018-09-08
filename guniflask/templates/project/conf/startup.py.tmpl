@@ -3,7 +3,6 @@
 import os
 from os.path import join
 import multiprocessing
-import sys
 
 from gunicorn.config import KNOWN_SETTINGS
 
@@ -17,23 +16,11 @@ _id_string = os.environ['${PROJECT_NAME}_ID_STRING']
 
 
 def _make_profile_settings():
-    c = {}
-    try:
-        c = load_config(join(_conf_dir, '${project_name}.py'))
-    except FileNotFoundError as e:
-        print('Warning:', e, file=sys.stderr)
-    active_profile = c.get('active_profile') or getattr(_config, 'active_profile', None)
-    gc = {}
-    try:
-        gc = load_config(join(_conf_dir, 'gunicorn.py'))
-    except FileNotFoundError as e:
-        print('Warning:', e, file=sys.stderr)
-    try:
-        gpc = load_profile_config(_conf_dir, 'gunicorn', profile=active_profile)
-    except FileNotFoundError as e:
-        print('Warning:', e, file=sys.stderr)
-    else:
-        gc.update(gpc)
+    c = load_config(join(_conf_dir, '${project_name}.py'))
+    active_profiles = c.get('active_profiles') or getattr(_config, 'active_profiles', None)
+    gc = load_config(join(_conf_dir, 'gunicorn.py'))
+    gpc = load_profile_config(_conf_dir, 'gunicorn', profiles=active_profiles)
+    gc.update(gpc)
     snames = set([i.name for i in KNOWN_SETTINGS])
     for name in gc:
         if name in snames:

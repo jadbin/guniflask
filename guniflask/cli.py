@@ -60,7 +60,8 @@ def main(argv=None):
         cmd.process_arguments(args)
         cmd.run(args)
     except UsageError as e:
-        parser.print_help(sys.stderr)
+        if e.print_help:
+            parser.print_help(sys.stderr)
         print('Error: {}'.format(e), file=sys.stderr)
         sys.exit(2)
     else:

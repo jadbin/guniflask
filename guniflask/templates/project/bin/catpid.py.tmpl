@@ -8,22 +8,7 @@ _home_dir = os.environ['${PROJECT_NAME}_HOME']
 if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
-
-def _get_config(fname):
-    if fname is None or not isfile(fname):
-        sys.exit(1)
-
-    code = compile(open(fname, 'rb').read(), fname, 'exec')
-    cfg = {
-        "__builtins__": __builtins__,
-        "__name__": "__config__",
-        "__file__": fname,
-        "__doc__": None,
-        "__package__": None
-    }
-    exec(code, cfg, cfg)
-
-    return cfg
+from ${project_name}.utils import load_config
 
 
 def cat_pid(argv=None):
@@ -32,7 +17,7 @@ def cat_pid(argv=None):
     if len(argv) < 2:
         sys.exit(1)
     del argv[0]
-    pidfile = _get_config(argv[0])['pidfile']
+    pidfile = load_config(argv[0])['pidfile']
     if not isfile(pidfile):
         sys.exit(1)
     with open(pidfile, 'r') as f:
