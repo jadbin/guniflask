@@ -10,8 +10,8 @@ if [ -f "$$${PROJECT_NAME}_CONF_DIR"/${project__name}-env.sh ]; then
     . "$$${PROJECT_NAME}_CONF_DIR"/${project__name}-env.sh
 fi
 
-if [ -n "$VIRTUAL_ENV" ]; then
-    . "$VIRTUAL_ENV"/bin/activate
+if [ -n "$$VIRTUAL_ENV" ]; then
+    . "$$VIRTUAL_ENV"/bin/activate
 fi
 
 export ${PROJECT_NAME}_LOG_DIR=$${${PROJECT_NAME}_LOG_DIR:-"$$${PROJECT_NAME}_HOME"/.log}
