@@ -37,8 +37,8 @@ def init_db(argv=None):
         if args.force:
             db.drop_all()
         else:
-            print("The tables already exist will not be recreated. "
-                  "Try '-f' option to force creating all tables.", file=sys.stdout)
+            print("\033[33;40mThe tables already exist will be skipped.\033[0m")
+            print("\033[33;40mYou can try '-f' option to force creating all tables.\033[0m")
         db.create_all()
 
 

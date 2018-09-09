@@ -110,7 +110,7 @@ class InitCommand(Command):
 
     @property
     def short_desc(self):
-        return 'Initialize a crawling project'
+        return 'Initialize a project'
 
     def add_arguments(self, parser):
         parser.add_argument('-d', '--root-dir', dest='root_dir', metavar='DIR',
