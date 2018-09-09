@@ -2,6 +2,4 @@
 
 active_profiles = None
 
-database_uri = None
-
 cors = True

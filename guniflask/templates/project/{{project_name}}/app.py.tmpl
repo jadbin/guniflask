@@ -52,8 +52,6 @@ def init_app(app):
             log.error('Failed to set CORS: %s', e)
 
     # database configuration
-    if hasattr(config, 'database_uri') and config.database_uri:
-        app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         try:
             from {{project_name}}.db import db

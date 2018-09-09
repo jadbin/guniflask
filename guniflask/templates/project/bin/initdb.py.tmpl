@@ -8,10 +8,7 @@ _home_dir = os.environ['{{PROJECT_NAME}}_HOME']
 if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
-from flask import Flask
-
-from {{project_name}} import config
-from {{project_name}}.app import read_config
+from {{project_name}}.app import create_app
 from {{project_name}}.db import db
 from {{project_name}} import model  # import models
 
@@ -29,10 +26,7 @@ def init_db(argv=None):
     parser.add_argument('-f', dest='force', action='store_true', default=False,
                         help='force creating all tables')
     args = parser.parse_args(args=argv[1:])
-    read_config()
-    app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = config.database_uri
-    db.init_app(app)
+    app = create_app()
     with app.app_context():
         if args.force:
             db.drop_all()
