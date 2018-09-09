@@ -2,3 +2,48 @@
 
 Debugging Application
 =====================
+
+Debug Mode
+----------
+
+在项目开发过程中，推荐以debug模式启动项目:
+
+.. code-block:: bash
+
+    $ bash bin/debug-${proj}.sh
+
+在debug模式中会设置如下环境变量:
+
+.. code-block:: bash
+
+    export ${PROJ}_DEBUG = 1
+
+用户在代码中可以根据是否设置了 ``${PROJ}_DEBUG`` 环境变量来确定项目是否以debug模式启动。
+
+Debug Settings
+--------------
+
+以debug模式启动项目时，会强制设定如下gunicorn配置项:
+
+- pidfile : ``None``
+- accesslog : ``'-'``
+- errorlog : ``'-'``
+- loglevel : ``'debug'``
+- disable_redirect_access_to_syslog : ``True``
+- reload : ``True``
+- reload_extra_files : conf文件夹下的所有文件
+- workers: ``1``
+- daemon: ``False``
+
+此时，用户在配置文件中对这些项的设定将不起作用。
+
+gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging。
+
+Auto Reloading
+--------------
+
+以debug模式启动项目时，如果 ``${proj}`` 模块中或conf文件夹中的代码发生了改变，进程会自动重启并加载最新的代码。
+
+.. note::
+
+    如果我们更改的是gunicorn配置项，则需要手动重启项目才会重新加载最新的gunicorn配置项。

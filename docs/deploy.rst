@@ -8,8 +8,8 @@ Active Profile
 
 如果采用多profile的形式管理配置文件，请确保在启动项目前已正确配置 ``active_profiles`` 。
 
-Start Application
------------------
+Starting Application
+--------------------
 
 运行项目的启动脚本:
 
@@ -22,8 +22,8 @@ Start Application
 如果提示项目启动失败，可以根据控制台的提示信息以及项目的日志纪录排查出错原因。
 项目的错误日志默认存放在 ``${home}/.log`` 文件夹中。
 
-Stop Application
-----------------
+Stopping Application
+--------------------
 
 运行项目的停止脚本:
 
