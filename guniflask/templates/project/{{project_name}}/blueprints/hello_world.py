@@ -2,7 +2,7 @@
 
 from flask import Blueprint
 
-hello_world_blueprint = Blueprint('hello_world', __name__)
+hello_world_blueprint = Blueprint('hello_world', __name__, url_prefix='/api')
 
 
 @hello_world_blueprint.route('/hello-world', methods=['GET'])

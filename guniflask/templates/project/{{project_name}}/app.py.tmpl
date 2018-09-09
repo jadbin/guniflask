@@ -70,7 +70,7 @@ def register_blueprints(app):
                     yield obj
 
     for b in iter_blueprints():
-        app.register_blueprint(b, url_prefix='/api')
+        app.register_blueprint(b)
 
 
 def create_app():
