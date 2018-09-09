@@ -10,4 +10,3 @@ docs/_build
 .coverage
 .idea
 .pytest_cache
-

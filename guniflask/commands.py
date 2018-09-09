@@ -42,9 +42,6 @@ class Command:
         raise NotImplementedError
 
 
-_ignore_file_type = ignore_patterns("*.pyc")
-
-
 class Step:
     default = None
     desc = None
@@ -173,7 +170,7 @@ class InitCommand(Command):
             os.makedirs(dst, 0o755)
         copymode(src, dst)
         names = os.listdir(src)
-        ignored_names = _ignore_file_type(src, names)
+        ignored_names = ignore_patterns('*.pyc')(src, names)
         for name in names:
             if name in ignored_names:
                 continue
