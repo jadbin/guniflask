@@ -1,6 +1,7 @@
 # coding=utf-8
 
-from os.path import isfile, join
+import os
+from os.path import isfile, join, isdir, abspath
 from importlib import import_module
 from pkgutil import iter_modules
 
@@ -48,3 +49,15 @@ def walk_modules(path):
                 submod = import_module(fullpath)
                 mods.append(submod)
     return mods
+
+
+def walk_files(path):
+    path = abspath(path)
+    files = []
+    if isdir(path):
+        names = os.listdir(path)
+        for name in names:
+            files += walk_files(join(path, name))
+    elif isfile(path):
+        files.append(path)
+    return files

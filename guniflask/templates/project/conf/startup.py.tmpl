@@ -6,7 +6,7 @@ import multiprocessing
 
 from gunicorn.config import KNOWN_SETTINGS
 
-from {{project_name}}.utils import load_config, load_profile_config
+from {{project_name}}.utils import load_config, load_profile_config, walk_files
 from {{project_name}} import config as _config
 
 _conf_dir = os.environ['{{PROJECT_NAME}}_CONF_DIR']
@@ -35,6 +35,7 @@ def _make_debug_settings():
         'loglevel': 'debug',
         'disable_redirect_access_to_syslog': True,
         'reload': True,
+        'reload_extra_files': walk_files(_conf_dir),
         'workers': 1,
         'daemon': False
     }
