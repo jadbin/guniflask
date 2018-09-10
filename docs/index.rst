@@ -30,6 +30,7 @@ Table of Contents
     :maxdepth: 2
 
     config
+    settings
     hook
     blueprints
     database

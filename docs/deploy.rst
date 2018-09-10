@@ -3,8 +3,8 @@
 Deploying Application
 =====================
 
-Active Profile
---------------
+Active Profiles
+---------------
 
 如果采用多profile的形式管理配置文件，请确保在启动项目前已正确配置 ``active_profiles`` 。
 

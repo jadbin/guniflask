@@ -20,7 +20,7 @@ Declaring Models
 
 .. code-block:: python
 
-    from ${proj}.db import db
+    from proj.db import db
 
     class Foo(db.Model):
         __tablename__ = 'foo'
