@@ -7,13 +7,13 @@ export PYTHON=python3
 export VIRTUAL_ENV=${VIRTUAL_ENV}
 
 # The directory where configuration files are stored
-export {{PROJECT_NAME}}_CONF_DIR=${{'{'}}{{PROJECT_NAME}}_CONF_DIR}
+export GUNIFLASK_APP_CONF_DIR=${GUNIFLASK_APP_CONF_DIR}
 
 # The directory where log files are stored
-export {{PROJECT_NAME}}_LOG_DIR=${{'{'}}{{PROJECT_NAME}}_LOG_DIR}
+export GUNIFLASK_APP_LOG_DIR=${GUNIFLASK_APP_LOG_DIR}
 
 # The directory where pid files are stored
-export {{PROJECT_NAME}}_PID_DIR=${{'{'}}{{PROJECT_NAME}}_PID_DIR}
+export GUNIFLASK_APP_PID_DIR=${GUNIFLASK_APP_PID_DIR}
 
 # A string representing this instance
-export {{PROJECT_NAME}}_ID_STRING=${{'{'}}{{PROJECT_NAME}}_ID_STRING}
+export GUNIFLASK_APP_ID_STRING=${GUNIFLASK_APP_ID_STRING}

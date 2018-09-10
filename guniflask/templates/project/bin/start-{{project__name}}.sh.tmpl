@@ -5,18 +5,18 @@ bin=$(cd "$bin"; pwd)
 
 . "$bin"/{{project__name}}-config.sh
 
-if [ ! -d "${{PROJECT_NAME}}_LOG_DIR" ]; then
-    mkdir -p "${{PROJECT_NAME}}_LOG_DIR"
+if [ ! -d "$GUNIFLASK_APP_LOG_DIR" ]; then
+    mkdir -p "$GUNIFLASK_APP_LOG_DIR"
 fi
-if [ ! -d "${{PROJECT_NAME}}_PID_DIR" ]; then
-    mkdir -p "${{PROJECT_NAME}}_PID_DIR"
+if [ ! -d "$GUNIFLASK_APP_PID_DIR" ]; then
+    mkdir -p "$GUNIFLASK_APP_PID_DIR"
 fi
 
-gconf="${{PROJECT_NAME}}_CONF_DIR"/startup.py
+gconf="$GUNIFLASK_APP_CONF_DIR"/startup.py
 
 echo "start {{project_name}}"
 
-cd "${{PROJECT_NAME}}_HOME"
+cd "$GUNIFLASK_APP_HOME"
 gunicorn -c "$gconf" "{{project_name}}.app:create_app()" $@
 cd - > /dev/null
 

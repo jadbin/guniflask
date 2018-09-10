@@ -5,11 +5,11 @@ bin=$(cd "$bin"; pwd)
 
 . "$bin"/{{project__name}}-config.sh
 
-gconf="${{PROJECT_NAME}}_CONF_DIR"/startup.py
+gconf="$GUNIFLASK_APP_CONF_DIR"/startup.py
 
 echo "debug {{project_name}}"
 
-export {{PROJECT_NAME}}_DEBUG=1
-cd "${{PROJECT_NAME}}_HOME"
+export GUNIFLASK_APP_DEBUG=1
+cd "$GUNIFLASK_APP_HOME"
 gunicorn -c "$gconf" "{{project_name}}.app:create_app()" $@
 cd - > /dev/null

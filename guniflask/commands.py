@@ -157,7 +157,6 @@ class InitCommand(Command):
         templates_dir = join(dirname(__file__), 'templates', 'project')
         project_dir = settings['project_dir']
         project_name = settings['project_name']
-        settings['PROJECT_NAME'] = string_uppercase_underscore(project_name)
         settings['project__name'] = string_lowercase_hyphen(project_name)
 
         print(flush=True)
