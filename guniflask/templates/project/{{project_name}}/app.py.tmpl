@@ -6,7 +6,7 @@ from flask import Flask, Blueprint
 
 from {{project_name}}.utils.config import walk_modules
 from {{project_name}} import config
-from {{project_name}}.logging import configure_app_logger, configure_logger
+from {{project_name}}.utils.logging import redirect_app_logger, redirect_logger
 from {{project_name}}.settings import settings
 
 log = logging.getLogger(__name__)
@@ -60,13 +60,16 @@ def register_blueprints(app):
         app.register_blueprint(b)
 
 
+def configure_logger(app):
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    redirect_app_logger(app, gunicorn_logger)
+    redirect_logger('{{project_name}}', gunicorn_logger)
+
+
 def create_app():
     app = Flask(__name__)
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    configure_app_logger(app, gunicorn_logger)
-    configure_logger('{{project_name}}', gunicorn_logger)
+    configure_logger(app)
     register_blueprints(app)
     set_app_config(app)
     init_app(app)
-
     return app
