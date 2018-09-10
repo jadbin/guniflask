@@ -7,8 +7,7 @@ from shutil import copymode, ignore_patterns
 from jinja2 import Template
 
 from guniflask.errors import AbortedError
-from guniflask.utils import string_lowercase_underscore, string_uppercase_underscore, string_lowercase_hyphen
-
+from guniflask.utils import string_lowercase_underscore, string_lowercase_hyphen
 from guniflask import __version__
 
 
