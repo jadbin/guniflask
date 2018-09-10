@@ -32,11 +32,11 @@ install_requires = [
 ]
 
 extras_require = {
-    'app': ['Flask>=1.0.2',
-            'gunicorn>=19.8',
-            'gevent>=1.3.6',
-            'Flask-SQLAlchemy>=2.3.2',
-            'Flask-Cors>=3.0.6']
+    'app': ['Flask',
+            'gunicorn',
+            'gevent',
+            'Flask-SQLAlchemy',
+            'Flask-Cors']
 }
 
 
