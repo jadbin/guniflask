@@ -38,4 +38,4 @@ Log Level
 
 gunicorn的配置项如何添加到项目中可参考 :ref:`config` 。
 
-日志相关的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging。
+日志相关的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging 。

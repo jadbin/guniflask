@@ -37,7 +37,7 @@ Debug Settings
 
 此时，用户在配置文件中对这些项的设定将不起作用。
 
-gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging。
+gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging 。
 
 Auto Reloading
 --------------

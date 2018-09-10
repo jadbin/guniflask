@@ -6,7 +6,7 @@ Blueprints
 Blueprint Concept
 -----------------
 
-Flask提供了blueprint的概念用于模块化构建服务端代码，详细文档请参考Flask文档: http://flask.pocoo.org/docs/blueprints/
+Flask提供了blueprint的概念用于模块化构建服务端代码，详细文档可参考Flask文档: http://flask.pocoo.org/docs/blueprints/ 。
 
 Declaring Blueprints
 --------------------
