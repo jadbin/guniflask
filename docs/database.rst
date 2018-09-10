@@ -4,18 +4,19 @@ Database Access
 ===============
 
 项目基于Flask-SQLAlchemy实现数据的访问。
+在 ${proj}/__init__.py 模块中我们声明了全局的 ``SQLAlchemy`` 对象 ``db`` 。
 
 Database Settings
 -----------------
 
 我们可以在 conf/${proj}.py 中对数据库进行配置，详细的配置项可参考Flask-SQLAlchemy文档: http://flask-sqlalchemy.pocoo.org/config/ 。
 
+只要配置了 ``SQLALCHEMY_DATABASE_URI`` ，项目会在启动前自动调用 ``db.init_app(app)`` 。
+
 Declaring Models
 ----------------
 
 我们约定项目中使用的model在 ``${proj}.models`` 模块及其子模块中声明。
-
-在 ${proj}/__init__.py 模块中我们声明了全局的 ``SQLAlchemy`` 对象 ``db`` ，在定义model时需要引入该对象。
 下面给出了一个定义model的示例。
 
 .. code-block:: python
