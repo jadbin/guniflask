@@ -21,6 +21,8 @@ def set_app_config(app):
     if make_settings:
         make_settings(app, settings)
 
+    log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
+
 
 def init_app(app):
     # CORS
