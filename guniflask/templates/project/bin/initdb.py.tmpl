@@ -10,7 +10,7 @@ if _home_dir not in sys.path:
 
 from {{project_name}}.app import create_app
 from {{project_name}}.db import db
-from {{project_name}} import model  # import models
+from {{project_name}}.utils.config import walk_modules
 
 import logging
 
@@ -26,6 +26,7 @@ def init_db(argv=None):
     parser.add_argument('-f', dest='force', action='store_true', default=False,
                         help='force creating all tables')
     args = parser.parse_args(args=argv[1:])
+    walk_modules('{{project_name}}.models')
     app = create_app()
     with app.app_context():
         if args.force:

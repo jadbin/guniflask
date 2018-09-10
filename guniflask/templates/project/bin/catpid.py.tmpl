@@ -8,7 +8,7 @@ _home_dir = os.environ['GUNIFLASK_APP_HOME']
 if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
-from {{project_name}}.utils import load_config
+from {{project_name}}.utils.config import load_config
 
 
 def cat_pid(argv=None):
