@@ -8,6 +8,21 @@ Active Profiles
 
 如果采用多profile的形式管理配置文件，请确保在启动项目前已正确配置 ``active_profiles`` 。
 
+Virtual Environment
+-------------------
+
+guniflask生成的项目支持配置Python标准库生成的虚拟环境。
+我们可以通过修改 conf/${proj}-env.sh 中有关虚拟环境的配置项使得项目在虚拟环境下启动:
+
+.. code-block:: bash
+
+    # The home directory of virtual environment
+    export VIRTUAL_ENV=${VIRTUAL_ENV}
+
+环境变量的值为虚拟环境所在文件夹的根目录。
+
+也可以通过其他方式在启动项目前设定好环境变量 ``VIRTUAL_ENV`` 。
+
 Starting Application
 --------------------
 
