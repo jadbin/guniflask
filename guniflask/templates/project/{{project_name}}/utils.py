@@ -25,7 +25,8 @@ def load_profile_config(conf_dir, name, profiles=None):
     pc = {}
     if profiles:
         profiles = profiles.split(',')
-        for profile in profiles.reverse():
+        profiles.reverse()
+        for profile in profiles:
             if profile:
                 pc_file = join(conf_dir, name + '-' + profile + '.py')
                 if not isfile(pc_file):
