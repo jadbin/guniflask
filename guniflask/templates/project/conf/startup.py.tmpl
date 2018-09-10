@@ -7,7 +7,7 @@ import multiprocessing
 from gunicorn.config import KNOWN_SETTINGS
 
 from {{project_name}}.utils import load_config, load_profile_config, walk_files
-from {{project_name}} import config as _config
+from guniflask_example.settings import settings
 
 _conf_dir = os.environ['{{PROJECT_NAME}}_CONF_DIR']
 _pid_dir = os.environ['{{PROJECT_NAME}}_PID_DIR']
@@ -16,11 +16,9 @@ _id_string = os.environ['{{PROJECT_NAME}}_ID_STRING']
 
 
 def _make_profile_settings():
-    c = load_config(join(_conf_dir, '{{project_name}}.py'))
-    active_profiles = c.get('active_profiles') or getattr(_config, 'active_profiles', None)
+    active_profiles = settings.get('active_profiles')
     gc = load_config(join(_conf_dir, 'gunicorn.py'))
-    gpc = load_profile_config(_conf_dir, 'gunicorn', profiles=active_profiles)
-    gc.update(gpc)
+    gc.update(load_profile_config(_conf_dir, 'gunicorn', profiles=active_profiles))
     snames = set([i.name for i in KNOWN_SETTINGS])
     for name in gc:
         if name in snames:

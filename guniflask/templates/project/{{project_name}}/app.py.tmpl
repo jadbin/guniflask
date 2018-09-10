@@ -1,51 +1,34 @@
 # coding=utf-8
 
-import os
-from os.path import join
 import logging
-import inspect
 
 from flask import Flask, Blueprint
 
-from {{project_name}}.utils import load_config, load_profile_config, walk_modules
+from {{project_name}}.utils import walk_modules
 from {{project_name}} import config
-from {{project_name}} import hooks
 from {{project_name}}.logging import configure_app_logger, configure_logger
+from {{project_name}}.settings import settings
 
 log = logging.getLogger(__name__)
 
 
-def read_config():
-    conf_dir = os.environ.get('GUNIFLASK_EXAMPLE_CONF_DIR')
-    if conf_dir is None:
-        return
-    c = load_config(join(conf_dir, '{{project_name}}.py'))
-    active_profiles = c.get('active_profiles') or getattr(config, 'active_profiles', None)
-    pc = load_profile_config(conf_dir, '{{project_name}}', profiles=active_profiles)
-    c.update(pc)
-    for name in c:
-        if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
-            setattr(config, name, c[name])
-
-
 def set_app_config(app):
-    read_config()
-    for k, v in vars(config).items():
+    for k, v in settings.items():
         if k.isupper():
             app.config[k] = v
 
-    make_settings = getattr(hooks, 'make_settings', None)
+    make_settings = getattr(config, 'make_settings', None)
     if make_settings:
-        make_settings(app, config)
+        make_settings(app, settings)
 
 
 def init_app(app):
     # CORS
-    if hasattr(config, 'cors') and config.cors:
+    if settings['cors']:
         try:
             from flask_cors import CORS
-            if isinstance(config.cors, dict):
-                CORS(app, **config.cors)
+            if isinstance(settings['cors'], dict):
+                CORS(app, **settings['cors'])
             else:
                 CORS(app)
         except (ModuleNotFoundError, ImportError) as e:
