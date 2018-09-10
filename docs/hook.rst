@@ -14,3 +14,13 @@ make_settings
     :param config: 项目配置
 
 此函数会在读取完配置文件后，init app之前进行调用。
+
+init_app
+--------
+
+.. function:: ${proj}.config.init_app(app, settings):
+
+    :param app: Flask app
+    :param config: 项目配置
+
+此函数会在项目使用的Flask拓展init app之后，运行app之前进行调用。

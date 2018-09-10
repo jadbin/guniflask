@@ -17,9 +17,9 @@ def set_app_config(app):
         if k.isupper():
             app.config[k] = v
 
-    make_settings = getattr(config, 'make_settings', None)
-    if make_settings:
-        make_settings(app, settings)
+    _make_settings = getattr(config, 'make_settings', None)
+    if _make_settings:
+        _make_settings(app, settings)
 
     log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
 
@@ -43,6 +43,10 @@ def init_app(app):
             db.init_app(app)
         except (ModuleNotFoundError, ImportError) as e:
             log.error('Failed to set database: %s', e)
+
+    _init_app = getattr(config, 'init_app', None)
+    if _init_app:
+        _init_app(app, settings)
 
 
 def register_blueprints(app):
