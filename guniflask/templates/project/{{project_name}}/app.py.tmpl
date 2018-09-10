@@ -39,7 +39,7 @@ def init_app(app):
     # database configuration
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         try:
-            from {{project_name}}.db import db
+            from {{project_name}} import db
             db.init_app(app)
         except (ModuleNotFoundError, ImportError) as e:
             log.error('Failed to set database: %s', e)

@@ -13,14 +13,14 @@ Database Settings
 Declaring Models
 ----------------
 
-我们约定项目中使用的model在 ``${proj}.models`` 中声明，或者以import的方式导入到该模块中。
+我们约定项目中使用的model在 ``${proj}.models`` 模块及其子模块中声明。
 
-在 ``${proj}.db`` 模块中我们声明了全局的 ``SQLAlchemy`` 对象 ``db`` ，在定义model时需要引入该对象。
+在 ${proj}/__init__.py 模块中我们声明了全局的 ``SQLAlchemy`` 对象 ``db`` ，在定义model时需要引入该对象。
 下面给出了一个定义model的示例。
 
 .. code-block:: python
 
-    from proj.db import db
+    from proj import db
 
     class Foo(db.Model):
         __tablename__ = 'foo'

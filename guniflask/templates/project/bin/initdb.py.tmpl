@@ -9,7 +9,7 @@ if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
 from {{project_name}}.app import create_app
-from {{project_name}}.db import db
+from {{project_name}} import db
 from {{project_name}}.utils.config import walk_modules
 
 import logging
