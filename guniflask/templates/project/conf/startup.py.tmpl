@@ -9,10 +9,10 @@ from gunicorn.config import KNOWN_SETTINGS
 from {{project_name}}.utils.config import load_config, load_profile_config, walk_files
 from guniflask_example.settings import settings
 
-_conf_dir = os.environ['GUNIFLASK_APP_CONF_DIR']
-_pid_dir = os.environ['GUNIFLASK_APP_PID_DIR']
-_log_dir = os.environ['GUNIFLASK_APP_LOG_DIR']
-_id_string = os.environ['GUNIFLASK_APP_ID_STRING']
+_conf_dir = os.environ['GUNIFLASK_CONF_DIR']
+_pid_dir = os.environ['GUNIFLASK_PID_DIR']
+_log_dir = os.environ['GUNIFLASK_LOG_DIR']
+_id_string = os.environ['GUNIFLASK_ID_STRING']
 
 
 def _make_profile_settings():
@@ -52,5 +52,5 @@ errorlog = join(_log_dir, '{{project_name}}-' + _id_string + '.error.log')
 _make_profile_settings()
 
 # if debug
-if os.environ.get('GUNIFLASK_APP_DEBUG'):
+if os.environ.get('GUNIFLASK_DEBUG'):
     _make_debug_settings()

@@ -16,9 +16,9 @@ Debug Mode
 
 .. code-block:: bash
 
-    export GUNIFLASK_APP_DEBUG = 1
+    export GUNIFLASK_DEBUG = 1
 
-用户在代码中可以根据是否设置了 ``GUNIFLASK_APP_DEBUG`` 环境变量来确定项目是否以debug模式启动。
+用户在代码中可以根据是否设置了 ``GUNIFLASK_DEBUG`` 环境变量来确定项目是否以debug模式启动。
 
 Debug Settings
 --------------

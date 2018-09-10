@@ -4,7 +4,7 @@ import sys
 import os
 from os.path import isfile
 
-_home_dir = os.environ['GUNIFLASK_APP_HOME']
+_home_dir = os.environ['GUNIFLASK_HOME']
 if _home_dir not in sys.path:
     sys.path.append(_home_dir)
 
