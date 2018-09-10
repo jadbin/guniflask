@@ -120,7 +120,7 @@ class Settings(BaseSettigns):
         conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
         if conf_dir:
             c.update(load_config(join(conf_dir, '{{project_name}}.py')))
-            active_profiles = c.get('active_profiles')
+            active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES', c.get('active_profiles'))
             c.update(load_profile_config(conf_dir, '{{project_name}}', profiles=active_profiles))
             c['active_profiles'] = active_profiles
         for name in c:
