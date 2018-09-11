@@ -2,7 +2,7 @@
 
 import logging
 
-from flask import Flask, Blueprint, has_app_context
+from flask import Flask, Blueprint, has_app_context, current_app
 from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.utils.config import walk_modules, load_app_config
@@ -15,11 +15,8 @@ class ConfigProxy:
     @property
     def settings(self):
         if has_app_context():
-            if hasattr(self, '_settings'):
-                return self._settings
-        else:
-            self._settings = load_app_config('{{project_name}}')
-            return self._settings
+            return current_app.config(['GUNIFLASK_SETTINGS'])
+        return load_app_config('guniflask_example')
 
 
 config = ConfigProxy()
