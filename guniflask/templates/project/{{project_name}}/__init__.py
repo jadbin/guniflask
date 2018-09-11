@@ -1,5 +1,5 @@
 # coding=utf-8
 
-from flask_sqlalchemy import SQLAlchemy
+from .app import create_app, db, config
 
-db = SQLAlchemy()
+__all__ = ['create_app', 'db', 'config']

@@ -1,0 +1,223 @@
+# coding=utf-8
+
+import sys
+import os
+from os.path import isfile, join
+import argparse
+import signal
+import time
+
+from gunicorn.app.base import Application
+from gunicorn.util import import_app
+
+from guniflask.utils.config import load_config, walk_modules
+
+home_dir = os.environ['GUNIFLASK_HOME']
+if home_dir not in sys.path:
+    sys.path.append(home_dir)
+
+
+class Command:
+    def __init__(self):
+        self.exitcode = 0
+
+    @property
+    def name(self):
+        return ""
+
+    @property
+    def syntax(self):
+        return ""
+
+    @property
+    def short_desc(self):
+        return ""
+
+    @property
+    def long_desc(self):
+        return self.short_desc
+
+    def add_arguments(self, parser):
+        pass
+
+    def process_arguments(self, args):
+        pass
+
+    def run(self, args):
+        raise NotImplementedError
+
+
+class InitDb(Command):
+    @property
+    def name(self):
+        return 'init-db'
+
+    @property
+    def syntax(self):
+        return '[options]'
+
+    @property
+    def short_desc(self):
+        return 'Initialize database from definition of models'
+
+    def add_arguments(self, parser):
+        parser.add_argument('-f', dest='force', action='store_true', default=False,
+                            help='force creating all tables')
+
+    def run(self, args):
+        from {{project_name}} import create_app, db
+
+        walk_modules('{{project_name}}.models')
+        app = create_app()
+        with app.app_context():
+            if args.force:
+                db.drop_all()
+            else:
+                print("\033[33;40mThe tables already exist will be skipped.\033[0m")
+                print("\033[33;40mYou can try '-f' option to force creating all tables.\033[0m")
+            db.create_all()
+
+
+class GunicornApplication(Application):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.app = app
+        super().__init__()
+
+    def load_config(self):
+        for key, value in self.options.items():
+            if key in self.cfg.settings and value is not None:
+                self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return import_app(self.app)
+
+
+class Debug(Command):
+    @property
+    def name(self):
+        return 'debug'
+
+    @property
+    def short_desc(self):
+        return 'Debug {{project_name}}'
+
+    def run(self, args):
+        os.environ['GUNIFLASK_DEBUG'] = '1'
+        options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
+        app = GunicornApplication('{{project_name}}:create_app()', options=options)
+        app.run()
+
+
+class Start(Command):
+    @property
+    def name(self):
+        return 'start'
+
+    @property
+    def short_desc(self):
+        return 'Start {{project_name}}'
+
+    def run(self, args):
+        options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
+        app = GunicornApplication('{{project_name}}:create_app()', options=options)
+        app.run()
+
+
+class Stop(Command):
+    @property
+    def name(self):
+        return 'stop'
+
+    @property
+    def short_desc(self):
+        return 'Stop {{project_name}}'
+
+    def run(self, args):
+        pid = None
+        options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
+        pidfile = options.get('pidfile')
+        if isfile(pidfile):
+            with open(pidfile, 'r') as f:
+                line = f.readline()
+                if line:
+                    pid = line.strip()
+        if pid:
+            pid = int(pid)
+            print('kill {}'.format(pid))
+            try:
+                os.kill(pid, 0)
+            except OSError:
+                print('No guniflask_exmaple to stop')
+            else:
+                os.kill(pid, signal.SIGTERM)
+                time.sleep(3)
+                try:
+                    os.kill(pid, 0)
+                except OSError:
+                    pass
+                else:
+                    print('{{project_name}} did not stop gracefully after 3 seconds')
+                    print('kill -9 {}'.format(pid))
+                    os.kill(pid, signal.SIGKILL)
+        else:
+            print('No guniflask_exmaple to stop')
+
+
+def _get_commands_from_module():
+    d = {}
+    for cmd in globals().values():
+        if isinstance(cmd, type) and issubclass(cmd, Command) and cmd is not Command:
+            o = cmd()
+            if o.name:
+                d[o.name] = o
+    return d
+
+
+def _print_commands():
+    print("usage: manage <command> [options] [args]\n")
+    print("available commands:")
+    cmds = _get_commands_from_module()
+    for cmdname, cmdclass in sorted(cmds.items()):
+        print("  {:<10} {}".format(cmdname, cmdclass.short_desc))
+    print()
+    print('Use "manage <command> -h" to see more info about a command')
+
+
+def _print_unknown_command(cmdname):
+    print("Unknown command: %s\n" % cmdname, file=sys.stderr)
+    print('Use "manage" to see available commands', file=sys.stderr)
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    cmds = _get_commands_from_module()
+    cmdname = argv[1] if len(argv) > 1 else None
+    if not cmdname:
+        _print_commands()
+        sys.exit(0)
+    elif cmdname not in cmds:
+        _print_unknown_command(cmdname)
+        sys.exit(2)
+    del argv[1]
+    cmd = cmds[cmdname]
+    parser = argparse.ArgumentParser()
+    parser.usage = "manage {} {}".format(cmdname, cmd.syntax)
+    parser.description = cmd.long_desc
+    cmd.add_arguments(parser)
+    try:
+        args = parser.parse_args(args=argv[1:])
+        cmd.process_arguments(args)
+        cmd.run(args)
+    except Exception as e:
+        parser.print_help(sys.stderr)
+        print('Error: {}'.format(e), file=sys.stderr)
+        sys.exit(2)
+    else:
+        if cmd.exitcode:
+            sys.exit(cmd.exitcode)
+
+
+if __name__ == '__main__':
+    main()

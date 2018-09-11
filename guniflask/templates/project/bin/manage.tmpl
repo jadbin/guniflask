@@ -5,4 +5,4 @@ bin=$(cd "$bin"; pwd)
 
 . "$bin"/{{project__name}}-config.sh
 
-"$PYTHON" "$bin"/initdb.py $@
+"$PYTHON" -u "$bin"/manage.py $@

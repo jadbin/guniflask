@@ -2,29 +2,45 @@
 
 import logging
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, has_app_context
+from flask_sqlalchemy import SQLAlchemy
 
-from {{project_name}}.utils.config import walk_modules
-from {{project_name}} import config
-from {{project_name}}.utils.logging import redirect_app_logger, redirect_logger
-from {{project_name}}.settings import settings
+from guniflask.utils.config import walk_modules, load_app_config
+from guniflask.utils.logging import redirect_app_logger, redirect_logger
 
 log = logging.getLogger(__name__)
 
 
-def set_app_config(app):
+class ConfigProxy:
+    @property
+    def settings(self):
+        if has_app_context():
+            if hasattr(self, '_settings'):
+                return self._settings
+        else:
+            self._settings = load_app_config('{{project_name}}')
+            return self._settings
+
+
+config = ConfigProxy()
+
+db = SQLAlchemy()
+
+
+def set_app_config(app, settings):
+    from {{project_name}} import hooks
+
     for k, v in settings.items():
         if k.isupper():
             app.config[k] = v
-
-    _make_settings = getattr(config, 'make_settings', None)
-    if _make_settings:
-        _make_settings(app, settings)
-
+    make_settings = getattr(hooks, 'make_settings', None)
+    if make_settings:
+        make_settings(app, settings)
+    app.config['GUNIFLASK_SETTINGS'] = settings
     log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
 
 
-def init_app(app):
+def init_app(app, settings):
     # CORS
     if settings['cors']:
         try:
@@ -44,10 +60,6 @@ def init_app(app):
         except (ModuleNotFoundError, ImportError) as e:
             log.error('Failed to set database: %s', e)
 
-    _init_app = getattr(config, 'init_app', None)
-    if _init_app:
-        _init_app(app, settings)
-
 
 def register_blueprints(app):
     def iter_blueprints():
@@ -60,16 +72,13 @@ def register_blueprints(app):
         app.register_blueprint(b)
 
 
-def configure_logger(app):
+def create_app():
+    app = Flask(__name__)
     gunicorn_logger = logging.getLogger('gunicorn.error')
     redirect_app_logger(app, gunicorn_logger)
     redirect_logger('{{project_name}}', gunicorn_logger)
-
-
-def create_app():
-    app = Flask(__name__)
-    configure_logger(app)
     register_blueprints(app)
-    set_app_config(app)
-    init_app(app)
+    settings = config.settings
+    set_app_config(app, settings)
+    init_app(app, settings)
     return app
