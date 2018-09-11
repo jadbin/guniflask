@@ -9,8 +9,11 @@ import time
 
 from gunicorn.app.base import Application
 from gunicorn.util import import_app
+from sqlalchemy.engine import create_engine
+from sqlalchemy.schema import MetaData
 
 from guniflask.utils.config import load_config, walk_modules
+from guniflask.modelgen import SqlToModelGenerator
 
 home_dir = os.environ['GUNIFLASK_HOME']
 if home_dir not in sys.path:
@@ -47,10 +50,16 @@ class Command:
         raise NotImplementedError
 
 
+class UsageError(Exception):
+    """
+    Usage error
+    """
+
+
 class InitDb(Command):
     @property
     def name(self):
-        return 'init-db'
+        return 'initdb'
 
     @property
     def syntax(self):
@@ -65,8 +74,10 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from {{project_name}} import create_app, db
+        from {{project_name}} import create_app, db, config
 
+        if not config.settings['SQLALCHEMY_DATABASE_URI']:
+            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' first in configuration.")
         walk_modules('{{project_name}}.models')
         app = create_app()
         with app.app_context():
@@ -210,8 +221,7 @@ def main(argv=None):
         args = parser.parse_args(args=argv[1:])
         cmd.process_arguments(args)
         cmd.run(args)
-    except Exception as e:
-        parser.print_help(sys.stderr)
+    except UsageError as e:
         print('Error: {}'.format(e), file=sys.stderr)
         sys.exit(2)
     else:

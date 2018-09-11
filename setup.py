@@ -28,7 +28,8 @@ with open(join(dirname(__file__), 'requirements_test.txt'), 'r', encoding='utf-8
     tests_require = [l.strip() for l in f]
 
 install_requires = [
-    'Jinja2>=2.10'
+    'Jinja2',
+    'inflect'
 ]
 
 extras_require = {

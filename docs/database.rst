@@ -42,10 +42,10 @@ Initializing Database
 
 .. code-block:: bash
 
-    $ bash bin/manage init-db
+    $ bash bin/manage initdb
 
 如果需要覆盖已经创建的数据库表需要添加 ``-f`` 选项:
 
 .. code-block:: bash
 
-    $ bash bin/manage init-db -f
+    $ bash bin/manage initdb -f
