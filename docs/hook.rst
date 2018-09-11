@@ -3,12 +3,12 @@
 Hook Functions
 ==============
 
-在 ``${proj}.config`` 模块中我们还可以定义如下的若干钩子函数，会在项目运行生命周期的不同阶段进行调用。
+在 ``foo.hooks`` 模块中我们还可以定义如下的若干钩子函数，会在项目运行生命周期的不同阶段进行调用。
 
 make_settings
 -------------
 
-.. function:: ${proj}.config.make_settings(app, settings):
+.. function:: foo.hooks.make_settings(app, settings):
 
     :param app: Flask app
     :param config: 项目配置
@@ -18,7 +18,7 @@ make_settings
 init_app
 --------
 
-.. function:: ${proj}.config.init_app(app, settings):
+.. function:: foo.hooks.init_app(app, settings):
 
     :param app: Flask app
     :param config: 项目配置

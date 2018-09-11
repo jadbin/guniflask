@@ -11,16 +11,14 @@ Uppercase Settings
 Getting Settings
 ----------------
 
-项目在 ``${project}.settings`` 模块中声明了全局的 ``settings`` 对象，用来获取项目配置。
-``settings`` 是一个实现了 ``MutableMapping`` 接口的对象。
-
-在项目中我们可以通过如下方式获取 ``settings`` 对象:
+我们可以通过如下方式获取项目配置:
 
 .. code-block:: python
 
-    from proj.settings import settings
+    from foo import config
 
-我们可以通过 ``setings['key']`` 的方式获取配置项 ``key`` 的属性值，如果 ``key`` 不存在则返回 ``None`` 。
+在 ``config.settings`` 中存放着项目所有的配置项， ``config.settings`` 是一个实现了 ``MutableMapping`` 接口的对象。
+我们可以通过 ``config.setings['key']`` 的方式获取配置项 ``key`` 的属性值，如果 ``key`` 不存在则返回 ``None`` 。
 
 Built-in Settings
 -----------------

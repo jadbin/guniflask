@@ -14,8 +14,9 @@ New Features
 Refactoring
 ^^^^^^^^^^^
 
-- ${proj}.model.py -> ${proj}/models
-- db对象的定义移至 ${proj}/__init__.py
+-
+- foo.model.py -> foo/models
+- db对象通过 ``from foo import db`` 导入
 
 0.1.0 (2018-09-10)
 ------------------

@@ -34,17 +34,17 @@ Getting Started
     $ guniflask init
 
 当出现提示时按 ``Enter`` 键即可选择默认设置。
-提示项目创建成功后，运行启动项目的脚本::
+提示项目创建成功后，执行启动项目的命令::
 
-    $ bash bin/start-foo.sh
+    $ bash bin/manage start
 
 提示项目已启动后，在浏览器中访问 http://localhost:8000/api/hello-world 即可看到::
 
     Hello World!
 
-运行停止项目的脚本::
+执行停止项目的命令::
 
-    $ bash bin/stop-foo.sh
+    $ bash bin/manage stop
 
 Documentation
 =============
