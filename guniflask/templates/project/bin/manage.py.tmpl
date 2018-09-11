@@ -70,7 +70,7 @@ class InitDb(Command):
         return 'Initialize database from definition of models'
 
     def add_arguments(self, parser):
-        parser.add_argument('-f', dest='force', action='store_true', default=False,
+        parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
                             help='force creating all tables')
 
     def run(self, args):
@@ -87,6 +87,40 @@ class InitDb(Command):
                 print("\033[33;40mThe tables already exist will be skipped.\033[0m")
                 print("\033[33;40mYou can try '-f' option to force creating all tables.\033[0m")
             db.create_all()
+
+
+class TableToModel(Command):
+    @property
+    def name(self):
+        return 'table2model'
+
+    @property
+    def syntax(self):
+        return '[options]'
+
+    @property
+    def short_desc(self):
+        return 'Convert tables to definition of models'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--tables', dest='tables',
+                            help='tables to process (comma-separated, default: all)')
+
+    def process_arguments(self, args):
+        if args.tables is not None:
+            args.tables = args.tables.split(',')
+
+    def run(self, args):
+        from {{project_name}} import config
+
+        database_uri = config.settings['SQLALCHEMY_DATABASE_URI']
+        if not database_uri:
+            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' first in configuration.")
+        engine = create_engine(database_uri)
+        metadata = MetaData(engine)
+        metadata.reflect(only=args.tables)
+        gen = SqlToModelGenerator('{{project_name}}', metadata)
+        gen.render(join(home_dir, '{{project_name}}', 'models'))
 
 
 class GunicornApplication(Application):
@@ -190,7 +224,7 @@ def _print_commands():
     print("available commands:")
     cmds = _get_commands_from_module()
     for cmdname, cmdclass in sorted(cmds.items()):
-        print("  {:<10} {}".format(cmdname, cmdclass.short_desc))
+        print("   {:<13} {}".format(cmdname, cmdclass.short_desc))
     print()
     print('Use "manage <command> -h" to see more info about a command')
 

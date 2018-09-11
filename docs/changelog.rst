@@ -9,12 +9,15 @@ Change log
 New Features
 ^^^^^^^^^^^^
 
-- 新增钩子函数 ``init_app(app, settings)``
+- 新增根据数据库表自动生成 models 的功能
+- 提供函数支持model和 ``dict`` 之间的转换
+- 添加钩子函数 ``init_app(app, settings)``
 
 Refactoring
 ^^^^^^^^^^^
 
--
+- 将控制项目的各项命令整合到 bin/manage 中
+- 通过 ``config.settings`` 获取配置
 - foo.model.py -> foo/models
 - db对象通过 ``from foo import db`` 导入
 
