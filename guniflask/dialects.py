@@ -9,7 +9,7 @@ class DatabaseDialect:
     def convert_column_type(self, coltype):
         raise NotImplementedError
 
-    def get_kwargs(self, coltype):
+    def get_kwargs_of_column_type(self, coltype):
         argspec = inspect.getfullargspec(coltype.__class__.__init__)
         defaults = dict(zip(argspec.args[-len(argspec.defaults or ()):],
                             argspec.defaults or ()))
@@ -57,7 +57,7 @@ class MysqlDialect(DatabaseDialect):
                 args.append('name={!r}'.format(coltype.name))
         else:
             # All other types
-            kwargs = self.get_kwargs(coltype)
+            kwargs = self.get_kwargs_of_column_type(coltype)
             argspec = inspect.getfullargspec(column_type.__init__)
             defaults = dict(zip(argspec.args[-len(argspec.defaults or ()):],
                                 argspec.defaults or ()))

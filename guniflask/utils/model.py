@@ -2,8 +2,6 @@
 
 import sqlalchemy
 
-__all__ = ['model_to_dict', 'dict_to_model']
-
 
 def model_to_dict(model):
     col_attrs = sqlalchemy.inspect(model).mapper.column_attrs

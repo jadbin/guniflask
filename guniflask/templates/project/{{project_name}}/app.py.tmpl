@@ -7,8 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.utils.config import walk_modules, load_app_config
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-
-from {{project_name}}.utils import model_to_dict, dict_to_model
+from guniflask.utils.model import model_to_dict, dict_to_model
 
 log = logging.getLogger(__name__)
 

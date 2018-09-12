@@ -14,6 +14,7 @@ from sqlalchemy.schema import MetaData
 
 from guniflask.utils.config import load_config, walk_modules
 from guniflask.modelgen import SqlToModelGenerator
+from guniflask.errors import UsageError
 
 home_dir = os.environ['GUNIFLASK_HOME']
 if home_dir not in sys.path:
@@ -48,12 +49,6 @@ class Command:
 
     def run(self, args):
         raise NotImplementedError
-
-
-class UsageError(Exception):
-    """
-    Usage error
-    """
 
 
 class InitDb(Command):
