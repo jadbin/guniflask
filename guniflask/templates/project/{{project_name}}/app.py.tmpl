@@ -16,7 +16,7 @@ class ConfigProxy:
     def settings(self):
         if has_app_context():
             return current_app.config(['GUNIFLASK_SETTINGS'])
-        return load_app_config('guniflask_example')
+        return load_app_config('{{project_name}}')
 
 
 config = ConfigProxy()
