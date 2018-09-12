@@ -2,7 +2,7 @@
 
 import os
 from os.path import exists, join, abspath, isdir, basename, dirname
-from shutil import copymode, ignore_patterns
+from shutil import ignore_patterns
 
 from jinja2 import Template
 
@@ -164,9 +164,6 @@ class InitCommand(Command):
         self.copytree(templates_dir, project_dir, settings)
 
     def copytree(self, src, dst, settings):
-        if not exists(dst):
-            os.makedirs(dst, 0o755)
-        copymode(src, dst)
         names = os.listdir(src)
         ignored_names = ignore_patterns('*.pyc')(src, names)
         for name in names:
@@ -194,7 +191,6 @@ class InitCommand(Command):
                         if self.force:
                             self.print_copying_file('force', dst_rel_path)
                             self.write_file(dst_path, content)
-                            copymode(src_path, dst_path)
                         else:
                             self.print_copying_file('conflict', dst_rel_path)
                             while True:
@@ -214,7 +210,6 @@ class InitCommand(Command):
                                 if user_input == 'y' or user_input == 'a':
                                     self.print_copying_file('force', dst_rel_path)
                                     self.write_file(dst_path, content)
-                                    copymode(src_path, dst_path)
                                     if user_input == 'a':
                                         self.force = True
                                 elif user_input == 'n':
@@ -225,7 +220,6 @@ class InitCommand(Command):
                 else:
                     self.print_copying_file('create', dst_rel_path)
                     self.write_file(dst_path, content)
-                    copymode(src_path, dst_path)
 
     @staticmethod
     def relative_path(path, fpath):
@@ -244,6 +238,9 @@ class InitCommand(Command):
 
     @staticmethod
     def write_file(path, raw):
+        d = dirname(path)
+        if not exists(d):
+            os.makedirs(d)
         with open(path, 'w', encoding='utf-8') as f:
             f.write(raw)
 
