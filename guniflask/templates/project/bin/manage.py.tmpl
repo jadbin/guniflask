@@ -115,7 +115,8 @@ class TableToModel(Command):
         metadata = MetaData(engine)
         metadata.reflect(only=args.tables)
         gen = SqlToModelGenerator('{{project_name}}', metadata)
-        gen.render(join(home_dir, '{{project_name}}', 'models'))
+        dest = config.settings.get('table2mdoel_dest', join('{{project_name}}', 'models'))
+        gen.render(join(home_dir, dest))
 
 
 class GunicornApplication(Application):
