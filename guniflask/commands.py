@@ -250,19 +250,19 @@ class InitCommand(Command):
 
     @staticmethod
     def print_request(question, option):
-        print('\033[32;40m?\033[0m {} \033[37;40m({})\033[0m '
+        print('\033[32m?\033[0m {} \033[37m({})\033[0m '
               .format(question, option), end='', flush=True)
 
     @staticmethod
     def print_decision(question, decision):
-        print('\033[32;40m?\033[0m {} \033[36;40m{}\033[0m'
+        print('\033[32m?\033[0m {} \033[36m{}\033[0m'
               .format(question, decision), flush=True)
 
     @staticmethod
     def print_welcome(project_dir):
-        print('\033[37;40mWelcome to gunicorn generator\033[0m \033[33;40mv{}\033[0m'
+        print('\033[37mWelcome to gunicorn generator\033[0m \033[33mv{}\033[0m'
               .format(__version__), flush=True)
-        print('\033[37;40mApplication file will be created in folder:\033[0m \033[33;40m{}\033[0m'
+        print('\033[37mApplication file will be created in folder:\033[0m \033[33m{}\033[0m'
               .format(project_dir), flush=True)
 
     @staticmethod
@@ -275,15 +275,15 @@ class InitCommand(Command):
 
     @staticmethod
     def print_invalid_command():
-        print('\033[31;40m>>\033[0m Please enter a valid command', end='', flush=True)
+        print('\033[31m>>\033[0m Please enter a valid command', end='', flush=True)
 
     @staticmethod
     def print_success():
-        print('\033[32;40mApplication is created successfully.\033[0m', flush=True)
+        print('\033[32mApplication is created successfully.\033[0m', flush=True)
 
     @staticmethod
     def print_aborted_error(message):
-        print('\033[33;40m{}\033[0m'.format(message), flush=True)
+        print('\033[33m{}\033[0m'.format(message), flush=True)
 
     @staticmethod
     def print_copying_file(t, path):
@@ -296,7 +296,7 @@ class InitCommand(Command):
             color = 32
         elif t == 'force' or t == 'skip':
             color = 33
-        print('\033[{};40m{:>9}\033[0m {}'.format(color, t, path), flush=True)
+        print('\033[{}m{:>9}\033[0m {}'.format(color, t, path), flush=True)
 
 
 class VersionCommand(Command):
