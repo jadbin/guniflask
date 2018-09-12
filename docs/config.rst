@@ -10,12 +10,15 @@ Overview
 gunicorn配置主要是对HTTP Server的配置。
 项目配置主要是业务相关的配置。
 
+部分配置也可以通过环境变量设定，环境变量的优先级高于配置文件。
+
 Gunicorn Config
 ---------------
 
-我们可以在 conf/gunicorn.py 中通过定义变量的方式添加gunicorn配置项，包括:
+我们可以在 conf/gunicorn.py 中通过定义变量的方式添加gunicorn配置项，包括但不限于:
 
 - bind: 项目运行时绑定的地址
+- loglevel: 日志级别
 
 gunicorn详细的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html 。
 

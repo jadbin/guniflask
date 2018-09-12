@@ -32,7 +32,9 @@ active_profiles
 
 激活哪些profile。
 
-有关profile的详细信息请参考 :ref:`profile` 。
+也可以通过环境变量 ``GUNIFLASK_ACTIVE_PROFILES`` 进行设置。
+
+有关使用profile区别运行环境并加载不同配置的详细信息请参考 :ref:`profile` 。
 
 cors
 ^^^^

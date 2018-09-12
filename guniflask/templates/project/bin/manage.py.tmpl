@@ -77,7 +77,7 @@ class InitDb(Command):
         from {{project_name}} import create_app, db, config
 
         if not config.settings['SQLALCHEMY_DATABASE_URI']:
-            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' first in configuration.")
+            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         walk_modules('{{project_name}}.models')
         app = create_app()
         with app.app_context():
@@ -115,7 +115,7 @@ class TableToModel(Command):
 
         database_uri = config.settings['SQLALCHEMY_DATABASE_URI']
         if not database_uri:
-            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' first in configuration.")
+            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         engine = create_engine(database_uri)
         metadata = MetaData(engine)
         metadata.reflect(only=args.tables)
