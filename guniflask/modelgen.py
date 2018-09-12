@@ -3,18 +3,23 @@
 from os.path import join
 from collections import defaultdict
 from keyword import iskeyword
-import inspect
 
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKey, Enum
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKey
 import inflect
 
 from guniflask.utils.template import string_camelcase, string_lowercase_underscore
+from guniflask.dialects import supported_dialects
 
 inflect_engine = inflect.engine()
 
 
 class SqlToModelGenerator:
     def __init__(self, name, metadata, indent=4):
+        dialect_name = metadata.bind.dialect.name
+        if dialect_name not in supported_dialects:
+            raise ValueError('Unsupported dialect: {}'.format(dialect_name))
+
+        self.dialect = supported_dialects[dialect_name]
         self.name = name
         self.indent = ' ' * indent
 
@@ -115,39 +120,10 @@ class SqlToModelGenerator:
                                                 [self.render_constraint(x) for x in dedicated_fks] +
                                                 ['{}={!r}'.format(i, getattr(column, i)) for i in kwargs]))
 
-    @staticmethod
-    def render_column_type(coltype):
-        coltype_name = coltype.__class__.__name__
-        args = []
-        if isinstance(coltype, Enum):
-            args.extend(repr(arg) for arg in coltype.enums)
-            if coltype.name is not None:
-                args.append('name={!r}'.format(coltype.name))
-        else:
-            # All other types
-            argspec = inspect.getfullargspec(coltype.__class__.__init__)
-            defaults = dict(zip(argspec.args[-len(argspec.defaults or ()):],
-                                argspec.defaults or ()))
-            missing = object()
-            use_kwargs = False
-            for attr in argspec.args[1:]:
-                if attr.startswith('_'):
-                    continue
-                value = getattr(coltype, attr, missing)
-                default = defaults.get(attr, missing)
-                if value is missing or value == default:
-                    use_kwargs = True
-                elif use_kwargs:
-                    args.append('{}={!r}'.format(attr, value))
-                else:
-                    args.append(repr(value))
-        rendered = 'db.{}'.format(coltype_name)
-        if args and not coltype_name.lower() == 'integer':
-            rendered += '({})'.format(', '.join(args))
-        return rendered
+    def render_column_type(self, coltype):
+        return 'db.{}'.format(self.dialect.convert_column_type(coltype))
 
-    @staticmethod
-    def render_constraint(constraint):
+    def render_constraint(self, constraint):
         def render_fk_options(*args):
             opts = [repr(i) for i in args]
             for attr in 'ondelete', 'onupdate':
