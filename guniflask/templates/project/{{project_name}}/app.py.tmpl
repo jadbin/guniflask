@@ -64,7 +64,7 @@ def init_app(app, settings):
 
 def register_blueprints(app):
     def iter_blueprints():
-        for module in walk_modules('{{project_name}}.blueprints'):
+        for module in walk_modules('{{project_name}}'):
             for obj in vars(module).values():
                 if isinstance(obj, Blueprint):
                     yield obj
