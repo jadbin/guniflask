@@ -3,8 +3,9 @@
 from os.path import join
 from collections import defaultdict
 from keyword import iskeyword
+import inspect
 
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKey
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKey, Enum
 import inflect
 
 from guniflask.utils.template import string_camelcase, string_lowercase_underscore
@@ -21,7 +22,7 @@ class SqlToModelGenerator:
         many_to_many_links = defaultdict(list)
         for table in metadata.tables.values():
             fk_constraints = [i for i in table.constraints if isinstance(i, ForeignKeyConstraint)]
-            if len(fk_constraints) == 2 and len(table.columns) == 2 and all(col.foreign_keys for col in table.columns):
+            if len(fk_constraints) == 2 and all(col.foreign_keys for col in table.columns):
                 many_to_many_tables.add(table.name)
                 tablename = fk_constraints[0].elements[0].column.table.name
                 many_to_many_links[tablename].append(table)
@@ -60,9 +61,11 @@ class SqlToModelGenerator:
         header_str = "class {}(db.Model):\n".format(model.class_name)
         header_str += "{}__tablename__ = '{}'\n\n".format(self.indent, model.table.name)
         columns_str = ''
-        for c in model.table.columns:
-            columns_str += '{}{} = {}\n'.format(self.indent, convert_to_valid_identifier(c.name),
-                                                self.render_column(c))
+        for col in model.table.columns:
+            attr = convert_to_valid_identifier(col.name)
+            show_name = attr != col.name
+            columns_str += '{}{} = {}\n'.format(self.indent, attr,
+                                                self.render_column(col, show_name=show_name))
         relationships_str = ''
         for r in model.relationships:
             relationships_str += self.indent + self.render_relationship(r) + '\n'
@@ -73,11 +76,11 @@ class SqlToModelGenerator:
                           if isinstance(r, ManyToManyRelationship)])
 
     def render_table(self, table):
-        columns_str = ',\n'.join(self.indent + self.render_column(c) for c in table.columns)
-        return '{} = db.Table({},\n{}\n)\n'.format(convert_to_valid_identifier(table.name),
-                                                   repr(table.name), columns_str)
+        columns_str = ',\n'.join(self.indent + self.render_column(col, show_name=True) for col in table.columns)
+        tablename = convert_to_valid_identifier(table.name)
+        return '{} = db.Table({!r},\n{}\n)\n'.format(tablename, table.name, columns_str)
 
-    def render_column(self, column):
+    def render_column(self, column, show_name=False):
         is_sole_pk = column.primary_key and len(column.table.primary_key) == 1
         dedicated_fks = [c for c in column.foreign_keys if len(c.constraint.columns) == 1]
         is_unique = any(isinstance(c, UniqueConstraint) and set(c.columns) == {column}
@@ -106,14 +109,42 @@ class SqlToModelGenerator:
 
         kwargs_str = ''
         for k in kwargs:
-            kwargs_str += ', {}={}'.format(k, repr(getattr(column, k)))
-        return "db.Column({})".format(', '.join([self.render_column_type(column)] +
+            kwargs_str += ', {}={!r}'.format(k, getattr(column, k))
+        return "db.Column({})".format(', '.join(([repr(column.name)] if show_name else []) +
+                                                [self.render_column_type(column.type)] +
                                                 [self.render_constraint(x) for x in dedicated_fks] +
-                                                ['{}={}'.format(i, repr(getattr(column, i))) for i in kwargs]))
+                                                ['{}={!r}'.format(i, getattr(column, i)) for i in kwargs]))
 
     @staticmethod
-    def render_column_type(column):
-        return 'db.{}'.format(repr(column.type))
+    def render_column_type(coltype):
+        coltype_name = coltype.__class__.__name__
+        args = []
+        if isinstance(coltype, Enum):
+            args.extend(repr(arg) for arg in coltype.enums)
+            if coltype.name is not None:
+                args.append('name={!r}'.format(coltype.name))
+        else:
+            # All other types
+            argspec = inspect.getfullargspec(coltype.__class__.__init__)
+            defaults = dict(zip(argspec.args[-len(argspec.defaults or ()):],
+                                argspec.defaults or ()))
+            missing = object()
+            use_kwargs = False
+            for attr in argspec.args[1:]:
+                if attr.startswith('_'):
+                    continue
+                value = getattr(coltype, attr, missing)
+                default = defaults.get(attr, missing)
+                if value is missing or value == default:
+                    use_kwargs = True
+                elif use_kwargs:
+                    args.append('{}={!r}'.format(attr, value))
+                else:
+                    args.append(repr(value))
+        rendered = 'db.{}'.format(coltype_name)
+        if args and not coltype_name.lower() == 'integer':
+            rendered += '({})'.format(', '.join(args))
+        return rendered
 
     @staticmethod
     def render_constraint(constraint):
@@ -122,7 +153,7 @@ class SqlToModelGenerator:
             for attr in 'ondelete', 'onupdate':
                 value = getattr(constraint, attr, None)
                 if value:
-                    opts.append('{}={}'.format(attr, repr(value)))
+                    opts.append('{}={!r}'.format(attr, value))
             return ', '.join(opts)
 
         if isinstance(constraint, ForeignKey):
@@ -210,7 +241,7 @@ class ManyToManyRelationship(Relationship):
         self.preferred_name = inflect_engine.plural(convert_to_valid_identifier(target_cls))
         self.association_table = association_table
 
-        self.kwargs['secondary'] = repr(convert_to_valid_identifier(association_table.name))
+        self.kwargs['secondary'] = convert_to_valid_identifier(association_table.name)
         self.kwargs['lazy'] = repr('select')
         self.kwargs['backref'] = "db.backref({}, lazy='select')".format(
             repr(inflect_engine.plural(convert_to_valid_identifier(source_cls))))
