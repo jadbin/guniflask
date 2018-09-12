@@ -4,7 +4,7 @@ from os.path import join
 from collections import defaultdict
 from keyword import iskeyword
 
-from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, ForeignKey
+from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, CheckConstraint, ForeignKey
 import inflect
 
 from guniflask.utils.template import string_camelcase, string_lowercase_underscore
@@ -29,7 +29,7 @@ class SqlToModelGenerator:
             fk_constraints = [i for i in table.constraints if isinstance(i, ForeignKeyConstraint)]
             if len(fk_constraints) == 2 and all(col.foreign_keys for col in table.columns):
                 many_to_many_tables.add(table.name)
-                tablename = fk_constraints[0].elements[0].column.table.name
+                tablename = sorted(fk_constraints, key=get_constraint_sort_key)[0].elements[0].column.table.name
                 many_to_many_links[tablename].append(table)
 
         self.models = {}
@@ -39,7 +39,7 @@ class SqlToModelGenerator:
             self.models[table.name] = Model(table, many_to_many_links[table.name])
 
             # Add many-to-one relations
-            for constraint in table.constraints:
+            for constraint in sorted(table.constraints, key=get_constraint_sort_key):
                 if isinstance(constraint, ForeignKeyConstraint):
                     tablename = constraint.elements[0].column.table.name
                     self.models[tablename].add_many_to_one_relation(constraint)
@@ -151,6 +151,12 @@ def convert_to_valid_identifier(name):
     return name
 
 
+def get_constraint_sort_key(constraint):
+    if isinstance(constraint, CheckConstraint):
+        return 'C{0}'.format(constraint.sqltext)
+    return constraint.__class__.__name__[0] + repr(list(constraint.columns.keys()))
+
+
 class Model:
     parent_name = 'db.Model'
 
@@ -162,6 +168,7 @@ class Model:
         # Add many-to-many relationships
         for association_table in association_tables:
             fk_constraints = [c for c in association_table.constraints if isinstance(c, ForeignKeyConstraint)]
+            fk_constraints.sort(key=get_constraint_sort_key)
             target_cls = self.table_name_to_class_name(fk_constraints[1].elements[0].column.table.name)
             relationship = ManyToManyRelationship(self.class_name, target_cls, association_table)
             self.relationships.append(relationship)

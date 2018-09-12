@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import os
-from os.path import join
+from os.path import join, dirname, exists
 import multiprocessing
 
 from gunicorn.config import KNOWN_SETTINGS
@@ -39,6 +39,15 @@ def _make_debug_settings():
         globals()[k] = v
 
 
+def _makedirs():
+    for c in ['pidfile', 'accesslog', 'errorlog']:
+        p = globals().get(c)
+        if p:
+            d = dirname(p)
+            if d and not exists(d):
+                os.makedirs(d)
+
+
 daemon = True
 workers = multiprocessing.cpu_count()
 worker_class = 'gevent'
@@ -52,3 +61,4 @@ _make_profile_settings(_settings['active_profiles'])
 # if debug
 if _settings['debug']:
     _make_debug_settings()
+_makedirs()

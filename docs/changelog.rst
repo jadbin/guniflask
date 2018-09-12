@@ -7,6 +7,8 @@ Change log
 ------------------
 
 - 修复初始化项目时创建 __pycache__ 的bug
+- 优化table2model导出的column type，修复部分已知bug
+- 修复未创建日志目录和pid目录时不能start项目的bug
 
 0.2.0 (2018-09-12)
 ------------------
