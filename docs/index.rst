@@ -39,7 +39,7 @@ Table of Contents
     settings
     hook
     blueprints
-    database
+    orm
     log
     debug
     deploy

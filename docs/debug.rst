@@ -25,7 +25,6 @@ Debug Settings
 
 以debug模式启动项目时，会强制设定如下gunicorn配置项:
 
-- pidfile : ``None``
 - accesslog : ``'-'``
 - errorlog : ``'-'``
 - loglevel : ``'debug'``

@@ -26,7 +26,7 @@ guniflask生成的项目支持配置Python标准库生成的虚拟环境。
 Starting Application
 --------------------
 
-启动项目:
+运行如下命令启动项目:
 
 .. code-block:: bash
 
@@ -38,7 +38,7 @@ Starting Application
 Stopping Application
 --------------------
 
-停止项目:
+运行如下命令停止项目:
 
 .. code-block:: bash
 

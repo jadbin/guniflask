@@ -46,3 +46,14 @@ cors
 如果为 ``True`` 表示开启跨域。
 项目基于Flask-Cors实现跨域，``cors`` 也可以设置为 ``dict`` 类型，并用作传入对跨域进行详细配置的关键字参数。
 详细配置可参考Flask-Cors文档: https://flask-cors.readthedocs.io/en/latest/api.html 。
+
+.. _table2model_dest:
+
+table2model_dest
+^^^^^^^^^^^^^^^^
+
+- Default: ``'foo/models'``
+
+配置table2model生成结果存储的路径。
+
+路径为相对于项目根目录的相对路径，并且需要路径对应的文件夹已经存在。

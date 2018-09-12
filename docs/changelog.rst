@@ -3,6 +3,15 @@
 Change log
 ==========
 
+0.2.2 (2018-09-13)
+------------------
+
+- 自动注册foo模块及自模块中所有声明的 ``Blueprint``
+- 添加配置项 ``table2model_dest`` ，用于指定table2model生成结果的存放路径
+- debug模式默认创建pid文件
+- 修复 ``config.settings`` 获取配置出错的bug
+- 修复 ``db.Model.from_dict``
+
 0.2.1 (2018-09-12)
 ------------------
 
