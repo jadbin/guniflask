@@ -16,7 +16,7 @@ Debug Mode
 
 .. code-block:: bash
 
-    export GUNIFLASK_DEBUG = 1
+    export GUNIFLASK_DEBUG=1
 
 用户在代码中可以根据是否设置了 ``GUNIFLASK_DEBUG`` 环境变量来确定项目是否以debug模式启动。
 
@@ -36,7 +36,7 @@ Debug Settings
 
 此时，用户在配置文件中对这些项的设定将不起作用。
 
-gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html#logging 。
+gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html 。
 
 Auto Reloading
 --------------

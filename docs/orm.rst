@@ -23,7 +23,7 @@ Declaring Models
 ----------------
 
 我们约定项目中使用的model在 ``foo.models`` 模块及其子模块中声明。
-下面给出了一个定义model的示例。
+下面给出了一个定义model的示例:
 
 .. code-block:: python
 

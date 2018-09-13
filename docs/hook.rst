@@ -11,7 +11,7 @@ make_settings
 .. function:: foo.hooks.make_settings(app, settings):
 
     :param app: Flask app
-    :param config: 项目配置
+    :param settings: 项目配置
 
 此函数会在读取完配置文件后，Flask拓展init app之前进行调用。
 
@@ -21,6 +21,6 @@ init_app
 .. function:: foo.hooks.init_app(app, settings):
 
     :param app: Flask app
-    :param config: 项目配置
+    :param settings: 项目配置
 
 此函数会在项目使用的Flask拓展init app之后，运行app之前进行调用。
