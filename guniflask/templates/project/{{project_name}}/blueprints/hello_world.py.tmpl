@@ -1,0 +1,37 @@
+# coding=utf-8
+
+import json
+
+from flask import Blueprint, jsonify
+
+from {{project_name}} import config
+
+hello_world_blueprint = Blueprint('hello_world', __name__, url_prefix='/api')
+
+
+@hello_world_blueprint.route('/hello-world', methods=['GET'])
+def hello_world():
+    return """<h1>Hello World!</h1>
+<h2>Available Links:</h2>
+<ul>
+    <li><a href="/api/hello-world">/api/hello-world</a></li>
+    <li><a href="/api/hello-world/settings">/api/hello-world/settings</a></li>
+</ul>
+"""
+
+
+@hello_world_blueprint.route('/hello-world/settings', methods=['GET'])
+def get_settings():
+    def is_jsonable(v):
+        try:
+            json.dumps(v)
+        except Exception:
+            return False
+        return True
+
+    # Show how to get settings
+    settings = {}
+    for k, v in config.settings.items():
+        if is_jsonable(v):
+            settings[k] = v
+    return jsonify(settings)
