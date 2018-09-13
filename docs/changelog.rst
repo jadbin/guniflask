@@ -11,6 +11,8 @@ Change log
 - debug模式默认创建pid文件
 - 修复 ``config.settings`` 获取配置出错的bug
 - 修复 ``db.Model.from_dict``
+- 修复生成项目的 ``tests`` 文件夹的路径
+- Python>=3.5
 
 0.2.1 (2018-09-12)
 ------------------
