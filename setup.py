@@ -34,8 +34,7 @@ install_requires = [
 ]
 
 extras_require = {
-    'app': ['guniflask',
-            'Flask',
+    'app': ['Flask',
             'gunicorn',
             'gevent',
             'Flask-SQLAlchemy',
