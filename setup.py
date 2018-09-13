@@ -16,6 +16,11 @@ def read_version():
         return re.search(r"__version__ = '([^']+)'", f.read()).group(1)
 
 
+def read_requirements(file):
+    with open(join(dirname(__file__), file), 'r', encoding='utf-8') as f:
+        return [l.strip() for l in f]
+
+
 class PyTest(TestCommand):
     def run_tests(self):
         import pytest
@@ -24,21 +29,15 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-with open(join(dirname(__file__), 'requirements_test.txt'), 'r', encoding='utf-8') as f:
-    tests_require = [l.strip() for l in f]
-
+tests_require = read_requirements('requirements_test.txt')
+app_require = read_requirements('requirements_app.txt')
 install_requires = [
     'Jinja2',
     'SQLAlchemy',
     'inflect'
 ]
-
 extras_require = {
-    'app': ['Flask',
-            'gunicorn',
-            'gevent',
-            'Flask-SQLAlchemy',
-            'Flask-Cors']
+    'app': app_require
 }
 
 
