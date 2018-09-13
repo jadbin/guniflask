@@ -19,7 +19,7 @@ guniflask是自动化生成基于flask + gunicorn + gevent的服务端项目基�
 Installation
 ============
 
-guniflask需要Python 3.4或更高版本的环境支持。
+guniflask需要Python 3.5或更高版本的环境支持。
 
 可以通过pip安装或升级guniflask::
 
