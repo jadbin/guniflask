@@ -1,10 +1,9 @@
 include README.rst
 include LICENSE
-include requirements_test.txt
-include requirements_app.txt
 graft guniflask
 graft docs
 graft tests
+graft requirements
 global-exclude *.pyc
 global-exclude *.pyo
 prune docs/_build

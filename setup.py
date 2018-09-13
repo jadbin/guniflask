@@ -17,7 +17,7 @@ def read_version():
 
 
 def read_requirements(file):
-    with open(join(dirname(__file__), file), 'r', encoding='utf-8') as f:
+    with open(join(dirname(__file__), 'requirements', file), 'r', encoding='utf-8') as f:
         return [l.strip() for l in f]
 
 
@@ -29,8 +29,8 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-tests_require = read_requirements('requirements_test.txt')
-app_require = read_requirements('requirements_app.txt')
+tests_require = read_requirements('test.txt')
+app_require = read_requirements('app.txt')
 install_requires = [
     'Jinja2',
     'SQLAlchemy',
