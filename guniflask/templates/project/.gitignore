@@ -11,5 +11,5 @@ docs/_build
 .idea
 .pytest_cache
 
-.log
-.pid
+*.log
+*.pid
