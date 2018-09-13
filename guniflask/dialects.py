@@ -27,20 +27,27 @@ class MysqlDialect(DatabaseDialect):
     name = 'mysql'
 
     column_types = {
-        'VARCHAR': sqlalchemy.String,
-        'TEXT': sqlalchemy.Text,
-        'BOOLEAN': sqlalchemy.Boolean,
-        'TINYINT': sqlalchemy.SmallInteger,
-        'SMALLINT': sqlalchemy.SmallInteger,
-        'INTEGER': sqlalchemy.Integer,
         'BIGINT': sqlalchemy.BigInteger,
-        'FLOAT': sqlalchemy.Float,
-        'DOUBLE': sqlalchemy.Float,
-        'DECIMAL': sqlalchemy.DECIMAL,
-        'ENUM': sqlalchemy.Enum,
+        'BINARY': sqlalchemy.Binary,
+        'BLOB': sqlalchemy.LargeBinary,
+        'BOOLEAN': sqlalchemy.Boolean,
+        'CHAR': sqlalchemy.CHAR,
         'DATE': sqlalchemy.Date,
         'DATETIME': sqlalchemy.DateTime,
-        'TIMESTAMP': sqlalchemy.TIMESTAMP
+        'DECIMAL': sqlalchemy.DECIMAL,
+        'DOUBLE': sqlalchemy.Float,
+        'ENUM': sqlalchemy.Enum,
+        'FLOAT': sqlalchemy.Float,
+        'INTEGER': sqlalchemy.Integer,
+        'JSON': sqlalchemy.JSON,
+        'SMALLINT': sqlalchemy.SmallInteger,
+        'NUMERIC': sqlalchemy.Numeric,
+        'TEXT': sqlalchemy.Text,
+        'TIMESTAMP': sqlalchemy.TIMESTAMP,
+        'TINYBLOB': sqlalchemy.Binary,
+        'TINYINT': sqlalchemy.SmallInteger,
+        'VARBINARY': sqlalchemy.VARBINARY,
+        'VARCHAR': sqlalchemy.String,
     }
 
     def convert_column_type(self, coltype):
