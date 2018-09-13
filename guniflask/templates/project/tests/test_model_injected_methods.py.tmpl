@@ -1,0 +1,21 @@
+# coding=utf-8
+
+from {{project_name}} import db
+
+
+class FooModel(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32))
+
+
+def test_to_dict():
+    foo = FooModel(name='foo').to_dict()
+    assert foo['id'] is None
+    assert foo['name'] == 'foo'
+
+
+def test_from_dict():
+    d = {'name': 'foo'}
+    foo = FooModel.from_dict(d)
+    assert foo.id is None
+    assert foo.name == 'foo'
