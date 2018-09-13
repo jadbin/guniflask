@@ -146,8 +146,13 @@ class Debug(Command):
     def run(self, args):
         os.environ['GUNIFLASK_DEBUG'] = '1'
         options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        app = GunicornApplication('{{project_name}}:create_app()', options=options)
-        app.run()
+        pid = get_pid(options)
+        if pid is not None and is_started(pid):
+            print('{{project_name}} is already started')
+            self.exitcode = 1
+        else:
+            app = GunicornApplication('{{project_name}}:create_app()', options=options)
+            app.run()
 
 
 class Start(Command):
@@ -161,8 +166,13 @@ class Start(Command):
 
     def run(self, args):
         options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        app = GunicornApplication('{{project_name}}:create_app()', options=options)
-        app.run()
+        pid = get_pid(options)
+        if pid is not None and is_started(pid):
+            print('{{project_name}} is already started')
+            self.exitcode = 1
+        else:
+            app = GunicornApplication('{{project_name}}:create_app()', options=options)
+            app.run()
 
 
 class Stop(Command):
@@ -175,34 +185,42 @@ class Stop(Command):
         return 'Stop {{project_name}}'
 
     def run(self, args):
-        pid = None
         options = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        pidfile = options.get('pidfile')
-        if isfile(pidfile):
-            with open(pidfile, 'r') as f:
-                line = f.readline()
-                if line:
-                    pid = line.strip()
-        if pid:
-            pid = int(pid)
+        pid = get_pid(options)
+        if pid is None or not is_started(pid):
+            print('No {{project_name}} to stop')
+            self.exitcode = 1
+        else:
             print('kill {}'.format(pid))
+            os.kill(pid, signal.SIGTERM)
+            time.sleep(3)
             try:
                 os.kill(pid, 0)
             except OSError:
-                print('No guniflask_exmaple to stop')
+                pass
             else:
-                os.kill(pid, signal.SIGTERM)
-                time.sleep(3)
-                try:
-                    os.kill(pid, 0)
-                except OSError:
-                    pass
-                else:
-                    print('{{project_name}} did not stop gracefully after 3 seconds')
-                    print('kill -9 {}'.format(pid))
-                    os.kill(pid, signal.SIGKILL)
-        else:
-            print('No guniflask_exmaple to stop')
+                print('{{project_name}} did not stop gracefully after 3 seconds')
+                print('kill -9 {}'.format(pid))
+                os.kill(pid, signal.SIGKILL)
+
+
+def get_pid(options):
+    pidfile = options.get('pidfile')
+    if isfile(pidfile):
+        with open(pidfile, 'r') as f:
+            line = f.readline()
+            if line:
+                pid = line.strip()
+                if pid:
+                    return int(pid)
+
+
+def is_started(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
 
 
 def _get_commands_from_module():
