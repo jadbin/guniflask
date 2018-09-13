@@ -138,7 +138,7 @@ class SqlToModelGenerator:
             return 'db.ForeignKey({})'.format(render_fk_options(remote_column))
 
     def render_relationship(self, relationship):
-        kwargs_str = ', '.join([repr(relationship.target_cls)] +
+        kwargs_str = ', '.join([repr(table_name_to_class_name(relationship.target_tbl))] +
                                ['{}={}'.format(i, relationship.kwargs[i]) for i in
                                 sorted(relationship.kwargs.keys())])
         return '{} = db.relationship({})'.format(relationship.preferred_name, kwargs_str)
@@ -147,6 +147,13 @@ class SqlToModelGenerator:
 def convert_to_valid_identifier(name):
     name = string_lowercase_underscore(name)
     if name[0].isdigit() or iskeyword(name):
+        name = '_' + name
+    return name
+
+
+def table_name_to_class_name(table_name):
+    name = string_camelcase(table_name)
+    if name[0].isdigit():
         name = '_' + name
     return name
 
@@ -162,43 +169,35 @@ class Model:
 
     def __init__(self, table, association_tables):
         self.table = table
-        self.class_name = self.table_name_to_class_name(table.name)
+        self.class_name = table_name_to_class_name(table.name)
         self.relationships = []
 
         # Add many-to-many relationships
         for association_table in association_tables:
             fk_constraints = [c for c in association_table.constraints if isinstance(c, ForeignKeyConstraint)]
             fk_constraints.sort(key=get_constraint_sort_key)
-            target_cls = self.table_name_to_class_name(fk_constraints[1].elements[0].column.table.name)
-            relationship = ManyToManyRelationship(self.class_name, target_cls, association_table)
+            target_tbl = fk_constraints[1].elements[0].column.table.name
+            relationship = ManyToManyRelationship(self.table.name, target_tbl, association_table)
             self.relationships.append(relationship)
 
-    @staticmethod
-    def table_name_to_class_name(table_name):
-        name = string_camelcase(table_name)
-        if name[0].isdigit():
-            name = '_' + name
-        return name
-
     def add_many_to_one_relation(self, constraint):
-        target_cls = self.table_name_to_class_name(constraint.table.name)
-        relationship = ManyToOneRelationship(self.class_name, target_cls, constraint)
+        relationship = ManyToOneRelationship(self.table.name, constraint.table.name, constraint)
         self.relationships.append(relationship)
 
 
 class Relationship:
-    def __init__(self, source_cls, target_cls):
-        self.source_cls = source_cls
-        self.target_cls = target_cls
+    def __init__(self, source_tbl, target_tbl):
+        self.source_tbl = source_tbl
+        self.target_tbl = target_tbl
         self.kwargs = {}
         self.preferred_name = None
 
 
 class ManyToOneRelationship(Relationship):
-    def __init__(self, source_cls, target_cls, constraint):
-        super().__init__(source_cls, target_cls)
+    def __init__(self, source_tbl, target_tbl, constraint):
+        super().__init__(source_tbl, target_tbl)
 
-        self.preferred_name = convert_to_valid_identifier(target_cls)
+        self.preferred_name = convert_to_valid_identifier(target_tbl)
         self.constraint = constraint
 
         # Add uselist=False to one-to-one relationships
@@ -214,17 +213,17 @@ class ManyToOneRelationship(Relationship):
         else:
             self.kwargs['lazy'] = repr('joined')
         self.kwargs['backref'] = "db.backref({}, lazy='joined')".format(
-            repr(convert_to_valid_identifier(source_cls)))
+            repr(convert_to_valid_identifier(source_tbl)))
 
 
 class ManyToManyRelationship(Relationship):
-    def __init__(self, source_cls, target_cls, association_table):
-        super().__init__(source_cls, target_cls)
+    def __init__(self, source_tbl, target_tbl, association_table):
+        super().__init__(source_tbl, target_tbl)
 
-        self.preferred_name = inflect_engine.plural(convert_to_valid_identifier(target_cls))
+        self.preferred_name = inflect_engine.plural(convert_to_valid_identifier(target_tbl))
         self.association_table = association_table
 
         self.kwargs['secondary'] = convert_to_valid_identifier(association_table.name)
         self.kwargs['lazy'] = repr('select')
         self.kwargs['backref'] = "db.backref({}, lazy='select')".format(
-            repr(inflect_engine.plural(convert_to_valid_identifier(source_cls))))
+            repr(inflect_engine.plural(convert_to_valid_identifier(source_tbl))))
