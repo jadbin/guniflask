@@ -29,14 +29,16 @@ db.Model.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(
 
 
 def set_app_config(app, settings):
-    from {{project_name}} import hooks
-
     for k, v in settings.items():
         if k.isupper():
             app.config[k] = v
-    make_settings = getattr(hooks, 'make_settings', None)
-    if make_settings:
-        make_settings(app, settings)
+
+    from {{project_name}} import hooks
+
+    _make_settings = getattr(hooks, 'make_settings', None)
+    if _make_settings:
+        _make_settings(app, settings)
+
     app.config['GUNIFLASK_SETTINGS'] = settings
     log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
 
@@ -60,6 +62,12 @@ def init_app(app, settings):
             db.init_app(app)
         except (ModuleNotFoundError, ImportError) as e:
             log.error('Failed to set database: %s', e)
+
+    from {{project_name}} import hooks
+
+    _init_app = getattr(hooks, 'init_app', None)
+    if _init_app:
+        _init_app(app, settings)
 
 
 def register_blueprints(app):
