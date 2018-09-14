@@ -12,7 +12,7 @@ from gunicorn.util import import_app
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
 
-from guniflask.utils.config import load_config, walk_modules
+from guniflask.utils.config import load_config, walk_modules, load_app_config
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 
@@ -69,9 +69,10 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from {{project_name}} import create_app, db, config
+        from infotrack import create_app, db
 
-        if not config.settings['SQLALCHEMY_DATABASE_URI']:
+        settings = load_app_config('{{project_name}}')
+        if not settings['SQLALCHEMY_DATABASE_URI']:
             raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         walk_modules('{{project_name}}.models')
         app = create_app()
@@ -106,16 +107,15 @@ class TableToModel(Command):
             args.tables = args.tables.split(',')
 
     def run(self, args):
-        from {{project_name}} import config
-
-        database_uri = config.settings['SQLALCHEMY_DATABASE_URI']
+        settings = load_app_config('{{project_name}}')
+        database_uri = settings['SQLALCHEMY_DATABASE_URI']
         if not database_uri:
             raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         engine = create_engine(database_uri)
         metadata = MetaData(engine)
         metadata.reflect(only=args.tables)
         gen = SqlToModelGenerator('{{project_name}}', metadata)
-        dest = config.settings.get('table2model_dest', join('{{project_name}}', 'models'))
+        dest = settings.get('table2model_dest', join('{{project_name}}', 'models'))
         gen.render(join(home_dir, dest))
 
 
