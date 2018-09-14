@@ -3,7 +3,9 @@
 from os.path import join
 from collections import defaultdict
 from keyword import iskeyword
+import re
 
+import sqlalchemy
 from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstraint, CheckConstraint, ForeignKey
 import inflect
 
@@ -21,6 +23,7 @@ class SqlToModelGenerator:
 
         self.dialect = supported_dialects[dialect_name]
         self.name = name
+        self.metadata = metadata
         self.indent = ' ' * indent
 
         many_to_many_tables = set()
@@ -93,7 +96,6 @@ class SqlToModelGenerator:
         is_unique = is_unique or any(i.unique and set(i.columns) == {column}
                                      for i in column.table.indexes)
         has_index = any(set(i.columns) == {column} for i in column.table.indexes)
-
         kwargs = []
         if column.key != column.name:
             kwargs.append('key')
@@ -111,14 +113,20 @@ class SqlToModelGenerator:
             kwargs.append('index')
         if column.comment:
             kwargs.append('comment')
-
-        kwargs_str = ''
-        for k in kwargs:
-            kwargs_str += ', {}={!r}'.format(k, getattr(column, k))
+        extra_kwargs = self.get_extra_column_kwargs(column)
         return "db.Column({})".format(', '.join(([repr(column.name)] if show_name else []) +
                                                 [self.render_column_type(column.type)] +
                                                 [self.render_constraint(x) for x in dedicated_fks] +
-                                                ['{}={!r}'.format(i, getattr(column, i)) for i in kwargs]))
+                                                ['{}={!r}'.format(i, getattr(column, i)) for i in kwargs] +
+                                                ['{}={}'.format(i, extra_kwargs[i]) for i in
+                                                 sorted(extra_kwargs.keys())]))
+
+    def get_extra_column_kwargs(self, column):
+        kwargs = {}
+        for p in supported_column_properties.values():
+            if p.match_column(column):
+                kwargs.update(p.kwargs)
+        return kwargs
 
     def render_column_type(self, coltype):
         return 'db.{}'.format(self.dialect.convert_column_type(coltype))
@@ -227,3 +235,38 @@ class ManyToManyRelationship(Relationship):
         self.kwargs['lazy'] = repr('select')
         self.kwargs['backref'] = "db.backref({}, lazy='select')".format(
             repr(inflect_engine.plural(convert_to_valid_identifier(source_tbl))))
+
+
+class ColumnProperty:
+    def __init__(self):
+        self.kwargs = {}
+
+    def match_column(self, column):
+        raise NotImplementedError
+
+
+class CreatedTimeProperty(ColumnProperty):
+    def __init__(self):
+        super().__init__()
+        self.kwargs['default'] = 'db.func.utc_timestamp()'
+        self.reg = re.compile(r'^create[d]?_(time|at)$')
+
+    def match_column(self, column):
+        return isinstance(column.type, sqlalchemy.DateTime) and self.reg.match(column.name.lower()) is not None
+
+
+class UpdatedTimeProperty(ColumnProperty):
+    def __init__(self):
+        super().__init__()
+        self.kwargs['default'] = 'db.func.utc_timestamp()'
+        self.kwargs['onupdate'] = 'db.func.utc_timestamp()'
+        self.reg = re.compile(r'^update[d]?_(time|at)$')
+
+    def match_column(self, column):
+        return isinstance(column.type, sqlalchemy.DateTime) and self.reg.match(column.name.lower()) is not None
+
+
+supported_column_properties = {
+    'created_time': CreatedTimeProperty(),
+    'updated_time': UpdatedTimeProperty(),
+}
