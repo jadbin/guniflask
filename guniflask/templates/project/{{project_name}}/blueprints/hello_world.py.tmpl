@@ -6,11 +6,11 @@ from flask import Blueprint, jsonify
 
 from {{project_name}} import config
 
-hello_world_blueprint = Blueprint('hello_world', __name__, url_prefix='/api')
+hello_world = Blueprint('hello_world', __name__, url_prefix='/api')
 
 
-@hello_world_blueprint.route('/hello-world', methods=['GET'])
-def hello_world():
+@hello_world.route('/hello-world', methods=['GET'])
+def home_page():
     return """<h1>Hello World!</h1>
 <h2>Available Links:</h2>
 <ul>
@@ -20,7 +20,7 @@ def hello_world():
 """
 
 
-@hello_world_blueprint.route('/hello-world/settings', methods=['GET'])
+@hello_world.route('/hello-world/settings', methods=['GET'])
 def get_settings():
     def is_jsonable(v):
         try:
