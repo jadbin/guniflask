@@ -3,6 +3,14 @@
 Change log
 ==========
 
+0.2.3 (2018-09-14)
+------------------
+
+- ``db.Model`` 提供 ``update_by_dict`` 方法
+- 为符合 ``^create[d]?_(time|at)$`` 模式的 ``datetime``字段，自动添加 ``default`` 属性
+- 为符合 ``^update[d]?_(time|at)$`` 模式的 ``datetime``字段，自动添加 ``default`` 和 ``onupdate`` 属性
+- 修复table2model生成relation的命名问题
+
 0.2.2 (2018-09-13)
 ------------------
 
