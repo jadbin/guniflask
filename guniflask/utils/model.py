@@ -15,3 +15,10 @@ def dict_to_model(dict_obj, model_cls=None):
     kwargs = {c.key: dict_obj[c.key] for c in col_attrs if c.key in dict_obj}
     model = model_cls(**kwargs)
     return model
+
+
+def update_model_by_dict(model, dict_obj):
+    col_attrs = sqlalchemy.inspect(model).mapper.column_attrs
+    for c in col_attrs:
+        if c.key in dict_obj:
+            setattr(model, c.key, dict_obj[c.key])

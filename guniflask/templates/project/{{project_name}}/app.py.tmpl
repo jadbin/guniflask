@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.utils.config import walk_modules, load_app_config
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-from guniflask.utils.model import model_to_dict, dict_to_model
+from guniflask.utils.model import model_to_dict, dict_to_model, update_model_by_dict
 
 log = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ config = ConfigProxy()
 db = SQLAlchemy()
 db.Model.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
 db.Model.from_dict = classmethod(lambda cls, dict_obj, **kwargs: dict_to_model(dict_obj, model_cls=cls, **kwargs))
+db.Model.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
 
 
 def set_app_config(app, settings):
