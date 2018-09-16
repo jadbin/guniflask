@@ -248,7 +248,7 @@ class ColumnProperty:
 class CreatedTimeProperty(ColumnProperty):
     def __init__(self):
         super().__init__()
-        self.kwargs['default'] = 'db.func.utc_timestamp()'
+        self.kwargs['default'] = 'db.func.now()'
         self.reg = re.compile(r'^create[d]?_(time|at)$')
 
     def match_column(self, column):
@@ -258,8 +258,8 @@ class CreatedTimeProperty(ColumnProperty):
 class UpdatedTimeProperty(ColumnProperty):
     def __init__(self):
         super().__init__()
-        self.kwargs['default'] = 'db.func.utc_timestamp()'
-        self.kwargs['onupdate'] = 'db.func.utc_timestamp()'
+        self.kwargs['default'] = 'db.func.now()'
+        self.kwargs['onupdate'] = 'db.func.now()'
         self.reg = re.compile(r'^update[d]?_(time|at)$')
 
     def match_column(self, column):

@@ -1,11 +1,19 @@
 # coding=utf-8
 
+import datetime as dt
+
 import sqlalchemy
 
 
 def model_to_dict(model):
     col_attrs = sqlalchemy.inspect(model).mapper.column_attrs
-    return {c.key: getattr(model, c.key) for c in col_attrs}
+    d = {c.key: getattr(model, c.key) for c in col_attrs}
+    # set tzinfo for datetime
+    tz_info = dt.datetime.now().astimezone().tzinfo
+    for k, v in d.items():
+        if isinstance(v, dt.datetime) and v.tzinfo is None:
+            d[k] = v.replace(tzinfo=tz_info)
+    return d
 
 
 def dict_to_model(dict_obj, model_cls=None):
