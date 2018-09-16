@@ -3,12 +3,20 @@
 Change log
 ==========
 
+0.2.4 (2018-09-16)
+------------------
+
+- 修复钩子函数 ``init_app`` 没有被调用的bug
+- ``config.settings`` 设定为app启动之后访问配置的途径，在启动app之前使用 ``config.settings`` 会raise RuntimeError
+- 创建时间和更新时间字段改为存储本地时间戳，在调用model的 ``to_dict`` 方法时自动对没有设置时区的 ``datetime`` 字段填充本地时区
+- many-to-one relationship默认添加 ``cascade='all, delete-orphan'``
+
 0.2.3 (2018-09-14)
 ------------------
 
 - ``db.Model`` 提供 ``update_by_dict`` 方法
-- 为符合 ``^create[d]?_(time|at)$`` 模式的 ``datetime``字段，自动添加 ``default`` 属性
-- 为符合 ``^update[d]?_(time|at)$`` 模式的 ``datetime``字段，自动添加 ``default`` 和 ``onupdate`` 属性
+- 对于符合 ``^create[d]?_(time|at)$`` 模式的 ``datetime`` 字段，视为创建时间字段，自动添加 ``default``
+- 对于符合 ``^update[d]?_(time|at)$`` 模式的 ``datetime`` 字段，视为更新时间字段，自动添加 ``default`` 和 ``onupdate``
 - 修复table2model生成relation的命名问题
 
 0.2.2 (2018-09-13)

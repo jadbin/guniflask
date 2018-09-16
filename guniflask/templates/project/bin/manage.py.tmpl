@@ -253,7 +253,7 @@ def main(argv=None):
         argv = sys.argv
     cmds = _get_commands_from_module()
     cmdname = argv[1] if len(argv) > 1 else None
-    if not cmdname:
+    if not cmdname or cmdname in ('-h', '--help'):
         _print_commands()
         sys.exit(0)
     elif cmdname not in cmds:
