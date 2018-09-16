@@ -226,6 +226,7 @@ class ManyToOneRelationship(Relationship):
             self.kwargs['lazy'] = repr('joined')
         self.kwargs['backref'] = "db.backref({}, lazy='joined')".format(
             repr(convert_to_valid_identifier(source_tbl)))
+        self.kwargs['cascade'] = repr('all, delete-orphan')
 
 
 class ManyToManyRelationship(Relationship):
