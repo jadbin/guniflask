@@ -48,11 +48,10 @@ class SqlToModelGenerator:
                     self.models[tablename].add_many_to_one_relation(constraint)
 
     def render(self, path):
-        with open(join(path, '__init__.py'), 'w', encoding='utf-8') as f:
-            f.write('# coding=utf-8\n')
+        model_modules = []
         for model in self.models.values():
-            model_name = convert_to_valid_identifier(model.table.name)
-            with open(join(path, model_name + '.py'), 'w', encoding='utf-8') as f:
+            module_name = convert_to_valid_identifier(model.table.name)
+            with open(join(path, module_name + '.py'), 'w', encoding='utf-8') as f:
                 f.write('# coding=utf-8\n\n')
                 f.write(self.render_imports())
                 tables_content = self.render_secondary_tables(model)
@@ -61,6 +60,11 @@ class SqlToModelGenerator:
                     f.write(tables_content)
                 f.write('\n\n')
                 f.write(self.render_model(model))
+            model_modules.append({'module': module_name, 'class': model.class_name})
+        with open(join(path, '__init__.py'), 'w', encoding='utf-8') as f:
+            f.write('# coding=utf-8\n\n')
+            for m in model_modules:
+                f.write('from .{} import {}\n'.format(m['module'], m['class']))
 
     def render_imports(self):
         return 'from {} import db\n'.format(self.name)
