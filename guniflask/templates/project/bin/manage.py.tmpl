@@ -69,7 +69,7 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from infotrack import create_app, db
+        from {{project_name}} import create_app, db
 
         settings = load_app_config('{{project_name}}')
         if not settings['SQLALCHEMY_DATABASE_URI']:
