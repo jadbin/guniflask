@@ -5,40 +5,42 @@ from os.path import join, dirname, exists
 import multiprocessing
 
 from gunicorn.config import KNOWN_SETTINGS
+from gunicorn.app.base import Application
+from gunicorn.util import import_app
 
 from guniflask.utils.config import load_config, load_profile_config, walk_files, load_app_config
 
-_conf_dir = os.environ['GUNIFLASK_CONF_DIR']
-_pid_dir = os.environ['GUNIFLASK_PID_DIR']
-_log_dir = os.environ['GUNIFLASK_LOG_DIR']
-_id_string = os.environ['GUNIFLASK_ID_STRING']
+conf_dir = os.environ['GUNIFLASK_CONF_DIR']
+pid_dir = os.environ['GUNIFLASK_PID_DIR']
+log_dir = os.environ['GUNIFLASK_LOG_DIR']
+id_string = os.environ['GUNIFLASK_ID_STRING']
 
 
-def _make_profile_settings(active_profiles):
-    gc = load_config(join(_conf_dir, 'gunicorn.py'))
-    gc.update(load_profile_config(_conf_dir, 'gunicorn', profiles=active_profiles))
+def make_profile_options(active_profiles):
+    gc = load_config(join(conf_dir, 'gunicorn.py'))
+    gc.update(load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles))
+    settings = {}
     snames = set([i.name for i in KNOWN_SETTINGS])
     for name in gc:
         if name in snames:
-            globals()[name] = gc[name]
+            settings[name] = gc[name]
+    return settings
 
 
-def _make_debug_settings():
-    debug_settings = {
+def make_debug_options():
+    return {
         'accesslog': '-',
         'errorlog': '-',
         'loglevel': 'debug',
         'disable_redirect_access_to_syslog': True,
         'reload': True,
-        'reload_extra_files': walk_files(_conf_dir),
+        'reload_extra_files': walk_files(conf_dir),
         'workers': 1,
         'daemon': False
     }
-    for k, v in debug_settings.items():
-        globals()[k] = v
 
 
-def _makedirs():
+def makedirs():
     for c in ['pidfile', 'accesslog', 'errorlog']:
         p = globals().get(c)
         if p:
@@ -47,17 +49,35 @@ def _makedirs():
                 os.makedirs(d)
 
 
-daemon = True
-workers = multiprocessing.cpu_count()
-worker_class = 'gevent'
+class GunicornApplication(Application):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.app = app
+        super().__init__()
 
-pidfile = join(_pid_dir, '{{project__name}}-' + _id_string + '.pid')
-accesslog = join(_log_dir, '{{project__name}}-' + _id_string + '.access.log')
-errorlog = join(_log_dir, '{{project__name}}-' + _id_string + '.error.log')
+    def load_config(self):
+        for key, value in self.options.items():
+            if key in self.cfg.settings and value is not None:
+                self.cfg.set(key.lower(), value)
 
-_settings = load_app_config('{{project_name}}')
-_make_profile_settings(_settings['active_profiles'])
+    def load(self):
+        return import_app(self.app)
+
+
+options = {
+    'daemon': True,
+    'workers': multiprocessing.cpu_count(),
+    'worker_class': 'gevent',
+    'pidfile': join(pid_dir, '{{project__name}}-' + id_string + '.pid'),
+    'accesslog': join(log_dir, '{{project__name}}-' + id_string + '.access.log'),
+    'errorlog': join(log_dir, '{{project__name}}-' + id_string + '.error.log')
+}
+
+settings = load_app_config('{{project_name}}')
+options.update(make_profile_options(settings['active_profiles']))
 # if debug
-if _settings['debug']:
-    _make_debug_settings()
-_makedirs()
+if settings['debug']:
+    options.update(make_debug_options())
+makedirs()
+
+application = GunicornApplication('{{project_name}}:create_app()', options=options)
