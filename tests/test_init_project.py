@@ -66,7 +66,7 @@ def check_pid(pid):
 
 
 def kill_process(pid_file):
-    t = 10
+    t = 30
     while t > 0 and not exists(pid_file):
         t -= 1
         time.sleep(1)
@@ -75,7 +75,7 @@ def kill_process(pid_file):
         pid = int(f.read().decode())
     assert check_pid(pid) is True
     os.kill(pid, signal.SIGTERM)
-    t = 10
+    t = 30
     while t > 0 and exists(pid_file):
         t -= 1
         time.sleep(1)
