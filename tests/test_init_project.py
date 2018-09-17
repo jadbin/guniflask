@@ -33,6 +33,16 @@ def run_debug_of_project(proj_dir):
     assert len(t.bucket) == 0, 'Exception in thread'
 
 
+def run_table2model_without_db(proj_dir):
+    res = subprocess.run("cd '{}' && bash bin/manage table2model".format(proj_dir), shell=True)
+    assert res.returncode == 2
+
+
+def run_initdb_without_db(proj_dir):
+    res = subprocess.run("cd '{}' && bash bin/manage initdb -f".format(proj_dir), shell=True)
+    assert res.returncode == 2
+
+
 class ExceptionThread(Thread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,3 +89,5 @@ def test_init_project(tmpdir):
     init_project(proj_dir)
     run_tests_of_project(proj_dir)
     run_debug_of_project(proj_dir)
+    run_initdb_without_db(proj_dir)
+    run_table2model_without_db(proj_dir)

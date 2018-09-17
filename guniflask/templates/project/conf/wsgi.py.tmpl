@@ -40,9 +40,9 @@ def make_debug_options():
     }
 
 
-def makedirs():
+def makedirs(opts):
     for c in ['pidfile', 'accesslog', 'errorlog']:
-        p = globals().get(c)
+        p = opts.get(c)
         if p:
             d = dirname(p)
             if d and not exists(d):
@@ -78,6 +78,6 @@ options.update(make_profile_options(settings['active_profiles']))
 # if debug
 if settings['debug']:
     options.update(make_debug_options())
-makedirs()
+makedirs(options)
 
 application = GunicornApplication('{{project_name}}:create_app()', options=options)
