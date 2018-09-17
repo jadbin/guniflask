@@ -34,7 +34,11 @@ Getting Started
     $ guniflask init
 
 当出现提示时按 ``Enter`` 键即可选择默认设置。
-提示项目创建成功后，执行启动项目的命令::
+提示项目创建成功后，安装项目所需依赖::
+
+    $ pip install -U guniflask[app]
+
+启动项目::
 
     $ bash bin/manage start
 
@@ -42,7 +46,7 @@ Getting Started
 
     Hello World!
 
-执行停止项目的命令::
+停止项目::
 
     $ bash bin/manage stop
 
