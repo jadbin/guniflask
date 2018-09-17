@@ -1,6 +1,7 @@
 # coding=utf-8
 
-from os.path import join
+import os
+from os.path import join, exists
 from collections import defaultdict
 from keyword import iskeyword
 import re
@@ -48,6 +49,8 @@ class SqlToModelGenerator:
                     self.models[tablename].add_many_to_one_relation(constraint)
 
     def render(self, path):
+        if not exists(path):
+            os.makedirs(path)
         model_modules = []
         for model in self.models.values():
             module_name = convert_to_valid_identifier(model.table.name)
