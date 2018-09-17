@@ -100,6 +100,7 @@ class SqlToModelGenerator:
         is_unique = is_unique or any(i.unique and set(i.columns) == {column}
                                      for i in column.table.indexes)
         has_index = any(set(i.columns) == {column} for i in column.table.indexes)
+        server_default = None
         kwargs = []
         if column.key != column.name:
             kwargs.append('key')
@@ -117,11 +118,14 @@ class SqlToModelGenerator:
             kwargs.append('index')
         if column.comment:
             kwargs.append('comment')
+        if column.server_default:
+            server_default = 'server_default="{}"'.format(str(column.server_default.arg))
         extra_kwargs = self.get_extra_column_kwargs(column)
         return "db.Column({})".format(', '.join(([repr(column.name)] if show_name else []) +
                                                 [self.render_column_type(column.type)] +
                                                 [self.render_constraint(x) for x in dedicated_fks] +
                                                 ['{}={!r}'.format(i, getattr(column, i)) for i in kwargs] +
+                                                ([server_default] if server_default else []) +
                                                 ['{}={}'.format(i, extra_kwargs[i]) for i in
                                                  sorted(extra_kwargs.keys())]))
 
