@@ -8,6 +8,7 @@ from jinja2 import Template
 
 from guniflask.errors import AbortedError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
+from guniflask.utils.config import load_config
 from guniflask import __version__
 
 
@@ -42,50 +43,128 @@ class Command:
 
 
 class Step:
-    default = None
     desc = None
 
     def __init__(self):
-        self.value = self.default
+        self.value = None
         self.title = self.desc
-        self.remark = self.default
+        self.tooltip = None
 
-    def process_arguments(self, args):
+    def process_arguments(self, args, settings):
         pass
 
-    def process_user_input(self, user_input):
-        pass
+    def process_user_input(self):
+        while True:
+            self.show_question()
+            user_input = self.get_user_input()
+            if self.check_user_input(user_input):
+                self.show_decision()
+                break
+            else:
+                self.show_invalid_tooltip()
+
+    def show_question(self):
+        raise NotImplementedError
+
+    def get_user_input(self):
+        raise NotImplementedError
+
+    def show_decision(self):
+        raise NotImplementedError
+
+    def show_invalid_tooltip(self):
+        raise NotImplementedError
+
+    def check_user_input(self, user_input):
+        return True
+
+    def update_settings(self, settings):
+        raise NotImplementedError
+
+    def question(self):
+        return '\033[32m?\033[0m {} \033[37m({})\033[0m'.format(self.title, self.tooltip)
+
+    def decision(self):
+        return '\033[32m?\033[0m {} \033[36m{}\033[0m'.format(self.title, self.value)
+
+    def go_back_lines(self, n=1):
+        return '\033[1A\r\033[K' * n
+
+    def clean_line(self):
+        return '\r\033[K'
 
 
-class BaseNameStep(Step):
+class InputStep(Step):
+    def show_question(self):
+        print(self.question() + ' ', end='', flush=True)
+
+    def get_user_input(self):
+        return input()
+
+    def show_decision(self):
+        print(self.clean_line(), end='', flush=True)
+        print(self.go_back_lines(), end='', flush=True)
+        print(self.decision(), flush=True)
+
+    def show_invalid_tooltip(self):
+        print(self.go_back_lines(), end='', flush=True)
+
+
+class BaseNameStep(InputStep):
     desc = 'What is the base name of your application?'
 
-    def process_arguments(self, args):
+    def process_arguments(self, args, settings):
         project_dir = abspath(args.root_dir or '')
-        self.remark = string_lowercase_underscore(basename(project_dir))
+        self.tooltip = string_lowercase_underscore(basename(project_dir))
 
-    def process_user_input(self, user_input):
+    def check_user_input(self, user_input):
         project_basename = string_lowercase_underscore(user_input)
         if not project_basename:
-            project_basename = self.remark
+            project_basename = self.tooltip
         if project_basename and not str.isdigit(project_basename[0]):
             self.value = project_basename
-            return {'project_name': project_basename}
+            return True
+        return False
+
+    def show_invalid_tooltip(self):
+        print('\033[31m>>\033[0m Please input a valid project name', end='', flush=True)
+        super().show_invalid_tooltip()
+
+    def update_settings(self, settings):
+        settings['project_name'] = self.value
 
 
-class PortStep(Step):
-    default = 8000
+class PortStep(InputStep):
     desc = 'Would you like to run your application on which port?'
 
-    def process_user_input(self, user_input):
+    def process_arguments(self, args, settings):
+        project_dir = settings['project_dir']
+        self.tooltip = 8000
+        try:
+            c = load_config(join(project_dir, 'conf', 'gunicorn.py'))
+            port = self.parse_port(c['bind'].rsplit(':')[1].strip())
+            if port is not None:
+                self.tooltip = port
+        except Exception:
+            pass
+
+    def check_user_input(self, user_input):
         user_input = user_input.strip()
         if user_input:
             port = self.parse_port(user_input)
         else:
-            port = self.parse_port(self.remark)
+            port = self.parse_port(self.tooltip)
         if port is not None:
             self.value = port
-            return {'port': port}
+            return True
+        return False
+
+    def show_invalid_tooltip(self):
+        print('\033[31m>>\033[0m Please input a valid port (0 ~ 65535)', end='', flush=True)
+        super().show_invalid_tooltip()
+
+    def update_settings(self, settings):
+        settings['port'] = self.value
 
     @staticmethod
     def parse_port(port):
@@ -94,8 +173,28 @@ class PortStep(Step):
         except (ValueError, TypeError):
             pass
         else:
-            if 0 <= res < 65535:
+            if 0 <= res < 65536:
                 return res
+
+
+class ConflictFileStep(InputStep):
+    def __init__(self, file):
+        super().__init__()
+        self.title = 'Overwrite {}?'.format(file)
+        self.tooltip = 'Y/n/a/x'
+
+    def check_user_input(self, user_input):
+        user_input = user_input.strip().lower()
+        if not user_input:
+            user_input = 'y'
+        if len(user_input) > 1 or user_input not in 'ynax':
+            return False
+        self.value = user_input
+        return True
+
+    def show_invalid_tooltip(self):
+        print('\033[31m>>\033[0m Please enter a valid command', end='', flush=True)
+        super().show_invalid_tooltip()
 
 
 class InitCommand(Command):
@@ -123,31 +222,17 @@ class InitCommand(Command):
         print(flush=True)
         settings = {'project_dir': project_dir}
         try:
-
             for step in steps:
-                step.process_arguments(args)
-                while True:
-                    self.print_request('({}/{}) {}'.format(cur_step, total_steps, step.title),
-                                       step.remark)
-                    user_input = input()
-                    res = step.process_user_input(user_input)
-                    if res is None:
-                        self.print_go_back_line()
-                        continue
-                    settings.update(res)
-                    self.print_go_back_line()
-                    self.print_decision('({}/{}) {}'.format(cur_step, total_steps, step.title),
-                                        step.value)
-                    cur_step += 1
-                    break
-        except KeyboardInterrupt:
-            print(flush=True)
-            return
-        try:
+                step.title = '({}/{}) {}'.format(cur_step, total_steps, step.title)
+                step.process_arguments(args, settings)
+                step.process_user_input()
+                step.update_settings(settings)
+                cur_step += 1
             self.copy_files(settings)
         except (KeyboardInterrupt, AbortedError):
             print(flush=True)
-            self.print_aborted_error('Process is aborted by user.')
+            self.print_aborted_error()
+            self.exitcode = 1
             return
         print(flush=True)
         self.print_success()
@@ -193,30 +278,18 @@ class InitCommand(Command):
                             self.write_file(dst_path, content)
                         else:
                             self.print_copying_file('conflict', dst_rel_path)
-                            while True:
-                                self.print_request('Overwrite {}?'.format(dst_rel_path), 'Y/n/a/x')
-                                user_input = input()
-                                user_input = user_input.strip().lower()
-                                if not user_input:
-                                    user_input = 'y'
-                                if user_input[0] not in 'ynax':
-                                    self.print_invalid_command()
-                                    self.print_go_back_line()
-                                    continue
-                                user_input = user_input[0]
-                                self.print_clean_line()
-                                self.print_go_back_line()
-                                self.print_decision('Overwrite {}?'.format(dst_rel_path), user_input)
-                                if user_input == 'y' or user_input == 'a':
-                                    self.print_copying_file('force', dst_rel_path)
-                                    self.write_file(dst_path, content)
-                                    if user_input == 'a':
-                                        self.force = True
-                                elif user_input == 'n':
-                                    self.print_copying_file('skip', dst_rel_path)
-                                elif user_input == 'x':
-                                    raise AbortedError
-                                break
+                            cf_step = ConflictFileStep(dst_rel_path)
+                            cf_step.process_user_input()
+                            user_input = cf_step.value
+                            if user_input == 'y' or user_input == 'a':
+                                self.print_copying_file('force', dst_rel_path)
+                                self.write_file(dst_path, content)
+                                if user_input == 'a':
+                                    self.force = True
+                            elif user_input == 'n':
+                                self.print_copying_file('skip', dst_rel_path)
+                            elif user_input == 'x':
+                                raise AbortedError
                 else:
                     self.print_copying_file('create', dst_rel_path)
                     self.write_file(dst_path, content)
@@ -249,16 +322,6 @@ class InitCommand(Command):
         return Template(raw, keep_trailing_newline=True).render(**kwargs)
 
     @staticmethod
-    def print_request(question, option):
-        print('\033[32m?\033[0m {} \033[37m({})\033[0m '
-              .format(question, option), end='', flush=True)
-
-    @staticmethod
-    def print_decision(question, decision):
-        print('\033[32m?\033[0m {} \033[36m{}\033[0m'
-              .format(question, decision), flush=True)
-
-    @staticmethod
     def print_welcome(project_dir):
         print('\033[37mWelcome to gunicorn generator\033[0m \033[33mv{}\033[0m'
               .format(__version__), flush=True)
@@ -266,24 +329,12 @@ class InitCommand(Command):
               .format(project_dir), flush=True)
 
     @staticmethod
-    def print_go_back_line():
-        print('\033[1A\r\033[K', end='', flush=True)
-
-    @staticmethod
-    def print_clean_line():
-        print('\r\033[K', end='', flush=True)
-
-    @staticmethod
-    def print_invalid_command():
-        print('\033[31m>>\033[0m Please enter a valid command', end='', flush=True)
-
-    @staticmethod
     def print_success():
         print('\033[32mApplication is created successfully.\033[0m', flush=True)
 
     @staticmethod
-    def print_aborted_error(message):
-        print('\033[33m{}\033[0m'.format(message), flush=True)
+    def print_aborted_error():
+        print('\033[33mProcess is aborted by user.\033[0m', flush=True)
 
     @staticmethod
     def print_copying_file(t, path):
