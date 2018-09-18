@@ -3,6 +3,13 @@
 Change log
 ==========
 
+0.2.5 (2018-09-18)
+------------------
+
+- table2model添加 ``server_default``
+- ``to_dict`` , ``from_dict`` , ``update_by_dict`` 添加 ``ignore`` 参数，表示忽略哪些字段，如 ``ignore=['id', 'updated_time']`` , ``ignore='id,updated_time'`` 均表示忽略 ``id`` 和 ``updated_time`` 字段
+- ``from_dict`` 能够自动将 ``int`` 型的时间戳或GMT格式的时间戳转换为 ``datetime``
+
 0.2.4 (2018-09-16)
 ------------------
 
