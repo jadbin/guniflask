@@ -31,11 +31,7 @@ class PyTest(TestCommand):
 
 tests_require = read_requirements('test.txt')
 app_require = read_requirements('app.txt')
-install_requires = [
-    'Jinja2>=2.10',
-    'SQLAlchemy>=1.2.11',
-    'inflect>=1.0.0'
-]
+install_requires = ['Jinja2>=2.10']
 extras_require = {
     'app': app_require
 }
