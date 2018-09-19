@@ -19,6 +19,10 @@ class ConfigProxy:
             return current_app.config['GUNIFLASK_SETTINGS']
         raise RuntimeError("Cannot access 'settings' without app context")
 
+    @property
+    def raw_settings(self):
+        return load_app_config('{{project_name}}')
+
 
 config = ConfigProxy()
 
@@ -81,7 +85,7 @@ def create_app():
     redirect_app_logger(app, gunicorn_logger)
     redirect_logger('{{project_name}}', gunicorn_logger)
     register_blueprints(app)
-    settings = load_app_config('{{project_name}}')
+    settings = config.raw_settings
     set_app_config(app, settings)
     init_app(app, settings)
     return app
