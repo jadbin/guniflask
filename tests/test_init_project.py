@@ -4,7 +4,6 @@ import os
 from os.path import join, exists
 import subprocess
 import time
-import signal
 from threading import Thread
 
 
@@ -25,7 +24,7 @@ def run_debug_of_project(proj_dir):
     assert res.returncode == 0
     id_string = res.stdout.decode().strip()
     pid_file = join(proj_dir, '.pid', 'some-project-' + id_string + '.pid')
-    t = ExceptionThread(target=kill_process, args=(pid_file,))
+    t = ExceptionThread(target=stop_project, args=(pid_file, proj_dir))
     t.start()
     res = subprocess.run("cd '{}' && bash bin/manage debug".format(proj_dir), shell=True)
     assert res.returncode == 0
@@ -56,26 +55,16 @@ class ExceptionThread(Thread):
             raise
 
 
-def check_pid(pid):
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    else:
-        return True
-
-
-def kill_process(pid_file):
-    t = 30
+def stop_project(pid_file, proj_dir):
+    t = 10
     while t > 0 and not exists(pid_file):
         t -= 1
         time.sleep(1)
     assert t > 0
-    with open(pid_file, 'rb') as f:
-        pid = int(f.read().decode())
-    assert check_pid(pid) is True
-    os.kill(pid, signal.SIGTERM)
-    t = 30
+    time.sleep(3)
+    res = subprocess.run("cd '{}' && bash bin/manage stop".format(proj_dir), shell=True)
+    assert res.returncode == 0
+    t = 10
     while t > 0 and exists(pid_file):
         t -= 1
         time.sleep(1)
