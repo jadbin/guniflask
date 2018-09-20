@@ -116,6 +116,14 @@ class BaseNameStep(InputStep):
     def process_arguments(self, args, settings):
         project_dir = abspath(args.root_dir or '')
         self.tooltip = string_lowercase_underscore(basename(project_dir))
+        conf_dir = join(project_dir, 'conf')
+        if isdir(conf_dir):
+            names = os.listdir(conf_dir)
+            for name in names:
+                if name.endswith('.py'):
+                    pname = name[:-3]
+                    if isdir(join(project_dir, pname)):
+                        self.tooltip = pname
 
     def check_user_input(self, user_input):
         project_basename = string_lowercase_underscore(user_input)
