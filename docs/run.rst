@@ -3,7 +3,7 @@
 Running guniflask
 =================
 
-guniflask用于自动化构建基于flask + gunicorn + gevent的服务端的基础代码。
+guniflask用于自动化构建基于flask + gunicorn的服务端的基础代码。
 
 创建项目目录，并在运行guniflask的初始化项目命令:
 

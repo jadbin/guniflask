@@ -45,7 +45,7 @@ def main():
         name="guniflask",
         version=read_version(),
         url="https://github.com/jadbin/guniflask",
-        description="flask + gunicorn + gevent",
+        description="flask + gunicorn, building RESTful web services",
         long_description=long_description,
         author="jadbin",
         author_email="jadbin.com@hotmail.com",

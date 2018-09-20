@@ -39,7 +39,7 @@ active_profiles
 cors
 ^^^^
 
-- Default: ``None``
+- Default: ``True``
 
 跨域相关配置。
 
@@ -56,4 +56,4 @@ table2model_dest
 
 配置table2model生成结果存储的路径。
 
-路径为相对于项目根目录的相对路径，并且需要路径对应的文件夹已经存在。
+路径为相对于项目根目录的相对路径。

@@ -5,7 +5,7 @@ Welcome to guniflask |version|
 Overview
 ========
 
-guniflask是自动化生成基于flask + gunicorn + gevent的服务端项目基础代码的构建工具。
+guniflask是自动化生成基于flask + gunicorn的服务端项目基础代码的构建工具。
 
 Installation
 ============
