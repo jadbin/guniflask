@@ -29,9 +29,11 @@ Debug Settings
 - errorlog : ``'-'``
 - loglevel : ``'debug'``
 - disable_redirect_access_to_syslog : ``True``
+- preload_app: ``False``
 - reload : ``True``
 - reload_extra_files : conf 文件夹下的所有文件
 - workers: ``1``
+- worker_class: ``'sync'``
 - daemon: ``False``
 
 此时，用户在配置文件中对这些项的设定将不起作用。
