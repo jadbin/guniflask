@@ -114,6 +114,7 @@ class TableToModel(Command):
             args.tables = args.tables.split(',')
 
     def run(self, args):
+        home_dir = os.environ['GUNIFLASK_HOME']
         settings = load_app_config('{{project_name}}')
         database_uri = settings['SQLALCHEMY_DATABASE_URI']
         if not database_uri:
