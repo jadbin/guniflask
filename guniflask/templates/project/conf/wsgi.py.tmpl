@@ -33,6 +33,7 @@ def make_debug_options():
         'errorlog': '-',
         'loglevel': 'debug',
         'disable_redirect_access_to_syslog': True,
+        'preload_app': False,
         'reload': True,
         'reload_extra_files': walk_files(conf_dir),
         'workers': 1,
@@ -66,6 +67,7 @@ class GunicornApplication(Application):
 
 options = {
     'daemon': True,
+    'preload_app': True,
     'workers': multiprocessing.cpu_count(),
     'worker_class': 'gevent',
     'pidfile': join(pid_dir, '{{project__name}}-' + id_string + '.pid'),
