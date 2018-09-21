@@ -83,7 +83,7 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    'description': 'flask + gunicorn, building RESTful web services',
+    'description': 'flask + gunicorn, building RESTful API',
     'github_user': 'jadbin',
     'github_repo': 'guniflask',
     'github_button': False,
