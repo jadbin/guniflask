@@ -2,7 +2,7 @@
 
 import sys
 import os
-from os.path import isfile, join
+from os.path import isfile, join, dirname
 import argparse
 import signal
 import time
@@ -14,9 +14,18 @@ from guniflask.utils.config import load_config, walk_modules, load_app_config
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 
-home_dir = os.environ['GUNIFLASK_HOME']
-if home_dir not in sys.path:
-    sys.path.append(home_dir)
+
+def set_environ():
+    home_dir = os.environ.get('GUNIFLASK_HOME')
+    if home_dir is None:
+        home_dir = dirname(dirname(__file__))
+        os.environ['GUNIFLASK_HOME'] = home_dir
+    if home_dir not in sys.path:
+        sys.path.append(home_dir)
+    os.environ.setdefault('GUNIFLASK_CONF_DIR', join(home_dir, 'conf'))
+    os.environ.setdefault('GUNIFLASK_LOG_DIR', join(home_dir, '.log'))
+    os.environ.setdefault('GUNIFLASK_PID_DIR', join(home_dir, '.pid'))
+    os.environ.setdefault('GUNIFLASK_ID_STRING', os.getlogin())
 
 
 class Command:
@@ -233,6 +242,7 @@ def _print_unknown_command(cmdname):
 
 
 def main(argv=None):
+    set_environ()
     if argv is None:
         argv = sys.argv
     cmds = _get_commands_from_module()
