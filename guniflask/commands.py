@@ -3,11 +3,13 @@
 import os
 from os.path import exists, join, abspath, isdir, basename, dirname
 from shutil import ignore_patterns
+import signal
 
 from jinja2 import Template
 
 from guniflask.errors import AbortedError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
+from guniflask.utils.cli import readchar
 from guniflask.utils.config import load_config
 from guniflask import __version__
 
@@ -110,6 +112,75 @@ class InputStep(Step):
         print(self.go_back_lines(), end='', flush=True)
 
 
+class ChoiceStep(Step):
+    def __init__(self):
+        super().__init__()
+        self.selected = 0
+        self.choices = []
+        self.values = []
+
+    def show_question(self):
+        print(self.question() + ' ', end='', flush=True)
+        for i in range(len(self.choices)):
+            print(flush=True)
+            if i == self.selected:
+                print('\033[1;36m>\033[0m \033[36m{}\033[0m'.format(self.choices[i]), end='', flush=True)
+            else:
+                print('  {}'.format(self.choices[i]), end='', flush=True)
+        self.hide_cursor()
+
+    def get_user_input(self):
+        ch = readchar()
+        if ch == '\x03':
+            self.show_cursor()
+            raise KeyboardInterrupt
+        if ch == '\x1a':
+            self.show_cursor()
+            os.kill(os.getpid(), signal.SIGSTOP)
+        return ch
+
+    def check_user_input(self, user_input):
+        if user_input == '\r' or user_input == '\n':
+            self.value = self.choices[self.selected]
+            self.show_cursor()
+            return True
+        if user_input == '\x1b':
+            assert readchar() == '['
+            ch = readchar()
+            if ch == 'A':
+                self.selected -= 1
+                if self.selected < 0:
+                    self.selected = len(self.choices) - 1
+            elif ch == 'B':
+                self.selected += 1
+                if self.selected >= len(self.choices):
+                    self.selected = 0
+        return False
+
+    def show_decision(self):
+        print(self.clean_line(), end='', flush=True)
+        print(self.go_back_lines(len(self.choices)), end='', flush=True)
+        print(self.decision(), flush=True)
+
+    def show_invalid_tooltip(self):
+        print(self.clean_line(), end='', flush=True)
+        print(self.go_back_lines(len(self.choices)), end='', flush=True)
+
+    def add_choices(self, desc, value):
+        self.choices.append(desc)
+        self.values.append(value)
+
+    @property
+    def selected_value(self):
+        return self.values[self.selected]
+
+    def show_cursor(self):
+        print('\033[?25h', end='', flush=True)
+
+    def hide_cursor(self):
+        print('\033[?25l', end='', flush=True)
+
+
 class BaseNameStep(InputStep):
     desc = 'What is the base name of your application?'
 
@@ -185,6 +256,19 @@ class PortStep(InputStep):
                 return res
 
 
+class SecurityStep(ChoiceStep):
+    desc = 'Which type of authentication would you like to use?'
+
+    def __init__(self):
+        super().__init__()
+        self.tooltip = 'Use arrow keys'
+        self.add_choices('None', None)
+        self.add_choices('JSON Web Tokens (JWT) authentication', 'jwt')
+
+    def update_settings(self, settings):
+        settings['security'] = self.selected_value
+
+
 class ConflictFileStep(InputStep):
     def __init__(self, file):
         super().__init__()
@@ -223,8 +307,8 @@ class InitCommand(Command):
                             help='application root directory')
 
     def run(self, args):
-        steps = [BaseNameStep(), PortStep()]
-        cur_step, total_steps = 1, 2
+        steps = [BaseNameStep(), PortStep(), SecurityStep()]
+        cur_step, total_steps = 1, len(steps)
         project_dir = abspath(args.root_dir or '')
         self.print_welcome(project_dir)
         print(flush=True)
