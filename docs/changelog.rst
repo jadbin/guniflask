@@ -3,11 +3,19 @@
 Change log
 ==========
 
+0.3.0 (2018-??-??)
+------------------
+
+- 在已有项目中使用guniflask init时会自动根据已有的配置推荐默认的项目名和端口号
+- bin/manage.py添加了默认环境变量的设置
+- 在启动app之前，可以通过 ``config.raw_settings`` 读取原始配置
+- 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
+
 0.2.5 (2018-09-18)
 ------------------
 
 - table2model添加 ``server_default``
-- ``to_dict`` , ``from_dict`` , ``update_by_dict`` 添加 ``ignore`` 参数，表示忽略哪些字段，如 ``ignore=['id', 'updated_time']`` , ``ignore='id,updated_time'`` 均表示忽略 ``id`` 和 ``updated_time`` 字段
+- ``to_dict`` , ``from_dict`` , ``update_by_dict`` 添加 ``ignore`` 参数，表示忽略哪些字段，如 ``ignore=['id', 'created_time']`` , ``ignore='id,created_time'`` 均表示忽略 ``id`` 和 ``created_time`` 字段
 - ``from_dict`` 能够自动将 ``int`` 型的时间戳或GMT格式的时间戳转换为 ``datetime``
 
 0.2.4 (2018-09-16)
