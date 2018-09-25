@@ -40,7 +40,7 @@ Multiple Profiles
 我们通过引入profile的概念来区别不同的运行环境。
 例如，我们设定两个profile——prod和dev，分别对应生产环境和开发环境。
 那么我们可以在 conf/foo_prod.py 中声明生产环境下的项目配置，在 conf/foo_dev.py 中声明开发环境下的项目配置。
-gunicorn配置同样可以用多个profile加以区分， conf 目录下配置文件的组织形式如下:
+gunicorn配置同样可以用profile后缀加以区分， conf 目录下配置文件的组织形式如下:
 
 .. code-block:: text
 
@@ -59,6 +59,6 @@ gunicorn配置同样可以用多个profile加以区分， conf 目录下配置�
 :ref:`active_profiles` 会同时作用于gunicorn配置和项目配置。
 
 .. note::
-    - :ref:`active_profiles` 只可在 conf/foo.py 中配置，在profile后缀的配置文件中配置无效。
+    - :ref:`active_profiles` 在profile后缀的配置文件中配置无效。
     - 指定profile的配置文件的优先级高于未指定profile的优先级。
     - 在 :ref:`active_profiles` 中越靠左边的profile优先级越高。

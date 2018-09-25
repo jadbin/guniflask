@@ -136,6 +136,14 @@ class Debug(Command):
     def short_desc(self):
         return 'Debug {{project_name}}'
 
+    def add_arguments(self, parser):
+        parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
+                            help='active profiles (comma-separated)')
+
+    def process_arguments(self, args):
+        if args.active_profiles:
+            os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
+
     def run(self, args):
         os.environ['GUNIFLASK_DEBUG'] = '1'
         c = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
@@ -156,6 +164,14 @@ class Start(Command):
     @property
     def short_desc(self):
         return 'Start {{project_name}}'
+
+    def add_arguments(self, parser):
+        parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
+                            help='active profiles (comma-separated)')
+
+    def process_arguments(self, args):
+        if args.active_profiles:
+            os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
 
     def run(self, args):
         c = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))

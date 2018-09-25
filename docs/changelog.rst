@@ -10,6 +10,7 @@ Change log
 - bin/manage.py添加了默认环境变量的设置
 - 在启动app之前，可以通过 ``config.raw_settings`` 读取原始配置
 - 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
+- 在 ``manage debug/start`` 命令中通过 ``-p`` 选项设置 ``active_profiles``
 
 0.2.5 (2018-09-18)
 ------------------
