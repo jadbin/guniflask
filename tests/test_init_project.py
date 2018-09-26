@@ -5,10 +5,27 @@ from os.path import join, exists
 import subprocess
 import time
 from threading import Thread
+import json
+
+from guniflask import __version__
+
+
+def show_version():
+    res = subprocess.run("guniflask version", shell=True)
+    assert res.returncode == 0
 
 
 def init_project(proj_dir):
-    res = subprocess.run("guniflask version && cd '{}' && echo '\n\n' | guniflask init".format(proj_dir), shell=True)
+    settings = {
+        'guniflask_version': __version__,
+        'authentication_type': None,
+        'port': 8000,
+        'project_name': 'foo'
+    }
+    with open(join(proj_dir, '.guniflask-init.json'), 'w') as f:
+        json.dump(settings, f)
+    res = subprocess.run("cd '{}' && guniflask init".format(proj_dir),
+                         shell=True)
     assert res.returncode == 0
 
 
@@ -19,11 +36,11 @@ def run_tests_of_project(proj_dir):
 
 
 def run_debug_of_project(proj_dir):
-    res = subprocess.run("cd '{}' && . bin/some-project-config.sh && echo $GUNIFLASK_ID_STRING".format(proj_dir),
+    res = subprocess.run("cd '{}' && . bin/foo-config.sh && echo $GUNIFLASK_ID_STRING".format(proj_dir),
                          shell=True, stdout=subprocess.PIPE)
     assert res.returncode == 0
     id_string = res.stdout.decode().strip()
-    pid_file = join(proj_dir, '.pid', 'some-project-' + id_string + '.pid')
+    pid_file = join(proj_dir, '.pid', 'foo-' + id_string + '.pid')
     t = ExceptionThread(target=stop_project, args=(pid_file, proj_dir))
     t.start()
     res = subprocess.run("cd '{}' && bash bin/manage debug".format(proj_dir), shell=True)
@@ -71,10 +88,10 @@ def stop_project(pid_file, proj_dir):
     assert t > 0
 
 
-def test_init_project(tmpdir):
-    proj_dir = join(str(tmpdir), 'some_project')
+def test_init_project(tmpdir, monkeypatch):
+    proj_dir = join(str(tmpdir), 'foo')
     os.mkdir(proj_dir)
-
+    show_version()
     init_project(proj_dir)
     run_tests_of_project(proj_dir)
     run_debug_of_project(proj_dir)
