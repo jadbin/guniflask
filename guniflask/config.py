@@ -3,6 +3,22 @@
 import copy
 from collections import MutableMapping
 
+from guniflask.utils.config import load_app_config
+
+
+class ConfigProxy:
+    def __init__(self, app=None):
+        self._settings = Settings()
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app):
+        self._settings.update(load_app_config(app.name))
+
+    @property
+    def settings(self):
+        return self._settings
+
 
 class Settings(MutableMapping):
     def __init__(self, values=None):

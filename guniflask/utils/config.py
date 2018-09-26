@@ -48,8 +48,6 @@ app_default_settings = {
 
 
 def load_app_config(name):
-    from guniflask.settings import Settings
-
     c = app_default_settings
     conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
     if conf_dir:
@@ -57,7 +55,7 @@ def load_app_config(name):
         active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES', c.get('active_profiles'))
         c.update(load_profile_config(conf_dir, name, profiles=active_profiles))
         c['active_profiles'] = active_profiles
-    settings = Settings()
+    settings = {}
     for name in c:
         if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
             settings[name] = c[name]

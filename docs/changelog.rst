@@ -8,9 +8,9 @@ Change log
 
 - 在已有项目中使用guniflask init时会自动根据已有的配置推荐默认的项目名和端口号
 - bin/manage.py添加了默认环境变量的设置
-- 在启动app之前，可以通过 ``config.raw_settings`` 读取原始配置
 - 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
 - 在 ``manage debug/start`` 命令中通过 ``-p`` 选项设置 ``active_profiles``
+- ``manage initdb`` 会自动加载foo模块及子模块中所有声明的 ``db.Model``
 
 0.2.5 (2018-09-18)
 ------------------
@@ -38,7 +38,7 @@ Change log
 0.2.2 (2018-09-13)
 ------------------
 
-- 自动注册foo模块及自模块中所有声明的 ``Blueprint``
+- 自动注册foo模块及子模块中所有声明的 ``Blueprint``
 - 添加配置项 ``table2model_dest`` ，用于指定table2model生成结果的存放路径
 - debug模式默认创建pid文件
 - 修复 ``config.settings`` 获取配置出错的bug
