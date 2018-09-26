@@ -22,10 +22,14 @@ def set_environ():
         os.environ['GUNIFLASK_HOME'] = home_dir
     if home_dir not in sys.path:
         sys.path.append(home_dir)
-    os.environ.setdefault('GUNIFLASK_CONF_DIR', join(home_dir, 'conf'))
-    os.environ.setdefault('GUNIFLASK_LOG_DIR', join(home_dir, '.log'))
-    os.environ.setdefault('GUNIFLASK_PID_DIR', join(home_dir, '.pid'))
-    os.environ.setdefault('GUNIFLASK_ID_STRING', os.getlogin())
+    if 'GUNIFLASK_CONF_DIR' not in os.environ:
+        os.environ['GUNIFLASK_CONF_DIR'] = join(home_dir, 'conf')
+    if 'GUNIFLASK_LOG_DIR' not in os.environ:
+        os.environ['GUNIFLASK_LOG_DIR'] = join(home_dir, '.log')
+    if 'GUNIFLASK_PID_DIR' not in os.environ:
+        os.environ['GUNIFLASK_PID_DIR'] = join(home_dir, '.pid')
+    if 'GUNIFLASK_ID_STRING' not in os.environ:
+        os.environ['GUNIFLASK_ID_STRING'] = os.getlogin()
 
 
 class Command:
