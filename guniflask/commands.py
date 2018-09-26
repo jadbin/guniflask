@@ -4,6 +4,7 @@ import os
 from os.path import exists, join, abspath, isdir, basename, dirname
 from shutil import ignore_patterns
 import signal
+import json
 
 from jinja2 import Template
 
@@ -11,6 +12,7 @@ from guniflask.errors import AbortedError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
 from guniflask.utils.cli import readchar
 from guniflask.utils.config import load_config
+from guniflask.utils.jwt import generate_secret
 from guniflask import __version__
 
 
@@ -52,7 +54,7 @@ class Step:
         self.title = self.desc
         self.tooltip = None
 
-    def process_arguments(self, args, settings):
+    def process_arguments(self, settings):
         pass
 
     def process_user_input(self):
@@ -124,7 +126,7 @@ class ChoiceStep(Step):
         for i in range(len(self.choices)):
             print(flush=True)
             if i == self.selected:
-                print('\033[1;36m>\033[0m \033[36m{}\033[0m'.format(self.choices[i]), end='', flush=True)
+                print('\033[36m>\033[0m \033[36m{}\033[0m'.format(self.choices[i]), end='', flush=True)
             else:
                 print('  {}'.format(self.choices[i]), end='', flush=True)
         self.hide_cursor()
@@ -166,7 +168,7 @@ class ChoiceStep(Step):
         print(self.clean_line(), end='', flush=True)
         print(self.go_back_lines(len(self.choices)), end='', flush=True)
 
-    def add_choices(self, desc, value):
+    def add_choice(self, desc=None, value=None):
         self.choices.append(desc)
         self.values.append(value)
 
@@ -184,8 +186,8 @@ class ChoiceStep(Step):
 class BaseNameStep(InputStep):
     desc = 'What is the base name of your application?'
 
-    def process_arguments(self, args, settings):
-        project_dir = abspath(args.root_dir or '')
+    def process_arguments(self, settings):
+        project_dir = settings['project_dir']
         self.tooltip = string_lowercase_underscore(basename(project_dir))
         conf_dir = join(project_dir, 'conf')
         if isdir(conf_dir):
@@ -216,7 +218,7 @@ class BaseNameStep(InputStep):
 class PortStep(InputStep):
     desc = 'Would you like to run your application on which port?'
 
-    def process_arguments(self, args, settings):
+    def process_arguments(self, settings):
         project_dir = settings['project_dir']
         self.tooltip = 8000
         try:
@@ -256,17 +258,21 @@ class PortStep(InputStep):
                 return res
 
 
-class SecurityStep(ChoiceStep):
+class AuthenticationTypeStep(ChoiceStep):
     desc = 'Which type of authentication would you like to use?'
 
     def __init__(self):
         super().__init__()
         self.tooltip = 'Use arrow keys'
-        self.add_choices('None', None)
-        self.add_choices('JSON Web Tokens (JWT) authentication', 'jwt')
+        self.add_choice('None', None)
+        self.add_choice('JWT authentication', 'jwt')
+        self.add_choice('Authentication with UAA server', 'uaa')
 
     def update_settings(self, settings):
-        settings['security'] = self.selected_value
+        security = self.selected_value
+        settings['authentication_type'] = security
+        if self.selected_value == 'jwt':
+            settings['jwt_secret'] = generate_secret()
 
 
 class ConflictFileStep(InputStep):
@@ -290,6 +296,10 @@ class ConflictFileStep(InputStep):
 
 
 class InitCommand(Command):
+    default_settings = {
+        'jwt_exp_time': 86400
+    }
+
     @property
     def syntax(self):
         return '[options]'
@@ -305,40 +315,59 @@ class InitCommand(Command):
     def add_arguments(self, parser):
         parser.add_argument('-d', '--root-dir', dest='root_dir', metavar='DIR',
                             help='application root directory')
+        parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
+                            help='force generating an application')
 
     def run(self, args):
-        steps = [BaseNameStep(), PortStep(), SecurityStep()]
-        cur_step, total_steps = 1, len(steps)
         project_dir = abspath(args.root_dir or '')
         self.print_welcome(project_dir)
-        print(flush=True)
-        settings = {'project_dir': project_dir}
         try:
-            for step in steps:
-                step.title = '({}/{}) {}'.format(cur_step, total_steps, step.title)
-                step.process_arguments(args, settings)
-                step.process_user_input()
-                step.update_settings(settings)
-                cur_step += 1
-            self.copy_files(settings)
+            init_json_file = join(project_dir, '.guniflask-init.json')
+            try:
+                if args.force:
+                    raise FileNotFoundError
+                with open(init_json_file, 'r', encoding='utf-8') as f:
+                    settings = json.load(f)
+                self.print_regenerate_project()
+            except (FileNotFoundError, json.JSONDecodeError):
+                settings = self.get_settings_by_steps(project_dir)
+                with open(init_json_file, 'w', encoding='utf-8') as f:
+                    json.dump(settings, f, indent=2, sort_keys=True)
+            self.copy_files(project_dir, settings)
         except (KeyboardInterrupt, AbortedError):
             print(flush=True)
             self.print_aborted_error()
             self.exitcode = 1
-            return
-        print(flush=True)
-        self.print_success()
 
-    def copy_files(self, settings):
+    def get_settings_by_steps(self, project_dir):
+        steps = [BaseNameStep(), PortStep(), AuthenticationTypeStep()]
+        cur_step, total_steps = 1, len(steps)
+        settings = {'project_dir': project_dir, 'guniflask_version': __version__}
+        print(flush=True)
+        for step in steps:
+            step.title = '({}/{}) {}'.format(cur_step, total_steps, step.title)
+            step.process_arguments(settings)
+            step.process_user_input()
+            step.update_settings(settings)
+            cur_step += 1
+        del settings['project_dir']
+        return settings
+
+    def copy_files(self, project_dir, settings):
+        settings = dict(settings)
         templates_dir = join(dirname(__file__), 'templates', 'project')
-        project_dir = settings['project_dir']
         project_name = settings['project_name']
+        settings['project_dir'] = project_dir
         settings['project__name'] = string_lowercase_hyphen(project_name)
+        for k, v in self.default_settings.items():
+            settings[k] = v
 
         print(flush=True)
-        print('Copying files:', flush=True)
+        self.print_copying_files()
         self.force = False
         self.copytree(templates_dir, project_dir, settings)
+        print(flush=True)
+        self.print_success()
 
     def copytree(self, src, dst, settings):
         names = os.listdir(src)
@@ -421,12 +450,21 @@ class InitCommand(Command):
               .format(project_dir), flush=True)
 
     @staticmethod
+    def print_regenerate_project():
+        print('\033[32mThis is an existing project, using the configuration from .guniflask-init.json '
+              'to regenerate the project...\033[0m')
+
+    @staticmethod
     def print_success():
         print('\033[32mApplication is created successfully.\033[0m', flush=True)
 
     @staticmethod
     def print_aborted_error():
         print('\033[33mProcess is aborted by user.\033[0m', flush=True)
+
+    @staticmethod
+    def print_copying_files():
+        print('Copying files:', flush=True)
 
     @staticmethod
     def print_copying_file(t, path):
