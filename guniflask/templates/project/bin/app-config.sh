@@ -6,8 +6,8 @@ bin=$(cd "$bin"; pwd)
 export GUNIFLASK_HOME=${GUNIFLASK_HOME:-$(cd "$bin"/../; pwd)}
 export GUNIFLASK_CONF_DIR=${GUNIFLASK_CONF_DIR:-"$GUNIFLASK_HOME"/conf}
 
-if [ -f "$GUNIFLASK_CONF_DIR"/{{project__name}}-env.sh ]; then
-    . "$GUNIFLASK_CONF_DIR"/{{project__name}}-env.sh
+if [ -f "$GUNIFLASK_CONF_DIR"/app-env.sh ]; then
+    . "$GUNIFLASK_CONF_DIR"/app-env.sh
 fi
 
 if [ -n "$VIRTUAL_ENV" ]; then

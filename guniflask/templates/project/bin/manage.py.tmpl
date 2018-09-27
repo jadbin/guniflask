@@ -82,7 +82,7 @@ class InitDb(Command):
     def run(self, args):
         from {{project_name}} import create_app, db
 
-        settings = load_app_config('{{project_name}}')
+        settings = load_app_config()
         if 'SQLALCHEMY_DATABASE_URI' not in settings:
             raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         walk_modules('{{project_name}}')
@@ -119,7 +119,7 @@ class TableToModel(Command):
 
     def run(self, args):
         home_dir = os.environ['GUNIFLASK_HOME']
-        settings = load_app_config('{{project_name}}')
+        settings = load_app_config()
         database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
         if not database_uri:
             raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")

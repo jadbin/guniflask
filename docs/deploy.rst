@@ -12,7 +12,7 @@ Virtual Environment
 -------------------
 
 guniflask生成的项目支持配置Python标准库生成的虚拟环境。
-我们可以通过修改 conf/foo-env.sh 中有关虚拟环境的配置项使得项目在虚拟环境下启动:
+我们可以通过修改 conf/app-env.sh 中有关虚拟环境的配置项使得项目在虚拟环境下启动:
 
 .. code-block:: bash
 

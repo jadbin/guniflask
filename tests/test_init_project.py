@@ -36,7 +36,7 @@ def run_tests_of_project(proj_dir):
 
 
 def run_debug_of_project(proj_dir):
-    res = subprocess.run("cd '{}' && . bin/foo-config.sh && echo $GUNIFLASK_ID_STRING".format(proj_dir),
+    res = subprocess.run("cd '{}' && . bin/app-config.sh && echo $GUNIFLASK_ID_STRING".format(proj_dir),
                          shell=True, stdout=subprocess.PIPE)
     assert res.returncode == 0
     id_string = res.stdout.decode().strip()

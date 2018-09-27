@@ -13,7 +13,7 @@ class ConfigProxy:
             self.init_app(app)
 
     def init_app(self, app):
-        self._settings.update(load_app_config(app.name))
+        self._settings.update(load_app_config())
 
     @property
     def settings(self):

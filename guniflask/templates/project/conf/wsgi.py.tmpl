@@ -76,7 +76,7 @@ options = {
     'errorlog': join(log_dir, '{{project__name}}-' + id_string + '.error.log')
 }
 
-settings = load_app_config('{{project_name}}')
+settings = load_app_config()
 options.update(make_profile_options(settings['active_profiles']))
 # if debug
 if settings['debug']:

@@ -47,13 +47,13 @@ app_default_settings = {
 }
 
 
-def load_app_config(name):
+def load_app_config():
     c = app_default_settings
     conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
     if conf_dir:
-        c.update(load_config(join(conf_dir, name + '.py')))
+        c.update(load_config(join(conf_dir, 'app.py')))
         active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES', c.get('active_profiles'))
-        c.update(load_profile_config(conf_dir, name, profiles=active_profiles))
+        c.update(load_profile_config(conf_dir, 'app', profiles=active_profiles))
         c['active_profiles'] = active_profiles
     settings = {}
     for name in c:
