@@ -3,6 +3,7 @@
 import logging
 
 from flask import Flask, Blueprint
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.config import ConfigProxy
@@ -38,8 +39,6 @@ def set_app_config(app):
 def init_app(app):
     # CORS
     if config.settings['cors']:
-        from flask_cors import CORS
-
         if isinstance(config.settings['cors'], dict):
             CORS(app, **config.settings['cors'])
         else:
