@@ -9,10 +9,10 @@ Change log
 - ``guniflask init`` 会将用户的选择保存在 .guniflask-init.json 中，再次使用该命令会直接使用保存的选择重新生成项目，如需重新进行选择可使用 ``guniflask init -f``
 - bin/manage.py 添加了默认环境变量的设置
 - 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
-- 在 ``manage debug/start`` 命令中通过 ``-p`` 选项设置 ``active_profiles``
+- ``active_profiles`` 改为只能通过环境变量进行设置
+- 在 ``manage debug/start`` 命令中可以通过 ``-p`` 选项设置 ``active_profiles`` 对应的环境变量
 - ``manage initdb`` 会自动加载foo模块及子模块中所有声明的 ``db.Model``
 - Flask app的name更正为项目的名称
-- 在app启动之前使用 ``config.settings`` 不再raise RuntimeError，但在app初始化之前 ``config.settings`` 尚未加载项目的配置项
 - 项目配置相关文件统一命名为app，包括 conf/app.py , conf/app-env.sh , bin/app-config.sh
 
 0.2.5 (2018-09-18)

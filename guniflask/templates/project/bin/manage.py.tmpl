@@ -10,7 +10,7 @@ import time
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
 
-from guniflask.utils.config import load_config, walk_modules, load_app_config
+from guniflask.utils.config import load_config, walk_modules
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 
@@ -80,14 +80,13 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from {{project_name}} import create_app, db
+        from {{project_name}} import create_app, db, config
 
-        settings = load_app_config()
-        if 'SQLALCHEMY_DATABASE_URI' not in settings:
-            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         walk_modules('{{project_name}}')
         app = create_app()
         with app.app_context():
+            if config.settings['SQLALCHEMY_DATABASE_URI'] is None:
+                raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
             if args.force:
                 db.drop_all()
             else:
@@ -118,17 +117,19 @@ class TableToModel(Command):
             args.tables = args.tables.split(',')
 
     def run(self, args):
-        home_dir = os.environ['GUNIFLASK_HOME']
-        settings = load_app_config()
-        database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
-        if not database_uri:
-            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
-        engine = create_engine(database_uri)
-        metadata = MetaData(engine)
-        metadata.reflect(only=args.tables)
-        gen = SqlToModelGenerator('{{project_name}}', metadata)
-        dest = settings.get('table2model_dest', join('{{project_name}}', 'models'))
-        gen.render(join(home_dir, dest))
+        from {{project_name}} import create_app, config
+
+        app = create_app()
+        with app.app_context():
+            database_uri = config.settings['SQLALCHEMY_DATABASE_URI']
+            if database_uri is None:
+                raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
+            engine = create_engine(database_uri)
+            metadata = MetaData(engine)
+            metadata.reflect(only=args.tables)
+            gen = SqlToModelGenerator('{{project_name}}', metadata)
+            dest = config.settings.get('table2model_dest', join('{{project_name}}', 'models'))
+            gen.render(join(app.config['GUNIFLASK_HOME'], dest))
 
 
 class Debug(Command):

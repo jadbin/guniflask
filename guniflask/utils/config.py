@@ -38,6 +38,17 @@ def load_profile_config(conf_dir, name, profiles=None):
     return pc
 
 
+environ_config_attrs = ['GUNIFLASK_HOME',
+                        'GUNIFLASK_CONF_DIR',
+                        'GUNIFLASK_ACTIVE_PROFILES',
+                        'GUNIFLASK_DEBUG']
+
+
+def set_app_config_from_environ(app):
+    for c in environ_config_attrs:
+        app.config[c] = os.environ.get(c)
+
+
 app_default_settings = {
     'active_profiles': None,
     'debug': False,
@@ -47,20 +58,21 @@ app_default_settings = {
 }
 
 
-def load_app_config():
-    c = app_default_settings
-    conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
+def load_app_config(app):
+    c = dict(app_default_settings)
+    conf_dir = app.config.get('GUNIFLASK_CONF_DIR')
     if conf_dir:
         c.update(load_config(join(conf_dir, 'app.py')))
-        active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES', c.get('active_profiles'))
+        active_profiles = app.config.get('GUNIFLASK_ACTIVE_PROFILES')
         c.update(load_profile_config(conf_dir, 'app', profiles=active_profiles))
         c['active_profiles'] = active_profiles
     settings = {}
     for name in c:
         if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
             settings[name] = c[name]
-    if os.environ.get('GUNIFLASK_DEBUG'):
+    if app.config.get('GUNIFLASK_DEBUG'):
         settings['debug'] = True
+    settings['home'] = app.config.get('GUNIFLASK_HOME')
     return settings
 
 

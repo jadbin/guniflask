@@ -7,23 +7,22 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.config import ConfigProxy
-from guniflask.utils.config import walk_modules
+from guniflask.utils.config import walk_modules, set_app_config_from_environ
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-from guniflask.utils.model import model_to_dict, dict_to_model, update_model_by_dict
+from guniflask.utils.model import inject_sqlalchemy_model
 
 log = logging.getLogger(__name__)
 
 config = ConfigProxy()
 
 db = SQLAlchemy()
-db.Model.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
-db.Model.from_dict = classmethod(lambda cls, dict_obj, **kwargs: dict_to_model(dict_obj, model_cls=cls, **kwargs))
-db.Model.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
+inject_sqlalchemy_model(db.Model)
 
 
 def set_app_config(app):
-    config.init_app(app)
-    for k, v in config.settings.items():
+    set_app_config_from_environ(app)
+    settings = config.init_app(app)
+    for k, v in settings.items():
         if k.isupper():
             app.config[k] = v
 
@@ -31,16 +30,17 @@ def set_app_config(app):
 
     _make_settings = getattr(hooks, 'make_settings', None)
     if _make_settings:
-        _make_settings(app, config.settings)
+        _make_settings(app, settings)
 
-    log.info('{{project_name}} active profiles: %s', config.settings['active_profiles'])
+    log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
+    return settings
 
 
-def init_app(app):
+def init_app(app, settings):
     # CORS
-    if config.settings['cors']:
-        if isinstance(config.settings['cors'], dict):
-            CORS(app, **config.settings['cors'])
+    if settings['cors']:
+        if isinstance(settings['cors'], dict):
+            CORS(app, **settings['cors'])
         else:
             CORS(app)
 
@@ -52,7 +52,7 @@ def init_app(app):
 
     _init_app = getattr(hooks, 'init_app', None)
     if _init_app:
-        _init_app(app, config.settings)
+        _init_app(app, settings)
 
 
 def register_blueprints(app):
@@ -72,6 +72,6 @@ def create_app():
     redirect_app_logger(app, gunicorn_logger)
     redirect_logger('{{project_name}}', gunicorn_logger)
     register_blueprints(app)
-    set_app_config(app)
-    init_app(app)
+    settings = set_app_config(app)
+    init_app(app, settings)
     return app

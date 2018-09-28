@@ -26,6 +26,13 @@ Getting Settings
 Built-in Settings
 -----------------
 
+home
+^^^^
+
+项目根目录。
+
+在配置文件中设置无效。
+
 .. _active_profiles:
 
 active_profiles
@@ -35,9 +42,18 @@ active_profiles
 
 激活哪些profile。
 
-也可以通过环境变量 ``GUNIFLASK_ACTIVE_PROFILES`` 进行设置，或通过 ``manage debug/start`` 命令的 ``-p`` 选项进行设置。
+在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_ACTIVE_PROFILES`` 进行设置，或通过 ``manage debug/start`` 命令的 ``-p`` 选项进行设置。
 
 有关使用profile区别运行环境并加载不同配置的详细信息请参考 :ref:`profile` 。
+
+debug
+^^^^^
+
+- Default: ``None``
+
+是否为debug模式。
+
+在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``manage debug`` 命令会自动设置。
 
 cors
 ^^^^

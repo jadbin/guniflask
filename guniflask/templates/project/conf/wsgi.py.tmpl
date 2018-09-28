@@ -8,7 +8,7 @@ from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
 from gunicorn.util import import_app
 
-from guniflask.utils.config import load_config, load_profile_config, walk_files, load_app_config
+from guniflask.utils.config import load_config, load_profile_config, walk_files
 
 conf_dir = os.environ['GUNIFLASK_CONF_DIR']
 pid_dir = os.environ['GUNIFLASK_PID_DIR']
@@ -76,10 +76,9 @@ options = {
     'errorlog': join(log_dir, '{{project__name}}-' + id_string + '.error.log')
 }
 
-settings = load_app_config()
-options.update(make_profile_options(settings['active_profiles']))
+options.update(make_profile_options(os.environ.get('GUNIFLASK_ACTIVE_PROFILES')))
 # if debug
-if settings['debug']:
+if os.environ.get('GUNIFLASK_DEBUG'):
     options.update(make_debug_options())
 makedirs(options)
 
