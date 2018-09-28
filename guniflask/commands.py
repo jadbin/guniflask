@@ -12,7 +12,7 @@ from guniflask.errors import AbortedError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
 from guniflask.utils.cli import readchar
 from guniflask.utils.config import load_config
-from guniflask.utils.jwt import generate_secret
+from guniflask.utils.security import generate_jwt_secret
 from guniflask import __version__
 
 
@@ -272,7 +272,7 @@ class AuthenticationTypeStep(ChoiceStep):
         security = self.selected_value
         settings['authentication_type'] = security
         if self.selected_value == 'jwt':
-            settings['jwt_secret'] = generate_secret()
+            settings['jwt_secret'] = generate_jwt_secret()
 
 
 class ConflictFileStep(InputStep):
@@ -297,7 +297,7 @@ class ConflictFileStep(InputStep):
 
 class InitCommand(Command):
     default_settings = {
-        'jwt_exp_time': 86400
+        'jwt_expires_in': 86400
     }
 
     @property
