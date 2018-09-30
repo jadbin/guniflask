@@ -1,10 +1,7 @@
 # coding=utf-8
 {% if authentication_type == 'jwt' %}
 # Secret for JWT
-jwt_secret = '{{jwt_secret}}'
-
-# JWT expiration time (in seconds)
-jwt_expires_in = {{jwt_expires_in}}
+JWT_SECRET = '{{jwt_secret}}'
 {% endif %}
 # Database URI, example: mysql://username:password@server/db?charset=utf8
 # SQLALCHEMY_DATABASE_URI = ''

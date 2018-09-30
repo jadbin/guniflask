@@ -11,7 +11,6 @@ from jinja2 import Template
 from guniflask.errors import AbortedError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
 from guniflask.utils.cli import readchar
-from guniflask.utils.config import load_config
 from guniflask.utils.security import generate_jwt_secret
 from guniflask import __version__
 
@@ -189,14 +188,9 @@ class BaseNameStep(InputStep):
     def process_arguments(self, settings):
         project_dir = settings['project_dir']
         self.tooltip = string_lowercase_underscore(basename(project_dir))
-        conf_dir = join(project_dir, 'conf')
-        if isdir(conf_dir):
-            names = os.listdir(conf_dir)
-            for name in names:
-                if name.endswith('.py'):
-                    pname = name[:-3]
-                    if isdir(join(project_dir, pname)):
-                        self.tooltip = pname
+        old_settings = settings['old_settings']
+        if old_settings and 'project_name' in old_settings:
+            self.tooltip = old_settings['project_name']
 
     def check_user_input(self, user_input):
         project_basename = string_lowercase_underscore(user_input)
@@ -219,15 +213,10 @@ class PortStep(InputStep):
     desc = 'Would you like to run your application on which port?'
 
     def process_arguments(self, settings):
-        project_dir = settings['project_dir']
         self.tooltip = 8000
-        try:
-            c = load_config(join(project_dir, 'conf', 'gunicorn.py'))
-            port = self.parse_port(c['bind'].rsplit(':')[1].strip())
-            if port is not None:
-                self.tooltip = port
-        except Exception:
-            pass
+        old_settings = settings['old_settings']
+        if old_settings and 'port' in old_settings:
+            self.tooltip = old_settings['port']
 
     def check_user_input(self, user_input):
         user_input = user_input.strip()
@@ -296,10 +285,6 @@ class ConflictFileStep(InputStep):
 
 
 class InitCommand(Command):
-    default_settings = {
-        'jwt_expires_in': 86400
-    }
-
     @property
     def syntax(self):
         return '[options]'
@@ -323,14 +308,16 @@ class InitCommand(Command):
         self.print_welcome(project_dir)
         try:
             init_json_file = join(project_dir, '.guniflask-init.json')
+            old_settings = None
             try:
+                with open(init_json_file, 'r', encoding='utf-8') as f:
+                    old_settings = json.load(f)
                 if args.force:
                     raise FileNotFoundError
-                with open(init_json_file, 'r', encoding='utf-8') as f:
-                    settings = json.load(f)
+                settings = old_settings
                 self.print_regenerate_project()
             except (FileNotFoundError, json.JSONDecodeError):
-                settings = self.get_settings_by_steps(project_dir)
+                settings = self.get_settings_by_steps(project_dir, old_settings=old_settings)
                 with open(init_json_file, 'w', encoding='utf-8') as f:
                     json.dump(settings, f, indent=2, sort_keys=True)
             self.copy_files(project_dir, settings)
@@ -339,10 +326,12 @@ class InitCommand(Command):
             self.print_aborted_error()
             self.exitcode = 1
 
-    def get_settings_by_steps(self, project_dir):
+    def get_settings_by_steps(self, project_dir, old_settings=None):
         steps = [BaseNameStep(), PortStep(), AuthenticationTypeStep()]
         cur_step, total_steps = 1, len(steps)
-        settings = {'project_dir': project_dir, 'guniflask_version': __version__}
+        settings = {'project_dir': project_dir,
+                    'old_settings': old_settings,
+                    'guniflask_version': __version__}
         print(flush=True)
         for step in steps:
             step.title = '({}/{}) {}'.format(cur_step, total_steps, step.title)
@@ -351,6 +340,7 @@ class InitCommand(Command):
             step.update_settings(settings)
             cur_step += 1
         del settings['project_dir']
+        del settings['old_settings']
         return settings
 
     def copy_files(self, project_dir, settings):
@@ -359,8 +349,6 @@ class InitCommand(Command):
         project_name = settings['project_name']
         settings['project_dir'] = project_dir
         settings['project__name'] = string_lowercase_hyphen(project_name)
-        for k, v in self.default_settings.items():
-            settings[k] = v
 
         print(flush=True)
         self.print_copying_files()

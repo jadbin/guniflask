@@ -5,7 +5,7 @@ import tty
 import termios
 
 
-def readchar():
+def readchar():  # pragma: no cover
     fd = sys.stdin.fileno()
     old_settings = termios.tcgetattr(fd)
     try:
