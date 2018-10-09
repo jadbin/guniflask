@@ -12,17 +12,13 @@ Installation
 
 guniflask需要Python 3.5或更高版本的环境支持。
 
-可以通过pip安装或升级guniflask:
+可以通过pip安装或升级guniflask::
 
-.. code-block:: bash
+    $ pip install -U guniflask
 
-    pip install -U guniflask
+安装或升级guniflask生成的项目的依赖::
 
-安装或升级guniflask生成的项目的依赖:
-
-.. code-block:: bash
-
-    pip install -U guniflask[app]
+    $ pip install -U guniflask[app]
 
 Table of Contents
 =================
@@ -47,4 +43,5 @@ Table of Contents
 .. toctree::
     :maxdepth: 1
 
+    upgrading
     changelog

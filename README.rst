@@ -23,7 +23,7 @@ guniflask需要Python 3.5或更高版本的环境支持。
 
 可以通过pip安装或升级guniflask::
 
-    pip install -U guniflask
+    $ pip install -U guniflask
 
 Getting Started
 ===============
