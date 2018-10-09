@@ -3,27 +3,17 @@
 import copy
 from collections import MutableMapping
 
-from flask import _app_ctx_stack
-
 from guniflask.utils.config import load_app_config
 
 
-class ConfigProxy:
+class Config:
     def __init__(self, app=None):
         if app:
             self.init_app(app)
 
     def init_app(self, app):
         settings = Settings(load_app_config(app))
-        app.app_settings = settings
-        return settings
-
-    @property
-    def settings(self):
-        ctx = _app_ctx_stack.top
-        if ctx is None:
-            raise RuntimeError('There is no app context')
-        return ctx.app.app_settings
+        app.extensions['settings'] = settings
 
 
 class Settings(MutableMapping):
@@ -64,7 +54,11 @@ class Settings(MutableMapping):
     def set(self, name, value):
         self.attributes[name] = value
 
-    def update(self, values):
+    def setdefault(self, k, default=None):
+        if self[k] is None:
+            self[k] = default
+
+    def update(self, values, **kwargs):
         if values is not None:
             if isinstance(values, Settings):
                 for name in values:
@@ -72,6 +66,8 @@ class Settings(MutableMapping):
             else:
                 for name, value in values.items():
                     self.set(name, value)
+        for k, v in kwargs.items():
+            self.set(k, v)
 
     def delete(self, name):
         del self.attributes[name]

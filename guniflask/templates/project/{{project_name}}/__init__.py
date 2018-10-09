@@ -1,3 +1,3 @@
 # coding=utf-8
 
-from .app import create_app, db, config
+from .app import create_app, db, settings

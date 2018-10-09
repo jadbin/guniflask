@@ -1,46 +1,68 @@
 # coding=utf-8
 
+import os
 import logging
 
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, current_app
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-from guniflask.config import ConfigProxy
-from guniflask.utils.config import walk_modules, set_app_config_from_environ
+from werkzeug.local import LocalProxy
+
+from guniflask.config import Config
+from guniflask.utils.config import walk_modules
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.utils.model import inject_sqlalchemy_model
 
 log = logging.getLogger(__name__)
 
-config = ConfigProxy()
+config = Config()
+settings = LocalProxy(lambda: current_app.extensions['settings'])
 
 db = SQLAlchemy()
 inject_sqlalchemy_model(db.Model)
 
+environ_config_attrs = ['GUNIFLASK_HOME',
+                        'GUNIFLASK_CONF_DIR',
+                        'GUNIFLASK_ACTIVE_PROFILES',
+                        'GUNIFLASK_DEBUG']
+
+app_default_settings = {
+    'debug': False,
+    'cors': True,
+    # Flask-SQLAlchemy
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False
+}
+
 
 def set_app_config(app):
-    set_app_config_from_environ(app)
-    settings = config.init_app(app)
-    for k, v in settings.items():
-        if k.isupper():
-            app.config[k] = v
+    for c in environ_config_attrs:
+        app.config[c] = os.environ.get(c)
+    config.init_app(app)
+    s = app.extensions['settings']
+    for k, v in app_default_settings.items():
+        s.setdefault(k, v)
 
     from {{project_name}} import hooks
 
     _make_settings = getattr(hooks, 'make_settings', None)
     if _make_settings:
-        _make_settings(app, settings)
+        _make_settings(app, s)
 
-    log.info('{{project_name}} active profiles: %s', settings['active_profiles'])
-    return settings
+    for k, v in s.items():
+        if k.isupper():
+            app.config[k] = v
+
+    log.info('{{project_name}} active profiles: %s', s['active_profiles'])
 
 
-def init_app(app, settings):
+def init_app(app):
+    s = app.extensions['settings']
+
     # CORS
-    if settings['cors']:
-        if isinstance(settings['cors'], dict):
-            CORS(app, **settings['cors'])
+    if s['cors']:
+        if isinstance(s['cors'], dict):
+            CORS(app, **s['cors'])
         else:
             CORS(app)
 
@@ -52,7 +74,7 @@ def init_app(app, settings):
 
     _init_app = getattr(hooks, 'init_app', None)
     if _init_app:
-        _init_app(app, settings)
+        _init_app(app, s)
 
 
 def register_blueprints(app):
@@ -72,6 +94,6 @@ def create_app():
     redirect_app_logger(app, gunicorn_logger)
     redirect_logger('{{project_name}}', gunicorn_logger)
     register_blueprints(app)
-    settings = set_app_config(app)
-    init_app(app, settings)
+    set_app_config(app)
+    init_app(app)
     return app

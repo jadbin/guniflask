@@ -29,37 +29,15 @@ def load_profile_config(conf_dir, name, profiles=None):
         profiles.reverse()
         for profile in profiles:
             if profile:
-                pc_file = join(conf_dir, name + '-' + profile + '.py')
-                if not isfile(pc_file):
-                    pc_file = join(conf_dir, name + '_' + profile + '.py')
+                pc_file = join(conf_dir, name + '_' + profile + '.py')
                 if isfile(pc_file):
                     c = load_config(pc_file)
                     pc.update(c)
     return pc
 
 
-environ_config_attrs = ['GUNIFLASK_HOME',
-                        'GUNIFLASK_CONF_DIR',
-                        'GUNIFLASK_ACTIVE_PROFILES',
-                        'GUNIFLASK_DEBUG']
-
-
-def set_app_config_from_environ(app):
-    for c in environ_config_attrs:
-        app.config[c] = os.environ.get(c)
-
-
-app_default_settings = {
-    'active_profiles': None,
-    'debug': False,
-    'cors': True,
-    # Flask-SQLAlchemy
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False
-}
-
-
 def load_app_config(app):
-    c = dict(app_default_settings)
+    c = {}
     conf_dir = app.config.get('GUNIFLASK_CONF_DIR')
     if conf_dir:
         c.update(load_config(join(conf_dir, 'app.py')))

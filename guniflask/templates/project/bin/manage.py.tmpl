@@ -80,12 +80,12 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from {{project_name}} import create_app, db, config
+        from {{project_name}} import create_app, db, settings
 
         walk_modules('{{project_name}}')
         app = create_app()
         with app.app_context():
-            if config.settings['SQLALCHEMY_DATABASE_URI'] is None:
+            if settings['SQLALCHEMY_DATABASE_URI'] is None:
                 raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
             if args.force:
                 db.drop_all()
@@ -117,18 +117,18 @@ class TableToModel(Command):
             args.tables = args.tables.split(',')
 
     def run(self, args):
-        from {{project_name}} import create_app, config
+        from {{project_name}} import create_app, settings
 
         app = create_app()
         with app.app_context():
-            database_uri = config.settings['SQLALCHEMY_DATABASE_URI']
+            database_uri = settings['SQLALCHEMY_DATABASE_URI']
             if database_uri is None:
                 raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
             engine = create_engine(database_uri)
             metadata = MetaData(engine)
             metadata.reflect(only=args.tables)
             gen = SqlToModelGenerator('{{project_name}}', metadata)
-            dest = config.settings.get('table2model_dest', join('{{project_name}}', 'models'))
+            dest = settings.get('table2model_dest', join('{{project_name}}', 'models'))
             gen.render(join(app.config['GUNIFLASK_HOME'], dest))
 
 

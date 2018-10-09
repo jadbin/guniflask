@@ -4,7 +4,7 @@ import json
 
 from flask import Blueprint, jsonify
 
-from {{project_name}} import config
+from {{project_name}} import settings
 
 hello_world = Blueprint('hello_world', __name__, url_prefix='/api')
 
@@ -30,8 +30,8 @@ def get_settings():
         return True
 
     # Show how to get settings
-    settings = {}
-    for k, v in config.settings.items():
+    s = {}
+    for k, v in settings.items():
         if is_jsonable(v):
-            settings[k] = v
-    return jsonify(settings)
+            s[k] = v
+    return jsonify(s)
