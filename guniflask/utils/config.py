@@ -46,7 +46,7 @@ def load_app_config(app):
         c['active_profiles'] = active_profiles
     settings = {}
     for name in c:
-        if not name.startswith('_') and not inspect.ismodule(c[name]) and not inspect.isfunction(c[name]):
+        if not name.startswith('_'):
             settings[name] = c[name]
     if app.config.get('GUNIFLASK_DEBUG'):
         settings['debug'] = True

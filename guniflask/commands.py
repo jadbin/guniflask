@@ -255,7 +255,6 @@ class AuthenticationTypeStep(ChoiceStep):
         self.tooltip = 'Use arrow keys'
         self.add_choice('None', None)
         self.add_choice('JWT authentication', 'jwt')
-        self.add_choice('Authentication with UAA server', 'uaa')
 
     def update_settings(self, settings):
         security = self.selected_value
