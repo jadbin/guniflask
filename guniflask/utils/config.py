@@ -4,7 +4,6 @@ import os
 from os.path import isfile, join, isdir, abspath
 from importlib import import_module
 from pkgutil import iter_modules
-import inspect
 
 
 def load_config(fname):
@@ -34,24 +33,6 @@ def load_profile_config(conf_dir, name, profiles=None):
                     c = load_config(pc_file)
                     pc.update(c)
     return pc
-
-
-def load_app_config(app):
-    c = {}
-    conf_dir = app.config.get('GUNIFLASK_CONF_DIR')
-    if conf_dir:
-        c.update(load_config(join(conf_dir, 'app.py')))
-        active_profiles = app.config.get('GUNIFLASK_ACTIVE_PROFILES')
-        c.update(load_profile_config(conf_dir, 'app', profiles=active_profiles))
-        c['active_profiles'] = active_profiles
-    settings = {}
-    for name in c:
-        if not name.startswith('_'):
-            settings[name] = c[name]
-    if app.config.get('GUNIFLASK_DEBUG'):
-        settings['debug'] = True
-    settings['home'] = app.config.get('GUNIFLASK_HOME')
-    return settings
 
 
 def walk_modules(path):

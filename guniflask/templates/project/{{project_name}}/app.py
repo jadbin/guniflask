@@ -1,7 +1,7 @@
 # coding=utf-8
 
-import os
 import logging
+from importlib import import_module
 
 from flask import Flask, Blueprint, current_app
 from flask_cors import CORS
@@ -22,11 +22,6 @@ settings = LocalProxy(lambda: current_app.extensions['settings'])
 db = SQLAlchemy()
 inject_sqlalchemy_model(db.Model)
 
-environ_config_attrs = ['GUNIFLASK_HOME',
-                        'GUNIFLASK_CONF_DIR',
-                        'GUNIFLASK_ACTIVE_PROFILES',
-                        'GUNIFLASK_DEBUG']
-
 app_default_settings = {
     'debug': False,
     'cors': True,
@@ -36,24 +31,25 @@ app_default_settings = {
 
 
 def set_app_config(app):
-    for c in environ_config_attrs:
-        app.config[c] = os.environ.get(c)
     config.init_app(app)
     s = app.extensions['settings']
     for k, v in app_default_settings.items():
         s.setdefault(k, v)
 
-    from {{project_name}} import hooks
-
-    _make_settings = getattr(hooks, 'make_settings', None)
-    if _make_settings:
-        _make_settings(app, s)
+    try:
+        hooks = import_module(app.name + '.hooks')
+    except ImportError:
+        pass
+    else:
+        _make_settings = getattr(hooks, 'make_settings', None)
+        if _make_settings:
+            _make_settings(app, s)
 
     for k, v in s.items():
         if k.isupper():
             app.config[k] = v
 
-    log.info('{{project_name}} active profiles: %s', s['active_profiles'])
+    log.info('%s active profiles: %s', app.name, s['active_profiles'])
 
 
 def init_app(app):
@@ -70,16 +66,19 @@ def init_app(app):
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         db.init_app(app)
 
-    from {{project_name}} import hooks
-
-    _init_app = getattr(hooks, 'init_app', None)
-    if _init_app:
-        _init_app(app, s)
+    try:
+        hooks = import_module(app.name + '.hooks')
+    except ImportError:
+        pass
+    else:
+        _init_app = getattr(hooks, 'init_app', None)
+        if _init_app:
+            _init_app(app, s)
 
 
 def register_blueprints(app):
     def iter_blueprints():
-        for module in walk_modules('{{project_name}}'):
+        for module in walk_modules(app.name):
             for obj in vars(module).values():
                 if isinstance(obj, Blueprint):
                     yield obj
@@ -88,11 +87,11 @@ def register_blueprints(app):
         app.register_blueprint(b)
 
 
-def create_app():
-    app = Flask('{{project_name}}')
+def create_app(name):
+    app = Flask(name)
     gunicorn_logger = logging.getLogger('gunicorn.error')
     redirect_app_logger(app, gunicorn_logger)
-    redirect_logger('{{project_name}}', gunicorn_logger)
+    redirect_logger(name, gunicorn_logger)
     register_blueprints(app)
     set_app_config(app)
     init_app(app)

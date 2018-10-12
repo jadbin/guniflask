@@ -2,15 +2,19 @@
 
 import sys
 import os
-from os.path import isfile, join, dirname
+from os.path import isfile, join, dirname, exists
 import argparse
 import signal
 import time
+import multiprocessing
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
 
-from guniflask.utils.config import load_config, walk_modules
+from gunicorn.config import KNOWN_SETTINGS
+from gunicorn.app.base import Application
+
+from guniflask.utils.config import load_config, walk_modules, load_profile_config, walk_files
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 
@@ -83,9 +87,9 @@ class InitDb(Command):
         from {{project_name}} import create_app, db, settings
 
         walk_modules('{{project_name}}')
-        app = create_app()
+        app = create_app('{{project_name}}')
         with app.app_context():
-            if settings['SQLALCHEMY_DATABASE_URI'] is None:
+            if settings.get('SQLALCHEMY_DATABASE_URI') is None:
                 raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
             if args.force:
                 db.drop_all()
@@ -119,9 +123,9 @@ class TableToModel(Command):
     def run(self, args):
         from {{project_name}} import create_app, settings
 
-        app = create_app()
+        app = create_app('{{project_name}}')
         with app.app_context():
-            database_uri = settings['SQLALCHEMY_DATABASE_URI']
+            database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
             if database_uri is None:
                 raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
             engine = create_engine(database_uri)
@@ -151,8 +155,7 @@ class Debug(Command):
 
     def run(self, args):
         os.environ['GUNIFLASK_DEBUG'] = '1'
-        c = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        app = c['application']
+        app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
             print('{{project_name}} is already started')
@@ -179,8 +182,7 @@ class Start(Command):
             os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
 
     def run(self, args):
-        c = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        app = c['application']
+        app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
             print('{{project_name}} is already started')
@@ -199,8 +201,7 @@ class Stop(Command):
         return 'Stop {{project_name}}'
 
     def run(self, args):
-        c = load_config(join(os.environ['GUNIFLASK_CONF_DIR'], 'wsgi.py'))
-        app = c['application']
+        app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is None or not is_started(pid):
             print('No {{project_name}} to stop')
@@ -217,6 +218,77 @@ class Stop(Command):
                 print('{{project_name}} did not stop gracefully after 3 seconds')
                 print('kill -9 {}'.format(pid))
                 os.kill(pid, signal.SIGKILL)
+
+
+class GunicornApplication(Application):
+    def __init__(self):
+        self.options = self._make_options()
+        super().__init__()
+
+    def load_config(self):
+        for key, value in self.options.items():
+            if key in self.cfg.settings and value is not None:
+                self.cfg.set(key.lower(), value)
+
+    def load(self):
+        from {{project_name}} import create_app
+        return create_app('{{project_name}}')
+
+    def _make_options(self):
+        pid_dir = os.environ['GUNIFLASK_PID_DIR']
+        log_dir = os.environ['GUNIFLASK_LOG_DIR']
+        id_string = os.environ['GUNIFLASK_ID_STRING']
+        options = {
+            'daemon': True,
+            'preload_app': True,
+            'workers': multiprocessing.cpu_count(),
+            'worker_class': 'gevent',
+            'pidfile': join(pid_dir, '{{project__name}}-' + id_string + '.pid'),
+            'accesslog': join(log_dir, '{{project__name}}-' + id_string + '.access.log'),
+            'errorlog': join(log_dir, '{{project__name}}-' + id_string + '.error.log')
+        }
+        options.update(self._make_profile_options(os.environ.get('GUNIFLASK_ACTIVE_PROFILES')))
+        # if debug
+        if os.environ.get('GUNIFLASK_DEBUG'):
+            options.update(self._make_debug_options())
+        self._makedirs(options)
+        return options
+
+    @staticmethod
+    def _make_profile_options(active_profiles):
+        conf_dir = os.environ['GUNIFLASK_CONF_DIR']
+        gc = load_config(join(conf_dir, 'gunicorn.py'))
+        gc.update(load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles))
+        settings = {}
+        snames = set([i.name for i in KNOWN_SETTINGS])
+        for name in gc:
+            if name in snames:
+                settings[name] = gc[name]
+        return settings
+
+    @staticmethod
+    def _make_debug_options():
+        conf_dir = os.environ['GUNIFLASK_CONF_DIR']
+        return {
+            'accesslog': '-',
+            'errorlog': '-',
+            'loglevel': 'debug',
+            'disable_redirect_access_to_syslog': True,
+            'preload_app': False,
+            'reload': True,
+            'reload_extra_files': walk_files(conf_dir),
+            'workers': 1,
+            'daemon': False
+        }
+
+    @staticmethod
+    def _makedirs(opts):
+        for c in ['pidfile', 'accesslog', 'errorlog']:
+            p = opts.get(c)
+            if p:
+                d = dirname(p)
+                if d and not exists(d):
+                    os.makedirs(d)
 
 
 def get_pid(options):

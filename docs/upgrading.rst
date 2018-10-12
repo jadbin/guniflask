@@ -1,7 +1,7 @@
 .. _upgrading:
 
-Upgrade to New Releases
-=======================
+Upgrading to New Releases
+=========================
 
 通过pip升级guniflask::
 
@@ -23,7 +23,7 @@ Version 0.3
 在新版本中，生成的配置文件将统一命名，不再和项目名相关。
 bin/foo-config.sh 文件统一命名为 bin/app-config.sh ，删除 bin/foo-config.sh 即可。
 conf/foo-env.sh 文件统一命名为 conf/app-env.sh ，将配置的环境变量移至新文件，之后删除 conf/foo-env.sh 。
-conf/foo.py 文件统一命名为 conf/app.py ，将配置项移至新文件，之后删除 conf/foo.py 。
+删除 conf/wsgi.py 。
 
 在新版本中，我们移除了 ``config`` 对象，改为直接通过 ``settings`` 对象获取配置项。
 因此如果原项目中存在如下引入 ``config`` 对象的代码:

@@ -77,7 +77,7 @@ def stop_project(pid_file, proj_dir):
     while t > 0 and not exists(pid_file):
         t -= 1
         time.sleep(1)
-    assert t > 0
+    assert t > 0, 'no project to stop'
     time.sleep(3)
     res = subprocess.run("cd '{}' && bash bin/manage stop".format(proj_dir), shell=True)
     assert res.returncode == 0
@@ -85,7 +85,7 @@ def stop_project(pid_file, proj_dir):
     while t > 0 and exists(pid_file):
         t -= 1
         time.sleep(1)
-    assert t > 0
+    assert t > 0, 'did not stop gracefully'
 
 
 def test_init_project(tmpdir, monkeypatch):

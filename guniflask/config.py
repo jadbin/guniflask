@@ -1,9 +1,11 @@
 # coding=utf-8
 
+import os
+from os.path import join
 import copy
 from collections import MutableMapping
 
-from guniflask.utils.config import load_app_config
+from guniflask.utils.config import load_config, load_profile_config
 
 
 class Config:
@@ -12,8 +14,25 @@ class Config:
             self.init_app(app)
 
     def init_app(self, app):
-        settings = Settings(load_app_config(app))
+        settings = Settings(self._load_app_config(app))
         app.extensions['settings'] = settings
+
+    def _load_app_config(self, app):
+        c = {}
+        conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
+        if conf_dir:
+            c.update(load_config(join(conf_dir, app.name + '.py')))
+            active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
+            c.update(load_profile_config(conf_dir, app.name, profiles=active_profiles))
+            c['active_profiles'] = active_profiles
+        settings = {}
+        for name in c:
+            if not name.startswith('_'):
+                settings[name] = c[name]
+        if os.environ.get('GUNIFLASK_DEBUG'):
+            settings['debug'] = True
+        settings['home'] = os.environ.get('GUNIFLASK_HOME', os.curdir)
+        return settings
 
 
 class Settings(MutableMapping):
@@ -58,13 +77,13 @@ class Settings(MutableMapping):
         if self[k] is None:
             self[k] = default
 
-    def update(self, values, **kwargs):
-        if values is not None:
-            if isinstance(values, Settings):
-                for name in values:
-                    self.set(name, values[name])
+    def update(self, __values=None, **kwargs):
+        if __values is not None:
+            if isinstance(__values, Settings):
+                for name in __values:
+                    self.set(name, __values[name])
             else:
-                for name, value in values.items():
+                for name, value in __values.items():
                     self.set(name, value)
         for k, v in kwargs.items():
             self.set(k, v)
