@@ -17,6 +17,7 @@ from gunicorn.app.base import Application
 from guniflask.utils.config import load_config, walk_modules, load_profile_config, walk_files
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
+from guniflask.commands import Command
 
 
 def set_environ():
@@ -34,36 +35,6 @@ def set_environ():
         os.environ['GUNIFLASK_PID_DIR'] = join(home_dir, '.pid')
     if 'GUNIFLASK_ID_STRING' not in os.environ:
         os.environ['GUNIFLASK_ID_STRING'] = os.getlogin()
-
-
-class Command:
-    def __init__(self):
-        self.exitcode = 0
-
-    @property
-    def name(self):
-        return ""
-
-    @property
-    def syntax(self):
-        return ""
-
-    @property
-    def short_desc(self):
-        return ""
-
-    @property
-    def long_desc(self):
-        return self.short_desc
-
-    def add_arguments(self, parser):
-        pass
-
-    def process_arguments(self, args):
-        pass
-
-    def run(self, args):
-        raise NotImplementedError
 
 
 class InitDb(Command):
@@ -143,7 +114,7 @@ class Debug(Command):
 
     @property
     def short_desc(self):
-        return 'Debug {{project_name}}'
+        return 'Debug application'
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
@@ -158,7 +129,7 @@ class Debug(Command):
         app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
-            print('{{project_name}} is already started')
+            print('Application is already started')
             self.exitcode = 1
         else:
             app.run()
@@ -171,7 +142,7 @@ class Start(Command):
 
     @property
     def short_desc(self):
-        return 'Start {{project_name}}'
+        return 'Start application'
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
@@ -185,7 +156,7 @@ class Start(Command):
         app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
-            print('{{project_name}} is already started')
+            print('Application is already started')
             self.exitcode = 1
         else:
             app.run()
@@ -198,13 +169,13 @@ class Stop(Command):
 
     @property
     def short_desc(self):
-        return 'Stop {{project_name}}'
+        return 'Stop application'
 
     def run(self, args):
         app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is None or not is_started(pid):
-            print('No {{project_name}} to stop')
+            print('No application to stop')
             self.exitcode = 1
         else:
             print('kill {}'.format(pid))
@@ -215,7 +186,7 @@ class Stop(Command):
             except OSError:
                 pass
             else:
-                print('{{project_name}} did not stop gracefully after 3 seconds')
+                print('Application did not stop gracefully after 3 seconds')
                 print('kill -9 {}'.format(pid))
                 os.kill(pid, signal.SIGKILL)
 
@@ -313,7 +284,7 @@ def is_started(pid):
 def _get_commands_from_module():
     d = {}
     for cmd in globals().values():
-        if isinstance(cmd, type) and issubclass(cmd, Command) and cmd is not Command:
+        if isinstance(cmd, type) and issubclass(cmd, Command):
             o = cmd()
             if o.name:
                 d[o.name] = o

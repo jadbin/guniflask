@@ -36,9 +36,9 @@ class Config:
 
 
 class Settings(MutableMapping):
-    def __init__(self, values=None):
+    def __init__(self, __values=None, **kwargs):
         self.attributes = {}
-        self.update(values)
+        self.update(__values, **kwargs)
 
     def __getitem__(self, name):
         if name not in self:
