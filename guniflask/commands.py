@@ -6,10 +6,8 @@ from shutil import ignore_patterns
 import signal
 import json
 
-from jinja2 import Template
-
-from guniflask.errors import AbortedError
-from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen
+from guniflask.errors import AbortedError, TemplateError
+from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen, jinja2_env
 from guniflask.utils.cli import readchar
 from guniflask.utils.security import generate_jwt_secret
 from guniflask import __version__
@@ -375,7 +373,10 @@ class InitCommand(Command):
                     dst_name = dst_name[:-5]
                     dst_path = join(dst, dst_name)
                     dst_rel_path = self.relative_path(dst_path, settings['project_dir'])
-                    content = self.render_string(content, **settings)
+                    try:
+                        content = self.render_string(content, **settings)
+                    except TemplateError:
+                        continue
                 if exists(dst_path):
                     raw = self.read_file(dst_path)
                     if content == raw:
@@ -427,7 +428,8 @@ class InitCommand(Command):
 
     @staticmethod
     def render_string(raw, **kwargs):
-        return Template(raw, keep_trailing_newline=True).render(**kwargs)
+        env = jinja2_env()
+        return env.from_string(raw).render(**kwargs)
 
     @staticmethod
     def print_welcome(project_dir):

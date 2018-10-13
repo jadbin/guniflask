@@ -13,5 +13,11 @@ class UsageError(Exception):
 
 class AbortedError(Exception):
     """
-    Aborted Error.
+    Aborted error.
+    """
+
+
+class TemplateError(Exception):
+    """
+    Template error.
     """

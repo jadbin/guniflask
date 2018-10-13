@@ -2,6 +2,10 @@
 
 import re
 
+from jinja2 import Environment
+
+from guniflask.errors import TemplateError
+
 _camelcase_invalid_chars = re.compile(r'[^a-zA-Z\d]')
 
 _name_invalid_chars = re.compile(r'[^a-zA-Z\d\-_]')
@@ -21,3 +25,22 @@ def string_lowercase_underscore(s):
 
 def string_uppercase_underscore(s):
     return _name_invalid_chars.sub('', s.strip().replace(' ', '_').upper()).replace('-', '_')
+
+
+def _raise_helper(message):
+    if message:
+        raise TemplateError(message)
+    raise TemplateError
+
+
+def _assert_helper(logical, message=None):
+    if not logical:
+        _raise_helper(message)
+    return ''
+
+
+def jinja2_env():
+    env = Environment(keep_trailing_newline=True)
+    env.globals['raise'] = _raise_helper
+    env.globals['assert'] = _assert_helper
+    return env
