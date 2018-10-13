@@ -5,7 +5,7 @@ from guniflask.config import Settings
 
 def test_get():
     d = {'key': 'value'}
-    c = Settings(values=d)
+    c = Settings(d)
     assert len(c) == 1
     for k in c:
         assert k == 'key' and c[k] == 'value'
@@ -23,7 +23,7 @@ def test_get_bool():
     d = {'bool_true': 'true', 'bool_True': 'True', 'bool_false': 'false', 'bool_False': 'False',
          'bool_int1': '1', 'bool_int0': '0', 'bool_none': '...',
          'true': True, 'false': False}
-    c = Settings(values=d)
+    c = Settings(d)
     assert c.getbool('true') is True
     assert c.getbool('false') is False
     assert c.getbool('bool_true') is True
@@ -43,7 +43,7 @@ def test_get_bool():
 
 def test_get_int():
     d = {'int_1': 1, 'int_str_1': '1', 'int_none': '...'}
-    c = Settings(values=d)
+    c = Settings(d)
     assert c.getint('int_1') == 1
     assert c.getint('int_str_1') == 1
     assert c.getint('int_none') is None
@@ -55,7 +55,7 @@ def test_get_int():
 
 def test_get_float():
     d = {'float_1.1': 1.1, 'float_str_1.1': '1.1', 'float_none': '...'}
-    c = Settings(values=d)
+    c = Settings(d)
     assert c.getfloat('float_1.1') == 1.1
     assert c.getfloat('float_str_1.1') == 1.1
     assert c.getfloat('float_none') is None
@@ -67,7 +67,7 @@ def test_get_float():
 
 def test_get_list():
     d = {'list': [1, 2], 'tuple': (1, 2), 'single': 1, 'list_str': '1,2'}
-    c = Settings(values=d)
+    c = Settings(d)
     assert c.getlist('list') == [1, 2]
     assert c.getlist('tuple') == [1, 2]
     assert c.getlist('single') == [1]
