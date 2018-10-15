@@ -104,7 +104,7 @@ class TableToModel(Command):
             metadata.reflect(only=args.tables)
             gen = SqlToModelGenerator('{{project_name}}', metadata)
             dest = settings.get('table2model_dest', join('{{project_name}}', 'models'))
-            gen.render(join(app.config['GUNIFLASK_HOME'], dest))
+            gen.render(join(settings['home'], dest))
 
 
 class Debug(Command):
