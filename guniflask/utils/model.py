@@ -65,7 +65,7 @@ def _get_ignore_set(ignore):
     return set(ignore if ignore else [])
 
 
-def inject_sqlalchemy_model(model_cls):
+def set_model_methods(model_cls):
     model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
     model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs: dict_to_model(dict_obj, model_cls=cls, **kwargs))
     model_cls.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)

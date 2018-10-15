@@ -12,7 +12,7 @@ from werkzeug.local import LocalProxy
 from guniflask.config import Config
 from guniflask.utils.config import walk_modules
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-from guniflask.utils.model import inject_sqlalchemy_model
+from guniflask.utils.model import set_model_methods
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ config = Config()
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
 db = SQLAlchemy()
-inject_sqlalchemy_model(db.Model)
+set_model_methods(db.Model)
 
 app_default_settings = {
     'debug': False,
