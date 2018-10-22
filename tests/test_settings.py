@@ -111,10 +111,8 @@ def test_update():
 
 
 def test_update_by_base_c():
-    c1 = Settings()
-    c1.set('k1', 'c1_k1')
-    c2 = Settings({'k1': 'c2_k1', 'k2': 'c2_k2'})
-    c2.set('k3', 'c2_k3')
+    c1 = Settings({'k1': 'c1_k1'})
+    c2 = Settings({'k1': 'c2_k1', 'k2': 'c2_k2'}, k3='c2_k3')
     c1.update(c2)
     assert len(c1) == 3
     assert c1['k1'] == 'c2_k1'
@@ -123,18 +121,14 @@ def test_update_by_base_c():
 
 
 def test_copy():
-    c1 = Settings()
-    c1.set('dict', {'k': 'v'})
+    c1 = Settings({'dict': {'k': 'v'}})
     c2 = c1.copy()
     c1['dict']['k'] = 'vv'
     assert c2['dict']['k'] == 'v'
 
 
 def test_delete():
-    c = Settings()
-    c.set('k1', 'v1')
-    c.set('k2', 'v2')
-    c.set('k3', 'v3')
+    c = Settings({'k1': 'v1', 'k2': 'v2', 'k3': 'v3'})
     c.delete('k2')
     assert len(c) == 2 and 'k2' not in c
     c.delete('k1')
@@ -149,6 +143,3 @@ def test_setdefault():
     assert c['k1'] == 'v1'
     c.setdefault('k1', 'v2')
     assert c['k1'] == 'v1'
-    c['k2'] = None
-    c.setdefault('k2', 'v2')
-    assert c['k2'] is 'v2'

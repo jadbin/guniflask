@@ -24,18 +24,3 @@ Version 0.3
 bin/foo-config.sh 文件统一命名为 bin/app-config.sh ，删除 bin/foo-config.sh 即可。
 conf/foo-env.sh 文件统一命名为 conf/app-env.sh ，将配置的环境变量移至新文件，之后删除 conf/foo-env.sh 。
 删除 conf/wsgi.py 。
-
-在新版本中，我们移除了 ``config`` 对象，改为直接通过 ``settings`` 对象获取配置项。
-因此如果原项目中存在如下引入 ``config`` 对象的代码:
-
-.. code-block:: python
-
-    from foo import config
-
-需要改为:
-
-.. code-block:: python
-
-    from foo import settings
-
-原项目中使用 ``config.settings`` 的地方改为直接使用 ``settings``。

@@ -5,7 +5,12 @@ from os.path import join
 import copy
 from collections import MutableMapping
 
+from flask import current_app
+from werkzeug.local import LocalProxy
+
 from guniflask.utils.config import load_config, load_profile_config
+
+settings = LocalProxy(lambda: current_app.extensions['settings'])
 
 
 class Config:
@@ -14,10 +19,10 @@ class Config:
             self.init_app(app)
 
     def init_app(self, app):
-        settings = Settings(self._load_app_config(app))
-        app.extensions['settings'] = settings
+        s = Settings(self._load_app_settings(app))
+        app.extensions['settings'] = s
 
-    def _load_app_config(self, app):
+    def _load_app_settings(self, app):
         c = {}
         conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
         if conf_dir:
@@ -25,14 +30,23 @@ class Config:
             active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
             c.update(load_profile_config(conf_dir, app.name, profiles=active_profiles))
             c['active_profiles'] = active_profiles
-        settings = {}
+        s = {}
         for name in c:
             if not name.startswith('_'):
-                settings[name] = c[name]
+                s[name] = c[name]
         if os.environ.get('GUNIFLASK_DEBUG'):
-            settings['debug'] = True
-        settings['home'] = os.environ.get('GUNIFLASK_HOME', os.curdir)
-        return settings
+            s['debug'] = True
+        s['home'] = os.environ.get('GUNIFLASK_HOME', os.curdir)
+        return s
+
+    @property
+    def settings(self):
+        return self.app_settings()
+
+    def app_settings(self, app=None):
+        if app is None:
+            return current_app.extensions['settings']
+        return app.extensions['settings']
 
 
 class Settings(MutableMapping):
@@ -68,25 +82,25 @@ class Settings(MutableMapping):
         return getlist(v)
 
     def __setitem__(self, name, value):
-        self.set(name, value)
-
-    def set(self, name, value):
         self.attributes[name] = value
 
+    def set(self, name, value):
+        self[name] = value
+
     def setdefault(self, k, default=None):
-        if self[k] is None:
+        if k not in self:
             self[k] = default
 
     def update(self, __values=None, **kwargs):
         if __values is not None:
             if isinstance(__values, Settings):
                 for name in __values:
-                    self.set(name, __values[name])
+                    self[name] = __values[name]
             else:
                 for name, value in __values.items():
-                    self.set(name, value)
+                    self[name] = value
         for k, v in kwargs.items():
-            self.set(k, v)
+            self[k] = v
 
     def delete(self, name):
         del self.attributes[name]

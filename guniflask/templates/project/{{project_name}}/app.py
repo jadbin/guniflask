@@ -3,11 +3,9 @@
 import logging
 from importlib import import_module
 
-from flask import Flask, Blueprint, current_app
+from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-
-from werkzeug.local import LocalProxy
 
 from guniflask.config import Config
 from guniflask.utils.config import walk_modules
@@ -17,7 +15,6 @@ from guniflask.utils.model import set_model_methods
 log = logging.getLogger(__name__)
 
 config = Config()
-settings = LocalProxy(lambda: current_app.extensions['settings'])
 
 db = SQLAlchemy()
 set_model_methods(db.Model)
@@ -32,7 +29,7 @@ app_default_settings = {
 
 def set_app_config(app):
     config.init_app(app)
-    s = app.extensions['settings']
+    s = config.app_settings(app)
     for k, v in app_default_settings.items():
         s.setdefault(k, v)
 
@@ -53,7 +50,7 @@ def set_app_config(app):
 
 
 def init_app(app):
-    s = app.extensions['settings']
+    s = config.app_settings(app)
 
     # CORS
     if s['cors']:
