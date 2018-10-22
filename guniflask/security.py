@@ -59,8 +59,9 @@ class User:
 
     def __init__(self, authorities=None, **kwargs):
         self.authorities = set()
-        for a in authorities:
-            self.authorities.add(a.lower())
+        if authorities is not None:
+            for a in authorities:
+                self.authorities.add(a.lower())
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -147,8 +148,8 @@ def authorities_required(*authorities):
 
 class JwtAuthManager(AuthManager):
     def __init__(self, app=None):
-        self._user_loader = self.load_user_from_header
         super().__init__(app=app)
+        self._user_loader = self.load_user_from_header
 
     def init_app(self, app):
         self._set_default_app_config(app)

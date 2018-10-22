@@ -65,7 +65,10 @@ def init_app(app):
     # database configuration
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         db.init_app(app)
-
+{% if authentication_type == 'jwt' %}
+    # authentication
+    jwt.init_app(app)
+{% endif %}
     try:
         hooks = import_module(app.name + '.hooks')
     except ImportError:
