@@ -19,7 +19,7 @@ def _load_user():
 
 
 current_user = LocalProxy(_load_user)
-auth_manager = LocalProxy(current_app.extensions['auth_manager'])
+auth_manager = LocalProxy(lambda: current_app.extensions['auth_manager'])
 
 
 class AuthManager:
@@ -105,16 +105,14 @@ class JwtAuthManager(AuthManager):
         self._set_default_app_config(app)
         super().init_app(app)
 
-    @staticmethod
-    def _set_default_app_config(app):
+    def _set_default_app_config(self, app):
         app.config.setdefault('JWT_ALGORITHM', 'HS256')
         app.config.setdefault('JWT_SECRET', None)
         app.config.setdefault('JWT_PRIVATE_KEY', None)
         app.config.setdefault('JWT_PUBLIC_KEY', None)
         app.config.setdefault('JWT_ACCESS_TOKEN_EXPIRES_IN', dt.timedelta(days=1))
 
-    @staticmethod
-    def create_access_token(authorities=None, expires_in=None, **kwargs):
+    def create_access_token(self, authorities=None, expires_in=None, **kwargs):
         config = current_app.config
         user_claims = dict(kwargs)
         user_claims['authorities'] = authorities
@@ -124,8 +122,7 @@ class JwtAuthManager(AuthManager):
         return encode_jwt(payload, config['JWT_SECRET'] or config['JWT_PRIVATE_KEY'],
                           config['JWT_ALGORITHM'], expires_in=expires_in)
 
-    @staticmethod
-    def load_user_from_header():
+    def load_user_from_header(self):
         config = current_app.config
         auth = request.headers.get('Authorization')
         user = AnonymousUser()
