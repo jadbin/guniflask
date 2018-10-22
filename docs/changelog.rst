@@ -1,7 +1,7 @@
 .. _changelog:
 
-Change Log
-==========
+Changelog
+=========
 
 0.3.0 (2018-??-??)
 ------------------
@@ -16,6 +16,7 @@ Change Log
 - 脚本文件命名更新: conf/foo-env.sh -> conf/app-env.sh , bin/foo-config.sh -> bin/app-config.sh
 - 配置项由原来的 ``config.settings`` 改为直接通过 ``settings`` 对象获取
 - 移除 conf/wsgi.py
+- 提供基于JWT的用户权限认证方案
 
 0.2.5 (2018-09-18)
 ------------------

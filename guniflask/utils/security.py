@@ -7,17 +7,6 @@ import uuid
 
 import jwt
 
-from flask import _request_ctx_stack
-
-
-def load_user(user_loader):
-    ctx = _request_ctx_stack.top
-    if ctx is not None:
-        if not hasattr(ctx, 'user'):
-            user = user_loader()
-            ctx.user = user
-        return ctx.user
-
 
 def generate_jwt_secret(n=32):
     return base64.b64encode(os.urandom(n), altchars=b'-_').decode().replace('=', '')
