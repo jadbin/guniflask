@@ -10,7 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from guniflask.config import Config
 from guniflask.utils.config import walk_modules
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-from guniflask.utils.model import set_model_methods
+from guniflask.model import wrap_model
 {% if authentication_type == 'jwt' %}from guniflask.security import JwtAuthManager
 {% endif %}
 log = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 config = Config()
 
 db = SQLAlchemy()
-set_model_methods(db.Model)
+wrap_model(db.Model)
 {% if authentication_type == 'jwt' %}
 jwt = JwtAuthManager()
 {% endif %}
