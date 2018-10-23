@@ -20,7 +20,14 @@ Upgrading to New Releases
 Version 0.3
 -----------
 
-在新版本中，生成的配置文件将统一命名，不再和项目名相关。
+Script Files Update
+^^^^^^^^^^^^^^^^^^^
+
 bin/foo-config.sh 文件统一命名为 bin/app-config.sh ，删除 bin/foo-config.sh 即可。
 conf/foo-env.sh 文件统一命名为 conf/app-env.sh ，将配置的环境变量移至新文件，之后删除 conf/foo-env.sh 。
 删除 conf/wsgi.py 。
+
+Requirement Files Update
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+依赖文件 requirements.txt 移至 requirements/app.txt ， requirements_test.txt 移至 requirements/test.txt 。

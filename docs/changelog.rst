@@ -13,10 +13,11 @@ Changelog
 - 在 ``manage debug/start`` 命令中可以通过 ``-p`` 选项设置 ``active_profiles`` 对应的环境变量
 - ``manage initdb`` 会自动加载foo模块及子模块中所有声明的 ``db.Model``
 - Flask app的name更正为项目的名称
-- 脚本文件命名更新: conf/foo-env.sh -> conf/app-env.sh , bin/foo-config.sh -> bin/app-config.sh
+- 脚本文件命名: conf/foo-env.sh -> conf/app-env.sh , bin/foo-config.sh -> bin/app-config.sh
 - 提供 ``settings`` 对象获取配置
 - 移除 conf/wsgi.py
 - 提供基于JWT的用户权限认证方案
+- 生成的依赖文件的位置: requirements.txt -> requirements/app.txt , requirements_test.txt -> requirements/test.txts
 
 0.2.5 (2018-09-18)
 ------------------
