@@ -38,17 +38,11 @@ Getting Started
 
     $ pip install -U guniflask[app]
 
-启动项目::
+调试模式启动项目::
 
-    $ bash bin/manage start
+    $ bash bin/manage debug
 
-提示项目已启动后，在浏览器中访问 http://localhost:8000/api/hello-world 即可看到::
-
-    Hello World!
-
-停止项目::
-
-    $ bash bin/manage stop
+在浏览器中访问 http://localhost:8000/hello-world 。
 
 Documentation
 =============

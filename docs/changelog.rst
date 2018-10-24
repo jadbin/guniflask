@@ -3,14 +3,14 @@
 Changelog
 =========
 
-0.3.0 (2018-??-??)
+0.3.0 (2018-10-24)
 ------------------
 
 - ``guniflask init`` 会将用户的选择保存在 .guniflask-init.json 中，再次使用该命令会直接使用保存的选择重新生成项目，如需重新进行选择可使用 ``guniflask init -f``
 - bin/manage.py 添加了默认环境变量的设置
 - 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
 - ``active_profiles`` 改为只能通过环境变量进行设置
-- 在 ``manage debug/start`` 命令中可以通过 ``-p`` 选项设置 ``active_profiles`` 对应的环境变量
+- 在 bin/manage debug|start 命令中可以通过 ``-p`` 选项设置 ``active_profiles`` 对应的环境变量
 - ``manage initdb`` 会自动加载foo模块及子模块中所有声明的 ``db.Model``
 - Flask app的name更正为项目的名称
 - 脚本文件命名: conf/foo-env.sh -> conf/app-env.sh , bin/foo-config.sh -> bin/app-config.sh
@@ -18,6 +18,7 @@ Changelog
 - 移除 conf/wsgi.py
 - 提供基于JWT的用户权限认证方案
 - 生成的依赖文件的位置: requirements.txt -> requirements/app.txt , requirements_test.txt -> requirements/test.txts
+- bin/manage debug 默认添加名为 ``dev`` 的profile, bin/manage start 默认添加名为 ``prod`` 的profile
 
 0.2.5 (2018-09-18)
 ------------------

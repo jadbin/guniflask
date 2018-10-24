@@ -15,19 +15,18 @@ Upgrading to New Releases
 
 在guniflask升级过程中可能会带来非兼容性更新，我们接下来将提供升级到各个新版本的指南。
 
-假设我们的项目名为foo。
+.. note::
+
+    假设我们的项目名为foo。
 
 Version 0.3
 -----------
-
-Script Files Update
-^^^^^^^^^^^^^^^^^^^
 
 bin/foo-config.sh 文件统一命名为 bin/app-config.sh ，删除 bin/foo-config.sh 即可。
 conf/foo-env.sh 文件统一命名为 conf/app-env.sh ，将配置的环境变量移至新文件，之后删除 conf/foo-env.sh 。
 删除 conf/wsgi.py 。
 
-Requirement Files Update
-^^^^^^^^^^^^^^^^^^^^^^^^
-
 依赖文件 requirements.txt 移至 requirements/app.txt ， requirements_test.txt 移至 requirements/test.txt 。
+
+现在在 conf/foo.py 中设置 ``active_profiles`` 无效，需要在 bin/manage debug|start 命令中通过 ``-p`` 选项设置 ``active_profiles`` 。
+bin/manage debug 默认添加名为 ``dev`` 的profile, bin/manage start 默认添加名为 ``prod`` 的profile。
