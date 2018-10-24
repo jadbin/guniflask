@@ -1,14 +1,13 @@
 # coding=utf-8
 
 import os
-from os.path import join
 import copy
 from collections import MutableMapping
 
 from flask import current_app
 from werkzeug.local import LocalProxy
 
-from guniflask.utils.config import load_config, load_profile_config
+from guniflask.utils.config import load_profile_config, get_default_args_from_env
 
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
@@ -25,18 +24,16 @@ class Config:
     def _load_app_settings(self, app):
         c = {}
         conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
+        active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
+        kwargs = get_default_args_from_env()
         if conf_dir:
-            c.update(load_config(join(conf_dir, app.name + '.py')))
-            active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
-            c.update(load_profile_config(conf_dir, app.name, profiles=active_profiles))
+            c = load_profile_config(conf_dir, app.name, profiles=active_profiles, **kwargs)
             c['active_profiles'] = active_profiles
+        c.update(kwargs)
         s = {}
         for name in c:
             if not name.startswith('_'):
                 s[name] = c[name]
-        if os.environ.get('GUNIFLASK_DEBUG'):
-            s['debug'] = True
-        s['home'] = os.environ.get('GUNIFLASK_HOME', os.curdir)
         return s
 
     @property

@@ -14,7 +14,7 @@ from sqlalchemy.schema import MetaData
 from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
 
-from guniflask.utils.config import load_config, walk_modules, load_profile_config, walk_files
+from guniflask.utils.config import walk_modules, load_profile_config, walk_files, get_default_args_from_env
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
@@ -126,6 +126,7 @@ class Debug(Command):
 
     def run(self, args):
         os.environ['GUNIFLASK_DEBUG'] = '1'
+        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
         app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
@@ -153,6 +154,7 @@ class Start(Command):
             os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
 
     def run(self, args):
+        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'prod')
         app = GunicornApplication()
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
@@ -228,8 +230,8 @@ class GunicornApplication(Application):
     @staticmethod
     def _make_profile_options(active_profiles):
         conf_dir = os.environ['GUNIFLASK_CONF_DIR']
-        gc = load_config(join(conf_dir, 'gunicorn.py'))
-        gc.update(load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles))
+        kwargs = get_default_args_from_env()
+        gc = load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles, **kwargs)
         settings = {}
         snames = set([i.name for i in KNOWN_SETTINGS])
         for name in gc:
