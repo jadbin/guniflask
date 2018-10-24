@@ -26,4 +26,7 @@ def encode_jwt(payload, key, algorithm, expires_in=None, **kwargs):
         exp = dt.datetime.utcnow() + expires_in
         token_data['exp'] = exp
     token_data.update(payload)
-    return jwt.encode(token_data, key, algorithm=algorithm, **kwargs)
+    token = jwt.encode(token_data, key, algorithm=algorithm, **kwargs)
+    if isinstance(token, bytes):
+        token = token.decode('utf-8')
+    return token
