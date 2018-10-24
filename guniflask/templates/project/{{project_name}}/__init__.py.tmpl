@@ -4,5 +4,5 @@ from guniflask.config import settings
 {% if authentication_type == 'jwt' %}from guniflask.security import current_user, login_required, roles_required, authorities_required
 {% endif %}
 from {{project_name}}.app import create_app, db, config
-{% if authentication_type == 'jwt' %}from {{project_name}}.app import jwt
+{% if authentication_type == 'jwt' %}from {{project_name}}.app import jwt_manager
 {% endif %}

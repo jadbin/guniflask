@@ -1,10 +1,13 @@
 # coding=utf-8
 
 import re
+from os.path import dirname, join
 
 from jinja2 import Environment
 
 from guniflask.errors import TemplateError
+
+template_folder = join(dirname(dirname(__file__)), 'templates')
 
 _camelcase_invalid_chars = re.compile(r'[^a-zA-Z\d]')
 

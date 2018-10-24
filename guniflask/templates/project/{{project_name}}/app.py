@@ -11,17 +11,17 @@ from guniflask.config import Config
 from guniflask.utils.config import walk_modules
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.model import wrap_model
-{% if authentication_type == 'jwt' %}from guniflask.security import JwtAuthManager
-{% endif %}
+from guniflask.security import JwtAuthManager
+
 log = logging.getLogger(__name__)
 
 config = Config()
 
 db = SQLAlchemy()
 wrap_model(db.Model)
-{% if authentication_type == 'jwt' %}
-jwt = JwtAuthManager()
-{% endif %}
+
+jwt_manager = JwtAuthManager()
+
 app_default_settings = {
     'debug': False,
     'cors': True,
@@ -65,10 +65,10 @@ def init_app(app):
     # database configuration
     if 'SQLALCHEMY_DATABASE_URI' in app.config:
         db.init_app(app)
-{% if authentication_type == 'jwt' %}
+
     # authentication
-    jwt.init_app(app)
-{% endif %}
+    jwt_manager.init_app(app)
+
     try:
         hooks = import_module(app.name + '.hooks')
     except ImportError:

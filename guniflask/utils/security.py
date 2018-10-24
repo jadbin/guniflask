@@ -23,7 +23,7 @@ def encode_jwt(payload, key, algorithm, expires_in=None, **kwargs):
     if expires_in is not None:
         if isinstance(expires_in, (int, float)):
             expires_in = dt.timedelta(seconds=expires_in)
-        exp = dt.datetime.utcnow().timestamp() + expires_in
+        exp = dt.datetime.utcnow() + expires_in
         token_data['exp'] = exp
     token_data.update(payload)
     return jwt.encode(token_data, key, algorithm=algorithm, **kwargs)

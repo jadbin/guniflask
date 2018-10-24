@@ -7,7 +7,7 @@ import signal
 import json
 
 from guniflask.errors import AbortedError, TemplateError
-from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen, jinja2_env
+from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen, jinja2_env, template_folder
 from guniflask.utils.cli import readchar
 from guniflask.utils.security import generate_jwt_secret
 from guniflask import __version__
@@ -251,7 +251,6 @@ class AuthenticationTypeStep(ChoiceStep):
     def __init__(self):
         super().__init__()
         self.tooltip = 'Use arrow keys'
-        self.add_choice('None', None)
         self.add_choice('JWT authentication', 'jwt')
 
     def update_settings(self, settings):
@@ -342,7 +341,6 @@ class InitCommand(Command):
 
     def copy_files(self, project_dir, settings):
         settings = dict(settings)
-        templates_dir = join(dirname(__file__), 'templates', 'project')
         project_name = settings['project_name']
         settings['project_dir'] = project_dir
         settings['project__name'] = string_lowercase_hyphen(project_name)
@@ -350,7 +348,7 @@ class InitCommand(Command):
         print(flush=True)
         self.print_copying_files()
         self.force = False
-        self.copytree(templates_dir, project_dir, settings)
+        self.copytree(join(template_folder, 'project'), project_dir, settings)
         print(flush=True)
         self.print_success()
 

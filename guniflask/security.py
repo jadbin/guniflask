@@ -80,10 +80,7 @@ class User:
         return False
 
     def has_role(self, role):
-        role = role.lower()
-        if not role.startswith(self.ROLE_PREFIX):
-            role = self.ROLE_PREFIX + role
-        return role in self.authorities
+        return self.has_authority(self._get_role_with_prefix(self.ROLE_PREFIX, role))
 
     def has_any_role(self, *roles):
         for r in roles:
@@ -91,22 +88,21 @@ class User:
                 return True
         return False
 
+    @staticmethod
+    def _get_role_with_prefix(prefix, role):
+        if role is None or prefix is None:
+            return role
+        if role.startswith(prefix):
+            return role
+        return prefix + role
+
 
 class AnonymousUser(User):
+    def __init__(self, authorities=None, **kwargs):
+        super().__init__(**kwargs)
+
     @property
     def is_authenticated(self):
-        return False
-
-    def has_authority(self, authority):
-        return False
-
-    def has_any_authority(self, *authorities):
-        return False
-
-    def has_role(self, role):
-        return False
-
-    def has_any_role(self, *roles):
         return False
 
 
@@ -149,7 +145,7 @@ def authorities_required(*authorities):
 class JwtAuthManager(AuthManager):
     def __init__(self, app=None):
         super().__init__(app=app)
-        self._user_loader = self.load_user_from_header
+        self._user_loader = self._load_user_from_header
 
     def init_app(self, app):
         self._set_default_app_config(app)
@@ -172,13 +168,13 @@ class JwtAuthManager(AuthManager):
         return encode_jwt(payload, config['JWT_SECRET'] or config['JWT_PRIVATE_KEY'],
                           config['JWT_ALGORITHM'], expires_in=expires_in)
 
-    def load_user_from_header(self):
+    def _load_user_from_header(self):
         config = current_app.config
-        auth = request.headers.get('Authorization')
         user = AnonymousUser()
-        if auth is not None and auth.starts_with('Bearer'):
+        token = self.current_token
+        if token:
             try:
-                payload = decode_jwt(auth.split(' ', 1)[1], config['JWT_SECRET'] or config['JWT_PUBLIC_KEY'],
+                payload = decode_jwt(token, config['JWT_SECRET'] or config['JWT_PUBLIC_KEY'],
                                      config['JWT_ALGORITHM'])
             except InvalidTokenError:
                 pass
@@ -186,3 +182,20 @@ class JwtAuthManager(AuthManager):
                 user_claims = payload['user_claims']
                 user = User(**user_claims)
         return user
+
+    @property
+    def current_token(self):
+        token = self._get_token_from_header()
+        if token is None:
+            token = self._get_token_from_query()
+        return token
+
+    @staticmethod
+    def _get_token_from_header():
+        auth = request.headers.get('Authorization')
+        if auth is not None and auth.startswith('Bearer'):
+            return auth.split(' ', 1)[1]
+
+    @staticmethod
+    def _get_token_from_query():
+        return request.args.get('access_token')
