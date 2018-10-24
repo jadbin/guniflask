@@ -1,0 +1,19 @@
+<div class="alert alert-warning" role="alert">Only jsonable settings will be displayed.</div>
+<table class="table table-sm">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Key</th>
+        <th scope="col">Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for i in range(app_settings|length) %}
+        <tr>
+            <th scope="row">{{ i + 1 }}</th>
+            <td>{{ app_settings[i]['key'] }}</td>
+            <td>{{ app_settings[i]['value'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

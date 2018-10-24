@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/hello-world/static/bootstrap.min.css" rel="stylesheet">
+    <title>GUNIFLASK - Login</title>
+</head>
+<body style="margin:2em">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/hello-world">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Login</li>
+    </ol>
+</nav>
+<h2>Login</h2>
+<form>
+    <div class="form-group">
+        <label for="usernameInput">Username</label>
+        <input type="text" class="form-control" id="usernameInput" placeholder="Please input your username">
+    </div>
+    <div class="form-group">
+        <label for="passwordInput">Password</label>
+        <input type="password" class="form-control" id="passwordInput" placeholder="Please input your password">
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-primary" id="loginBtn">Login</button>
+    </div>
+</form>
+<p>Username: root, Password: 123456</p>
+</body>
+<script src="/hello-world/static/jquery.min.js"></script>
+<script>
+    'use strict';
+    localStorage.removeItem('user');
+    $('#loginBtn').click(() => {
+        let data = {
+            username: $('#usernameInput').val(),
+            password: $('#passwordInput').val()
+        };
+        $.ajax({
+            url: '/hello-world/login',
+            data: JSON.stringify(data),
+            type: 'post',
+            contentType: 'application/json',
+            success: (res) => {
+                localStorage.setItem('user', JSON.stringify(res));
+                alert('登陆成功');
+                location.href = '/hello-world';
+            }
+        }).fail((res) => {
+            alert('登陆失败');
+        });
+    });
+</script>
+</html>

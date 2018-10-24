@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/hello-world/static/bootstrap.min.css" rel="stylesheet">
+    <title>GUNIFLASK - App Settings</title>
+</head>
+<body style="margin:2em">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/hello-world">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">App Settings</li>
+    </ol>
+</nav>
+<h2>App Settings</h2>
+<div id="settings-table">Please wait ...</div>
+<p id="loginTip" style="display:none">Please <a href="/hello-world/login">login</a> first.</p>
+</body>
+<script src="/hello-world/static/jquery.min.js"></script>
+<script>
+    'use strict';
+    let user = localStorage.getItem('user');
+    if (user == null) {
+        $('#loginTip').show();
+        $('#settings-table').hide();
+    } else {
+        user = JSON.parse(user);
+        $.ajax({
+            url: '/hello-world/settings-table',
+            type: 'post',
+            contentType: 'application/json',
+            headers: {
+                Authorization: 'Bearer ' + user['access_token']
+            },
+            success: (res) => {
+                $('#settings-table').html(res);
+            }
+        }).fail((res) => {
+            $('#loginTip').show();
+            $('#settings-table').hide();
+        });
+    }
+</script>
+</html>
