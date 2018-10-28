@@ -58,10 +58,11 @@ class User:
     ROLE_PREFIX = 'role_'
 
     def __init__(self, authorities=None, **kwargs):
-        self.authorities = set()
+        self.authorities = []
         if authorities is not None:
             for a in authorities:
-                self.authorities.add(a.lower())
+                self.authorities.append(a.lower())
+        self._authorities_set = set(self.authorities)
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -71,7 +72,7 @@ class User:
 
     def has_authority(self, authority):
         authority = authority.lower()
-        return authority in self.authorities
+        return authority in self._authorities_set
 
     def has_any_authority(self, *authorities):
         for a in authorities:
