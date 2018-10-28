@@ -82,4 +82,4 @@ def is_jsonable(v):
 
 @hello_world.route('/static/<name>', methods=['GET'])
 def get_static_files(name):
-    return send_from_directory(join(template_folder, 'hello_world', 'static'), name)
+    return send_from_directory(join(template_folder, 'static'), name)
