@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import os
-from os.path import isfile, join, isdir, abspath
+from os.path import isfile, join, isdir
 from importlib import import_module
 from pkgutil import iter_modules
 
@@ -52,7 +52,6 @@ def walk_modules(path):
 
 
 def walk_files(path):
-    path = abspath(path)
     files = []
     if isdir(path):
         names = os.listdir(path)
