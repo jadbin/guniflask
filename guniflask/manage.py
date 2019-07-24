@@ -333,18 +333,18 @@ def _get_commands_from_module():
 
 
 def _print_commands():
-    print("usage: manage <command> [options] [args]\n")
-    print("available commands:")
+    print("Usage: guniflask-manage <command> [options] [args]\n")
+    print("Available commands:")
     cmds = _get_commands_from_module()
     for cmdname, cmdclass in sorted(cmds.items()):
         print("   {:<13} {}".format(cmdname, cmdclass.short_desc))
     print()
-    print('Use "manage <command> -h" to see more info about a command')
+    print('Use "guniflask-manage <command> -h" to see more info about a command')
 
 
 def _print_unknown_command(cmdname):
     print("Unknown command: %s\n" % cmdname, file=sys.stderr)
-    print('Use "manage" to see available commands', file=sys.stderr)
+    print('Use "guniflask-manage" to see available commands', file=sys.stderr)
 
 
 def main(argv=None):

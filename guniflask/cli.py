@@ -24,8 +24,8 @@ def _get_commands_from_module():
 
 
 def _print_commands():
-    print("usage: guniflask <command> [options] [args]\n")
-    print("available commands:")
+    print("Usage: guniflask <command> [options] [args]\n")
+    print("Available commands:")
     cmds = _get_commands_from_module()
     for cmdname, cmdclass in sorted(cmds.items()):
         print("  {:<10} {}".format(cmdname, cmdclass.short_desc))

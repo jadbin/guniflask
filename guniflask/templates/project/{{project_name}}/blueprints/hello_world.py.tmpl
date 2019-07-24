@@ -45,7 +45,6 @@ def login():
     if data is not None:
         username = data.get('username')
         password = data.get('password')
-        print(username, password)
         if username in accounts and password == accounts[username]['password']:
             token = jwt_manager.create_access_token(accounts[username]['authorities'],
                                                     username=username)
