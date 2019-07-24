@@ -66,7 +66,11 @@ def _get_ignore_set(ignore):
 
 
 def wrap_model(model_cls):
-    model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
-    model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs: dict_to_model(dict_obj, model_cls=cls, **kwargs))
-    model_cls.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
+    if not hasattr(model_cls, 'to_dict'):
+        model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
+    if not hasattr(model_cls, 'from_dict'):
+        model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs:
+                                          dict_to_model(dict_obj, model_cls=cls, **kwargs))
+    if not hasattr(model_cls, 'update_by_dict'):
+        model_cls.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
     return model_cls
