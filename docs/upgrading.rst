@@ -22,9 +22,13 @@ Upgrading to New Releases
 Version 0.4
 -----------
 
-对foo/app.py中的代码进行了重新组织，保留对象的定义并移除了原有的功能函数，foo/hooks.py中的代码追加到foo/app.py后删除foo/hooks.py。
+对 foo/app.py 中的代码进行了重新组织，保留对象的定义并移除了原有的功能函数。
+foo/hooks.py 中的代码追加到 foo/app.py 后删除 foo/hooks.py 。
+移除 ``app_default_settings`` 对象，相关配置通过 ``make_settings`` 进行设置。
 
-删除tests目录下项目自动生成的测试文件。
+删除 bin/manage.py 。
+
+删除 tests 目录下项目自动生成的测试文件。
 
 Version 0.3
 -----------

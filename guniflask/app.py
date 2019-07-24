@@ -15,6 +15,13 @@ from guniflask.security import JwtAuthManager
 
 log = logging.getLogger(__name__)
 
+app_default_settings = {
+    'debug': False,
+    'cors': True,
+    # Flask-SQLAlchemy
+    'SQLALCHEMY_TRACK_MODIFICATIONS': False
+}
+
 
 def _get_app_module(app):
     return import_module(app.name + '.app')
@@ -32,8 +39,6 @@ def set_app_config(app):
     assert isinstance(config, Config)
 
     config.init_app(app)
-    # get default settings
-    app_default_settings = getattr(app_module, 'app_default_settings', {})
     s = config.app_settings(app)
     for k, v in app_default_settings.items():
         s.setdefault(k, v)

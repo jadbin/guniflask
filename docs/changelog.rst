@@ -6,14 +6,14 @@ Changelog
 0.4.0 (2019-07-??)
 ------------------
 
-- 简化foo/app.py中的代码，便于后续新特性在更新guniflask之后即可使用，无需再关注app.py代码的变化
-- 移除foo/hooks.py，原有代码并入foo/app.py中
-- 移除bin/manage.py，原有代码并入guniflask中
+- 简化 foo/app.py 中的代码，便于后续新特性在更新guniflask之后即可使用，无需再关注 app.py 代码的变化
+- 移除 foo/hooks.py ，原有代码并入 foo/app.py 中
+- 移除 bin/manage.py ，原有代码并入guniflask中
 - 环境变量配置 ``VIRTUAL_ENV`` 更名为 ``GUNIFLASK_VIRTUAL_ENV``
 - 修复 ``server_default`` 的自动生成
 - debug添加后台运行模式
 - start支持关闭后台运行模式
-- 添加docker相关配置文件，包括Dockerfile和docker-compose.yml
+- 添加docker相关配置文件
 
 0.3.1 (2018-10-31)
 ------------------

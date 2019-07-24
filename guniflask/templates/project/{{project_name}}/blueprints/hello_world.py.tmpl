@@ -4,14 +4,18 @@ import json
 from os.path import join
 from functools import wraps
 
-from flask import Blueprint, request, abort, jsonify, render_template, send_from_directory
+from flask import Blueprint, request, abort, jsonify, render_template
 
 from guniflask.utils.template import template_folder
 
 from {{project_name}} import settings, jwt_manager, roles_required
 
+static_folder = join(template_folder, 'static')
+
 hello_world = Blueprint('hello_world', __name__, url_prefix='/hello-world',
-                        template_folder=join(template_folder, 'hello_world'))
+                        template_folder=join(template_folder, 'hello_world'),
+                        static_folder=static_folder,
+                        static_url_path='/static')
 
 
 def debug_only(func):
@@ -77,8 +81,3 @@ def is_jsonable(v):
     except Exception:
         return False
     return True
-
-
-@hello_world.route('/static/<name>', methods=['GET'])
-def get_static_files(name):
-    return send_from_directory(join(template_folder, 'static'), name)

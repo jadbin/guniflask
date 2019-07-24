@@ -61,11 +61,3 @@ def walk_files(path):
         files.append(path)
     return files
 
-
-def get_default_args_from_env():
-    kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir)}
-    if os.environ.get('GUNIFLASK_DEBUG'):
-        kwargs['debug'] = True
-    else:
-        kwargs['debug'] = False
-    return kwargs

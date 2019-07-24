@@ -16,7 +16,7 @@ from sqlalchemy.schema import MetaData
 from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
 
-from guniflask.utils.config import walk_modules, load_profile_config, walk_files, get_default_args_from_env
+from guniflask.utils.config import walk_modules, load_profile_config, walk_files
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
@@ -272,8 +272,7 @@ class GunicornApplication(Application):
     @staticmethod
     def _make_profile_options(active_profiles):
         conf_dir = os.environ['GUNIFLASK_CONF_DIR']
-        kwargs = get_default_args_from_env()
-        gc = load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles, **kwargs)
+        gc = load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles)
         settings = {}
         snames = set([i.name for i in KNOWN_SETTINGS])
         for name in gc:

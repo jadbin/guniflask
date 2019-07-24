@@ -7,7 +7,7 @@ from collections import MutableMapping
 from flask import current_app
 from werkzeug.local import LocalProxy
 
-from guniflask.utils.config import load_profile_config, get_default_args_from_env
+from guniflask.utils.config import load_profile_config
 
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
@@ -44,6 +44,15 @@ class Config:
         if app is None:
             return current_app.extensions['settings']
         return app.extensions['settings']
+
+
+def get_default_args_from_env():
+    kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir)}
+    if os.environ.get('GUNIFLASK_DEBUG'):
+        kwargs['debug'] = True
+    else:
+        kwargs['debug'] = False
+    return kwargs
 
 
 class Settings(MutableMapping):

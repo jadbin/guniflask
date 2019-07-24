@@ -13,13 +13,6 @@ config = Config()
 db = SQLAlchemy()
 jwt_manager = JwtAuthManager()
 
-app_default_settings = {
-    'debug': False,
-    'cors': True,
-    # Flask-SQLAlchemy
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False
-}
-
 
 def make_settings(app, settings):
     """
