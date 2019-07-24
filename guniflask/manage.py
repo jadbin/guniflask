@@ -149,6 +149,7 @@ class Debug(Command):
         return 'Debug application'
 
     def add_arguments(self, parser):
+        parser.add_argument('-d', '--daemon', dest='daemon', action='store_true', help='run in daemon mode')
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
 
@@ -160,6 +161,8 @@ class Debug(Command):
         os.environ['GUNIFLASK_DEBUG'] = '1'
         os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
         app = GunicornApplication()
+        if args.daemon:
+            app.set_option('daemon', True)
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
             print('Application is already started')
@@ -229,6 +232,10 @@ class GunicornApplication(Application):
     def __init__(self):
         self.options = self._make_options()
         super().__init__()
+
+    def set_option(self, key, value):
+        if key in self.cfg.settings:
+            self.cfg.set(key, value)
 
     def load_config(self):
         for key, value in self.options.items():
