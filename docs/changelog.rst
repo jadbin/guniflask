@@ -12,6 +12,7 @@ Changelog
 - 环境变量配置 ``VIRTUAL_ENV`` 更名为 ``GUNIFLASK_VIRTUAL_ENV``
 - 修复 ``server_default`` 的自动生成
 - debug添加后台运行模式
+- start支持关闭后台运行模式
 
 0.3.1 (2018-10-31)
 ------------------

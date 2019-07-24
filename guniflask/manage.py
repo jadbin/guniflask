@@ -181,6 +181,7 @@ class Start(Command):
         return 'Start application'
 
     def add_arguments(self, parser):
+        parser.add_argument('--daemon-off', dest='daemon_off', action='store_true', help='turn off daemon mode')
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
 
@@ -191,6 +192,8 @@ class Start(Command):
     def run(self, args):
         os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'prod')
         app = GunicornApplication()
+        if args.daemon_off:
+            app.set_option('daemon', False)
         pid = get_pid(app.options)
         if pid is not None and is_started(pid):
             print('Application is already started')
