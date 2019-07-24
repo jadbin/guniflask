@@ -10,8 +10,8 @@ if [ -f "$GUNIFLASK_CONF_DIR"/app-env.sh ]; then
     . "$GUNIFLASK_CONF_DIR"/app-env.sh
 fi
 
-if [ -n "$VIRTUAL_ENV" ]; then
-    . "$VIRTUAL_ENV"/bin/activate
+if [ -n "$GUNIFLASK_VIRTUAL_ENV" ]; then
+    . "$GUNIFLASK_VIRTUAL_ENV"/bin/activate
 fi
 
 export GUNIFLASK_LOG_DIR=${GUNIFLASK_LOG_DIR:-"$GUNIFLASK_HOME"/.log}

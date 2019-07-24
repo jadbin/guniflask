@@ -5,4 +5,4 @@ bin=$(cd "$bin"; pwd)
 
 . "$bin"/app-config.sh
 
-"$PYTHON" -u "$bin"/manage.py $@
+guniflask-manage $@

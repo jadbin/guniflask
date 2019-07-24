@@ -93,7 +93,7 @@ def test_init_project(tmpdir, monkeypatch):
     os.mkdir(proj_dir)
     show_version()
     init_project(proj_dir)
-    run_tests_of_project(proj_dir)
+    # run_tests_of_project(proj_dir)
     run_debug_of_project(proj_dir)
     run_initdb_without_db(proj_dir)
     run_table2model_without_db(proj_dir)

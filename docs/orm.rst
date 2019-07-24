@@ -63,7 +63,7 @@ Table to Model
 
 我们可以通过修改 :ref:`table2model_dest` 配置更改model存储的路径。
 
-Model |xhArr|  Dict
+Model |xhArr|  dict
 -------------------
 
 我们对 ``db.Model`` 注入了两个成员函数:

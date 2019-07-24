@@ -3,6 +3,14 @@
 Changelog
 =========
 
+0.4.0 (2019-07-??)
+------------------
+
+- 简化foo/app.py中的代码，便于后续新特性在更新guniflask之后即可使用，无需再关注app.py代码的变化
+- 移除foo/hooks.py，原有代码并入foo/app.py中
+- 移除bin/manage.py，原有代码并入guniflask中
+- 环境变量配置 ``VIRTUAL_ENV`` 更名为 ``GUNIFLASK_VIRTUAL_ENV``
+
 0.3.1 (2018-10-31)
 ------------------
 
@@ -22,7 +30,7 @@ Changelog
 - 提供 ``settings`` 对象获取配置
 - 移除 conf/wsgi.py
 - 提供基于JWT的用户权限认证方案
-- 生成的依赖文件的位置: requirements.txt -> requirements/app.txt , requirements_test.txt -> requirements/test.txts
+- 生成的依赖文件的位置: requirements.txt -> requirements/app.txt , requirements_test.txt -> requirements/test.txt
 - bin/manage debug 默认添加名为 ``dev`` 的profile, bin/manage start 默认添加名为 ``prod`` 的profile
 
 0.2.5 (2018-09-18)

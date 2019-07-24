@@ -7,6 +7,7 @@ import argparse
 import signal
 import time
 import multiprocessing
+from importlib import import_module
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
@@ -18,6 +19,7 @@ from guniflask.utils.config import walk_modules, load_profile_config, walk_files
 from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
+from guniflask.app import create_app
 
 
 def set_environ():
@@ -35,6 +37,10 @@ def set_environ():
         os.environ['GUNIFLASK_PID_DIR'] = join(home_dir, '.pid')
     if 'GUNIFLASK_ID_STRING' not in os.environ:
         os.environ['GUNIFLASK_ID_STRING'] = os.getlogin()
+
+
+def _get_project_name():
+    return os.environ.get('GUNIFLASK_PROJECT_NAME')
 
 
 class InitDb(Command):
@@ -55,10 +61,13 @@ class InitDb(Command):
                             help='force creating all tables')
 
     def run(self, args):
-        from {{project_name}} import create_app, db, settings
+        project_name = _get_project_name()
+        project_module = import_module(project_name)
+        db = getattr(project_module, 'db')
+        settings = getattr(project_module, 'settings')
 
-        walk_modules('{{project_name}}')
-        app = create_app('{{project_name}}')
+        walk_modules(project_name)
+        app = create_app(project_name)
         with app.app_context():
             if settings.get('SQLALCHEMY_DATABASE_URI') is None:
                 raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
@@ -92,9 +101,11 @@ class TableToModel(Command):
             args.tables = args.tables.split(',')
 
     def run(self, args):
-        from {{project_name}} import create_app, settings
+        project_name = _get_project_name()
+        project_module = import_module(project_name)
+        settings = getattr(project_module, 'settings')
 
-        app = create_app('{{project_name}}')
+        app = create_app(project_name)
         with app.app_context():
             database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
             if database_uri is None:
@@ -102,8 +113,8 @@ class TableToModel(Command):
             engine = create_engine(database_uri)
             metadata = MetaData(engine)
             metadata.reflect(only=args.tables)
-            gen = SqlToModelGenerator('{{project_name}}', metadata)
-            dest = settings.get('table2model_dest', join('{{project_name}}', 'models'))
+            gen = SqlToModelGenerator(project_name, metadata)
+            dest = settings.get('table2model_dest', join(project_name, 'models'))
             gen.render(join(settings['home'], dest))
 
 
@@ -204,21 +215,21 @@ class GunicornApplication(Application):
                 self.cfg.set(key.lower(), value)
 
     def load(self):
-        from {{project_name}} import create_app
-        return create_app('{{project_name}}')
+        return create_app(_get_project_name())
 
     def _make_options(self):
         pid_dir = os.environ['GUNIFLASK_PID_DIR']
         log_dir = os.environ['GUNIFLASK_LOG_DIR']
         id_string = os.environ['GUNIFLASK_ID_STRING']
+        project_name = _get_project_name()
         options = {
             'daemon': True,
             'preload_app': True,
             'workers': multiprocessing.cpu_count(),
             'worker_class': 'gevent',
-            'pidfile': join(pid_dir, '{{project__name}}-' + id_string + '.pid'),
-            'accesslog': join(log_dir, '{{project__name}}-' + id_string + '.access.log'),
-            'errorlog': join(log_dir, '{{project__name}}-' + id_string + '.error.log')
+            'pidfile': join(pid_dir, '{}-{}.pid'.format(project_name, id_string)),
+            'accesslog': join(log_dir, '{}-{}.access.log'.format(project_name, id_string)),
+            'errorlog': join(log_dir, '{}-{}.error.log'.format(project_name, id_string))
         }
         options.update(self._make_profile_options(os.environ.get('GUNIFLASK_ACTIVE_PROFILES')))
         # if debug

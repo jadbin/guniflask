@@ -45,11 +45,11 @@
             contentType: 'application/json',
             success: (res) => {
                 localStorage.setItem('user', JSON.stringify(res));
-                alert('登陆成功');
+                alert('登录成功');
                 location.href = '/hello-world';
             }
         }).fail((res) => {
-            alert('登陆失败');
+            alert('登录失败');
         });
     });
 </script>

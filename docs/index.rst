@@ -33,7 +33,7 @@ Table of Contents
 
     config
     settings
-    hook
+    app
     blueprints
     orm
     log
