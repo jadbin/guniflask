@@ -13,6 +13,7 @@ Changelog
 - 修复 ``server_default`` 的自动生成
 - debug添加后台运行模式
 - start支持关闭后台运行模式
+- 添加docker相关配置文件，包括Dockerfile和docker-compose.yml
 
 0.3.1 (2018-10-31)
 ------------------
