@@ -17,11 +17,11 @@ guniflask生成的项目支持配置Python标准库生成的虚拟环境。
 .. code-block:: bash
 
     # The home directory of virtual environment
-    export VIRTUAL_ENV=${VIRTUAL_ENV}
+    export GUNIFLASK_VIRTUAL_ENV=${GUNIFLASK_VIRTUAL_ENV}
 
 环境变量的值为虚拟环境所在文件夹的根目录。
 
-也可以通过其他方式在启动项目前设定好环境变量 ``VIRTUAL_ENV`` 。
+也可以通过其他方式在启动项目前设定好环境变量 ``GUNIFLASK_VIRTUAL_ENV`` 。
 
 Starting Application
 --------------------
