@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="./static/bootstrap.min.css" rel="stylesheet">
+    <title>{{ project_name }} API documentation</title>
+    <link href="./static/basic.css" rel="stylesheet">
+    <link href="./static/apidoc.css" rel="stylesheet">
+</head>
+<body style="margin:1em">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home</li>
+    </ol>
+</nav>
+<div class="api-module-list">
+    {% for key in api_module_keys %}
+    <div class="api-module">
+        <div class="api-module-title">
+            <a href="./{{ api_modules[key]['name'] }}">{{ api_modules[key]['name'] }}</a>
+        </div>
+        <div class="api-module-meta">
+            <span class="api-module-meta-key">URL Prefix: </span>
+            <code class="api-module-meta-value">{{ api_modules[key]['url_prefix'] }}</code>
+        </div>
+        {% if api_modules[key]['doc'] %}
+        <pre>{{ api_modules[key]['doc'] }}</pre>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

@@ -12,6 +12,7 @@ from guniflask.utils.config import walk_modules
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.model import wrap_model
 from guniflask.security import JwtAuthManager
+from guniflask.apidoc import ApiDoc
 
 log = logging.getLogger(__name__)
 
@@ -79,6 +80,11 @@ def init_app(app):
     jwt_manager = _get_instance_from_app(app, 'jwt_manager')
     if isinstance(jwt_manager, JwtAuthManager):
         jwt_manager.init_app(app)
+
+    # API doc
+    if s['apidoc'] or (s['apidoc'] is None and s['debug']):
+        apidoc = ApiDoc()
+        apidoc.init_app(app)
 
     _init_app = getattr(app_module, 'init_app', None)
     if _init_app:

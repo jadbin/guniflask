@@ -47,7 +47,8 @@ class Config:
 
 
 def get_default_args_from_env():
-    kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir)}
+    kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir),
+              'project_name': os.environ.get('GUNIFLASK_PROJECT_NAME')}
     if os.environ.get('GUNIFLASK_DEBUG'):
         kwargs['debug'] = True
     else:

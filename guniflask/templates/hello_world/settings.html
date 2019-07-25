@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/hello-world/static/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/bootstrap.min.css" rel="stylesheet">
     <title>GUNIFLASK - App Settings</title>
 </head>
-<body style="margin:2em">
+<body style="margin:1em">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/hello-world">Home</a></li>
+        <li class="breadcrumb-item"><a href="./">Home</a></li>
         <li class="breadcrumb-item active" aria-current="page">App Settings</li>
     </ol>
 </nav>
 <h2>App Settings</h2>
 <div id="settings-table">Please wait ...</div>
-<p id="loginTip" style="display:none">Please <a href="/hello-world/login">login</a> first.</p>
+<p id="loginTip" style="display:none">Please <a href="./login">login</a> first.</p>
 </body>
-<script src="/hello-world/static/jquery.min.js"></script>
+<script src="./static/jquery.min.js"></script>
 <script>
     'use strict';
     let user = localStorage.getItem('user');
@@ -27,7 +27,7 @@
     } else {
         user = JSON.parse(user);
         $.ajax({
-            url: '/hello-world/settings-table',
+            url: './settings-table',
             type: 'post',
             contentType: 'application/json',
             headers: {

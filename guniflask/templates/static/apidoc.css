@@ -1,0 +1,22 @@
+.api-module {
+    margin-bottom: 2em;
+}
+
+.api-module pre {
+    margin-top: 0;
+    margin-bottom: 0;
+    background-color: #f5f5f5;
+    padding: 1em;
+}
+
+.api-module-title {
+    font-size: 18px;
+    margin-top: 0.5em;
+    padding-bottom: 0.25em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid #eee;
+}
+
+.api-module-meta {
+    margin-bottom: 0.5em;
+}

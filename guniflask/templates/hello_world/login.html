@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="/hello-world/static/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/bootstrap.min.css" rel="stylesheet">
     <title>GUNIFLASK - Login</title>
 </head>
-<body style="margin:2em">
+<body style="margin:1em">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/hello-world">Home</a></li>
+        <li class="breadcrumb-item"><a href="./">Home</a></li>
         <li class="breadcrumb-item active" aria-current="page">Login</li>
     </ol>
 </nav>
@@ -29,7 +29,7 @@
 </form>
 <p>Username: root, Password: 123456</p>
 </body>
-<script src="/hello-world/static/jquery.min.js"></script>
+<script src="./static/jquery.min.js"></script>
 <script>
     'use strict';
     localStorage.removeItem('user');
@@ -39,14 +39,14 @@
             password: $('#passwordInput').val()
         };
         $.ajax({
-            url: '/hello-world/login',
+            url: './login',
             data: JSON.stringify(data),
             type: 'post',
             contentType: 'application/json',
             success: (res) => {
                 localStorage.setItem('user', JSON.stringify(res));
                 alert('登录成功');
-                location.href = '/hello-world';
+                location.href = './';
             }
         }).fail((res) => {
             alert('登录失败');
