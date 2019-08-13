@@ -5,6 +5,11 @@ from multiprocessing import Process
 import signal
 from threading import Thread
 import time
+from os.path import join
+from logging.config import dictConfig
+import logging
+
+from gunicorn.glogging import Logger
 
 from guniflask.app import create_bg_process_app
 
@@ -13,6 +18,26 @@ class BgProcess:
     def __init__(self, app):
         self.app = app
         self.settings = app.extensions['settings']
+        self.configure_logging()
+
+    def configure_logging(self):
+        if 'bg_log_config' in self.settings:
+            dictConfig(self.settings['bg_log_config'])
+        else:
+            logger = logging.getLogger(self.app.name)
+            debug = os.environ.get('GUNIFLASK_DEBUG')
+            if debug:
+                logger.setLevel(logging.DEBUG)
+            else:
+                logger.setLevel(logging.INFO)
+            log_dir = os.environ['GUNIFLASK_LOG_DIR']
+            id_string = os.environ['GUNIFLASK_ID_STRING']
+            project_name = os.environ.get('GUNIFLASK_PROJECT_NAME')
+            log_file = join(log_dir, 'bg-{}-{}.log'.format(project_name, id_string))
+            handler = logging.FileHandler(log_file)
+            formatter = logging.Formatter(Logger.error_fmt, Logger.datefmt)
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
 
     def run(self):
         raise NotImplemented

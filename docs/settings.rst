@@ -76,3 +76,10 @@ table2model_dest
 配置table2model生成结果存储的路径。
 
 路径为相对于项目根目录的相对路径。
+
+bg_log_config
+^^^^^^^^^^^^^
+
+设置后台进程的日志格式。
+
+参考：https://docs.python.org/3/library/logging.config.html#logging.config.dictConfig
