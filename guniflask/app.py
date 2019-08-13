@@ -111,3 +111,10 @@ def create_app(name):
     set_app_config(app)
     init_app(app)
     return app
+
+
+def create_bg_process_app(name):
+    app = Flask(name)
+    set_app_config(app)
+    init_app(app)
+    return app

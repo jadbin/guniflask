@@ -9,6 +9,7 @@ import time
 import multiprocessing
 from importlib import import_module
 import json
+from functools import partial
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
@@ -21,6 +22,7 @@ from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
 from guniflask.app import create_app
+from guniflask.bg_process import start_bg_process
 
 
 def set_environ():
@@ -232,6 +234,8 @@ class Stop(Command):
 
 
 class GunicornApplication(Application):
+    known_settings = {'bg_process'}
+
     def __init__(self):
         self.options = self._make_options()
         super().__init__()
@@ -267,14 +271,23 @@ class GunicornApplication(Application):
         if os.environ.get('GUNIFLASK_DEBUG'):
             options.update(self._make_debug_options())
         self._makedirs(options)
+        # bg process
+        self._set_bg_process(options)
         return options
 
-    @staticmethod
-    def _make_profile_options(active_profiles):
+    def _set_bg_process(self, options):
+        if 'bg_process' in options:
+            bg_cls = options['bg_process']
+            kwargs = dict(name=_get_project_name(), bg_cls=bg_cls, on_starting=options.get('on_starting'))
+            options['on_starting'] = partial(start_bg_process, **kwargs)
+            options.pop('bg_process')
+
+    def _make_profile_options(self, active_profiles):
         conf_dir = os.environ['GUNIFLASK_CONF_DIR']
         gc = load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles)
         settings = {}
         snames = set([i.name for i in KNOWN_SETTINGS])
+        snames.update(self.known_settings)
         for name in gc:
             if name in snames:
                 settings[name] = gc[name]
