@@ -61,3 +61,11 @@ def walk_files(path):
         files.append(path)
     return files
 
+
+def load_object(path):
+    if isinstance(path, str):
+        dot = path.rindex(".")
+        module, name = path[:dot], path[dot + 1:]
+        mod = import_module(module)
+        return getattr(mod, name)
+    return path

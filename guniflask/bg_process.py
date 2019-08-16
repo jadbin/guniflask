@@ -12,6 +12,7 @@ import logging
 from gunicorn.glogging import Logger
 
 from guniflask.app import create_bg_process_app
+from guniflask.utils.config import load_object
 
 
 class BgProcess:
@@ -48,35 +49,39 @@ class BgProcess:
 
 
 def start_bg_process(server, name=None, bg_cls=None, on_starting=None):
-    def start(pid):
-        daemonize()
-        init_signals()
-        t = Thread(target=supervisor, args=(pid,))
-        t.start()
-        app = create_bg_process_app(name)
-        bg = bg_cls(app)
-        bg.start()
-
-    def init_signals():
-        def _exit(signum, frame):
-            os._exit(0)
-
-        signal.signal(signal.SIGINT, _exit)
-        signal.signal(signal.SIGTERM, _exit)
-
-    def supervisor(pid):
-        while True:
-            if not existsp(pid):
-                os._exit(0)
-            time.sleep(3)
-
     if on_starting is not None:
         on_starting(server)
-    assert issubclass(bg_cls, BgProcess)
     pid = os.getpid()
-    p = Process(target=start, args=(pid,))
+    p = Process(target=_start_bg_process, args=(bg_cls, name, pid))
     p.start()
     p.join()
+
+
+def _start_bg_process(bg_cls, name, pid):
+    daemonize()
+    _bg_init_signals()
+    t = Thread(target=_bg_supervisor, args=(pid,))
+    t.start()
+    app = create_bg_process_app(name)
+    if isinstance(bg_cls, str):
+        bg_cls = load_object(bg_cls)
+    bg = bg_cls(app)
+    bg.start()
+
+
+def _bg_init_signals():
+    def _exit(signum, frame):
+        os._exit(0)
+
+    signal.signal(signal.SIGINT, _exit)
+    signal.signal(signal.SIGTERM, _exit)
+
+
+def _bg_supervisor(pid):
+    while True:
+        if not existsp(pid):
+            os._exit(0)
+        time.sleep(3)
 
 
 def daemonize():
