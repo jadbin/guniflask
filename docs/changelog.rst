@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.4.2 (2019-08-20)
+------------------
+
+- fix: 在后台进程启动后再载入BgProcess所在模块，避免因为过早的import导致gevent报错
+- ``to_dict`` , ``from_dict`` , ``update_by_dict`` 添加 ``only`` 和 ``only_not_none`` 参数
+
 0.4.1 (2019-08-13)
 ------------------
 
