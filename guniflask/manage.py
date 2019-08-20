@@ -118,10 +118,15 @@ class TableToModel(Command):
     def add_arguments(self, parser):
         parser.add_argument('--tables', dest='tables',
                             help='tables to process (comma-separated, default: all)')
+        parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
+                            help='active profiles (comma-separated)')
 
     def process_arguments(self, args):
         if args.tables is not None:
             args.tables = args.tables.split(',')
+        if args.active_profiles:
+            os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
+        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
 
     def run(self, args):
         project_name = _get_project_name()
@@ -158,10 +163,10 @@ class Debug(Command):
     def process_arguments(self, args):
         if args.active_profiles:
             os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
-
-    def run(self, args):
         os.environ['GUNIFLASK_DEBUG'] = '1'
         os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
+
+    def run(self, args):
         app = GunicornApplication()
         if args.daemon:
             app.set_option('daemon', True)
@@ -190,9 +195,9 @@ class Start(Command):
     def process_arguments(self, args):
         if args.active_profiles:
             os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
+        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'prod')
 
     def run(self, args):
-        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'prod')
         app = GunicornApplication()
         if args.daemon_off:
             app.set_option('daemon', False)
