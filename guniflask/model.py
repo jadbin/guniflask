@@ -24,9 +24,7 @@ def model_to_dict(model, ignore=None, only=None, only_not_none=False):
     return d
 
 
-def dict_to_model(dict_obj, model_cls=None, ignore=None, only=None, only_not_none=False):
-    if model_cls is None:
-        return dict(dict_obj)
+def dict_to_model(dict_obj, model_cls, ignore=None, only=None, only_not_none=False):
     mapper = sqlalchemy.inspect(model_cls).mapper
     columns = mapper.columns
     col_attrs = mapper.column_attrs
@@ -85,7 +83,7 @@ def wrap_model(model_cls):
         model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
     if not hasattr(model_cls, 'from_dict'):
         model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs:
-                                          dict_to_model(dict_obj, model_cls=cls, **kwargs))
+                                          dict_to_model(dict_obj, cls, **kwargs))
     if not hasattr(model_cls, 'update_by_dict'):
         model_cls.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
     return model_cls
