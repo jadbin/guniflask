@@ -23,6 +23,7 @@ from guniflask.errors import UsageError
 from guniflask.commands import Command
 from guniflask.app import create_app
 from guniflask.bg_process import start_bg_process
+from guniflask.config import load_app_settings
 
 
 def set_environ():
@@ -130,20 +131,17 @@ class TableToModel(Command):
 
     def run(self, args):
         project_name = _get_project_name()
-        project_module = import_module(project_name)
-        settings = getattr(project_module, 'settings')
+        settings = load_app_settings(project_name)
 
-        app = create_app(project_name)
-        with app.app_context():
-            database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
-            if database_uri is None:
-                raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
-            engine = create_engine(database_uri)
-            metadata = MetaData(engine)
-            metadata.reflect(only=args.tables)
-            gen = SqlToModelGenerator(project_name, metadata)
-            dest = settings.get('table2model_dest', join(project_name, 'models'))
-            gen.render(join(settings['home'], dest))
+        database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
+        if database_uri is None:
+            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
+        engine = create_engine(database_uri)
+        metadata = MetaData(engine)
+        metadata.reflect(only=args.tables)
+        gen = SqlToModelGenerator(project_name, metadata)
+        dest = settings.get('table2model_dest', join(project_name, 'models'))
+        gen.render(join(settings['home'], dest))
 
 
 class Debug(Command):

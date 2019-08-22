@@ -18,23 +18,8 @@ class Config:
             self.init_app(app)
 
     def init_app(self, app):
-        s = Settings(self._load_app_settings(app))
+        s = Settings(load_app_settings(app.name))
         app.extensions['settings'] = s
-
-    def _load_app_settings(self, app):
-        c = {}
-        conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
-        active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
-        kwargs = get_default_args_from_env()
-        if conf_dir:
-            c = load_profile_config(conf_dir, app.name, profiles=active_profiles, **kwargs)
-            c['active_profiles'] = active_profiles
-        c.update(kwargs)
-        s = {}
-        for name in c:
-            if not name.startswith('_'):
-                s[name] = c[name]
-        return s
 
     @property
     def settings(self):
@@ -44,6 +29,22 @@ class Config:
         if app is None:
             return current_app.extensions['settings']
         return app.extensions['settings']
+
+
+def load_app_settings(app_name):
+    c = {}
+    conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
+    active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
+    kwargs = get_default_args_from_env()
+    if conf_dir:
+        c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
+        c['active_profiles'] = active_profiles
+    c.update(kwargs)
+    s = {}
+    for name in c:
+        if not name.startswith('_'):
+            s[name] = c[name]
+    return s
 
 
 def get_default_args_from_env():
