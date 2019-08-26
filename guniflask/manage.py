@@ -22,7 +22,7 @@ from guniflask.modelgen import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
 from guniflask.app import create_app
-from guniflask.bg_process import start_bg_process
+from guniflask.bg_process import BgProcessRunner
 from guniflask.config import load_app_settings
 
 
@@ -282,7 +282,8 @@ class GunicornApplication(Application):
         if 'bg_process' in options:
             bg_cls = options['bg_process']
             kwargs = dict(name=_get_project_name(), bg_cls=bg_cls, on_starting=options.get('on_starting'))
-            options['on_starting'] = partial(start_bg_process, **kwargs)
+            bg_runner = BgProcessRunner(**kwargs)
+            options['on_starting'] = bg_runner.start
             options.pop('bg_process')
 
     def _make_profile_options(self, active_profiles):

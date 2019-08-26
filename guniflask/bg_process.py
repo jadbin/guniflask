@@ -20,6 +20,7 @@ class BgProcess:
         self.app = app
         self.settings = app.extensions['settings']
         self.configure_logging()
+        self.logger = logging.getLogger(self.app.name + '.bg')
 
     def configure_logging(self):
         if 'bg_log_config' in self.settings:
@@ -44,44 +45,58 @@ class BgProcess:
         raise NotImplemented
 
     def start(self):
-        with self.app.app_context():
-            self.run()
+        try:
+            with self.app.app_context():
+                self.run()
+        except Exception:
+            self.logger.error('error occurred in %s', self.__class__.__name__, exc_info=True)
 
 
-def start_bg_process(server, name=None, bg_cls=None, on_starting=None):
-    if on_starting is not None:
-        on_starting(server)
-    pid = os.getpid()
-    p = Process(target=_start_bg_process, args=(bg_cls, name, pid))
-    p.start()
-    p.join()
+class BgProcessRunner:
+    def __init__(self, name=None, bg_cls=None, on_starting=None):
+        self.name = name
+        self.bg_cls = bg_cls
+        self.on_starting = on_starting
+        self.debug = os.environ.get('GUNIFLASK_DEBUG')
+        self.bg = None
 
+    def start(self, server):
+        if self.on_starting is not None:
+            self.on_starting(server)
+        pid = os.getpid()
+        p = Process(target=self._start_bg_process, args=(pid,))
+        p.start()
+        p.join()
 
-def _start_bg_process(bg_cls, name, pid):
-    daemonize()
-    _bg_init_signals()
-    t = Thread(target=_bg_supervisor, args=(pid,))
-    t.start()
-    app = create_bg_process_app(name)
-    if isinstance(bg_cls, str):
-        bg_cls = load_object(bg_cls)
-    bg = bg_cls(app)
-    bg.start()
+    def _start_bg_process(self, pid):
+        daemonize()
+        self._bg_init_signals()
+        t = Thread(target=self._bg_supervisor, args=(pid,))
+        t.start()
+        app = create_bg_process_app(self.name)
+        bg_cls = self.bg_cls
+        if isinstance(bg_cls, str):
+            bg_cls = load_object(bg_cls)
+        self.bg = bg_cls(app)
+        self.bg.start()
 
+    def _bg_init_signals(self):
+        def _exit(signum, frame):
+            self._bg_exit()
 
-def _bg_init_signals():
-    def _exit(signum, frame):
+        signal.signal(signal.SIGINT, _exit)
+        signal.signal(signal.SIGTERM, _exit)
+
+    def _bg_supervisor(self, pid):
+        while True:
+            if not existsp(pid):
+                self._bg_exit()
+            time.sleep(1)
+
+    def _bg_exit(self):
+        if self.bg:
+            self.bg.logger.info('%s exiting (pid: %s)', self.bg.__class__.__name__, os.getpid())
         os._exit(0)
-
-    signal.signal(signal.SIGINT, _exit)
-    signal.signal(signal.SIGTERM, _exit)
-
-
-def _bg_supervisor(pid):
-    while True:
-        if not existsp(pid):
-            os._exit(0)
-        time.sleep(3)
 
 
 def daemonize():
