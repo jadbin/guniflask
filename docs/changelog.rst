@@ -9,6 +9,7 @@ Changelog
 - table2model命令提供设定profile的选项，默认为 ``dev``
 - table2model不再加载项目模块，避免因项目错误导致不能正常生成model
 - bg process捕获运行时异常并记录在日志中
+- model添加 ``result_to_dict`` 方法
 
 0.4.2 (2019-08-20)
 ------------------

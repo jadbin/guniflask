@@ -24,6 +24,26 @@ def model_to_dict(model, ignore=None, only=None, only_not_none=False):
     return d
 
 
+def result_to_dict(result, model_cls, ignore=None, only=None, only_not_none=False):
+    res = {}
+    col_attrs = sqlalchemy.inspect(model_cls).mapper.column_attrs
+    tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
+    ignore_set = _get_field_set(ignore)
+    only_set = _get_field_set(only)
+    for c in col_attrs:
+        if c.key not in ignore_set:
+            if only and c.key not in only_set:
+                continue
+            if hasattr(result, c.key):
+                v = getattr(result, c.key)
+                if isinstance(v, dt.datetime) and v.tzinfo is None:
+                    v = v.replace(tzinfo=tz_info)
+                if only_not_none and v is None:
+                    continue
+                res[c.key] = v
+    return res
+
+
 def dict_to_model(dict_obj, model_cls, ignore=None, only=None, only_not_none=False):
     mapper = sqlalchemy.inspect(model_cls).mapper
     columns = mapper.columns
@@ -82,8 +102,9 @@ def wrap_model(model_cls):
     if not hasattr(model_cls, 'to_dict'):
         model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
     if not hasattr(model_cls, 'from_dict'):
-        model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs:
-                                          dict_to_model(dict_obj, cls, **kwargs))
+        model_cls.from_dict = classmethod(lambda cls, dict_obj, **kwargs: dict_to_model(dict_obj, cls, **kwargs))
     if not hasattr(model_cls, 'update_by_dict'):
         model_cls.update_by_dict = lambda self, dict_obj, **kwargs: update_model_by_dict(self, dict_obj, **kwargs)
+    if not hasattr(model_cls, 'result_to_dict'):
+        model_cls.result_to_dict = classmethod(lambda cls, result, **kwargs: result_to_dict(result, cls, **kwargs))
     return model_cls
