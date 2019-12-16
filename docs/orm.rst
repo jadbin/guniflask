@@ -40,7 +40,7 @@ Declaring Models
 Initializing Database
 ---------------------
 
-我们可以通过运行如下命令自动生成 ``foo.models`` 中定义的model对应的数据库表:
+我们可以通过运行如下命令自动生成定义的model对应的数据库表:
 
 .. code-block:: bash
 

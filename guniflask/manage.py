@@ -9,7 +9,6 @@ import time
 import multiprocessing
 from importlib import import_module
 import json
-from functools import partial
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
@@ -81,14 +80,21 @@ class InitDb(Command):
         return 'Initialize database from definition of models'
 
     def add_arguments(self, parser):
+        parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
+                            help='active profiles (comma-separated)')
         parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
                             help='force creating all tables')
+
+    def process_arguments(self, args):
+        if args.active_profiles:
+            os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
+        os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
 
     def run(self, args):
         project_name = _get_project_name()
         project_module = import_module(project_name)
         db = getattr(project_module, 'db')
-        settings = getattr(project_module, 'settings')
+        settings = load_app_settings(project_name)
 
         walk_modules(project_name)
         app = create_app(project_name)
@@ -119,6 +125,8 @@ class TableToModel(Command):
     def add_arguments(self, parser):
         parser.add_argument('--tables', dest='tables',
                             help='tables to process (comma-separated, default: all)')
+        parser.add_argument('--dest', dest='dest',
+                            help='where to put the models generated from database tables')
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
 
@@ -137,11 +145,34 @@ class TableToModel(Command):
         if database_uri is None:
             raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
         engine = create_engine(database_uri)
-        metadata = MetaData(engine)
-        metadata.reflect(only=args.tables)
-        gen = SqlToModelGenerator(project_name, metadata)
-        dest = settings.get('table2model_dest', join(project_name, 'models'))
-        gen.render(join(settings['home'], dest))
+
+        dest = []
+        default_dest = join(project_name, 'models')
+        if args.tables:
+            config_dest = args.dest
+            if config_dest is None:
+                config_dest = settings.get('table2model_dest')
+            if not isinstance(config_dest, str):
+                config_dest = default_dest
+            dest.append({'tables': args.tables, 'dest': config_dest})
+        else:
+            config_dest = args.dest
+            if config_dest is None:
+                config_dest = settings.get('table2model_dest', default_dest)
+            if isinstance(config_dest, str):
+                dest.append({'tables': None, 'dest': config_dest})
+            else:
+                for d in config_dest:
+                    t = d.get('tables')
+                    if isinstance(t, str):
+                        t = t.split(',')
+                    dest.append({'tables': t, 'dest': d.get('dest', default_dest)})
+
+        for d in dest:
+            metadata = MetaData(engine)
+            metadata.reflect(only=d.get('tables'))
+            gen = SqlToModelGenerator(project_name, metadata)
+            gen.render(join(settings['home'], d.get('dest')))
 
 
 class Debug(Command):
