@@ -28,8 +28,7 @@
         user = JSON.parse(user);
         $.ajax({
             url: './settings-table',
-            type: 'post',
-            contentType: 'application/json',
+            type: 'get',
             headers: {
                 Authorization: 'Bearer ' + user['access_token']
             },

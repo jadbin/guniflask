@@ -431,7 +431,7 @@ class InitCommand(Command):
 
     @staticmethod
     def print_welcome(project_dir):
-        print('\033[37mWelcome to gunicorn generator\033[0m \033[33mv{}\033[0m'
+        print('\033[37mWelcome to guniflask generator\033[0m \033[33mv{}\033[0m'
               .format(__version__), flush=True)
         print('\033[37mApplication file will be created in folder:\033[0m \033[33m{}\033[0m'
               .format(project_dir), flush=True)

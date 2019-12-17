@@ -18,7 +18,7 @@ def show_version():
 def init_project(proj_dir):
     settings = {
         'guniflask_version': __version__,
-        'authentication_type': None,
+        'authentication_type': 'jwt',
         'port': 8000,
         'project_name': 'foo'
     }

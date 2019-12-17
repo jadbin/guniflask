@@ -66,6 +66,13 @@ cors
 项目基于Flask-Cors实现跨域，``cors`` 也可以设置为 ``dict`` 类型，并用作传入对跨域进行详细配置的关键字参数。
 详细配置可参考Flask-Cors文档: https://flask-cors.readthedocs.io/en/latest/api.html 。
 
+jwt
+^^^
+
+- Default: ``False``
+
+是否开启基于JWT的认证功能。
+
 .. _table2model_dest:
 
 table2model_dest

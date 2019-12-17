@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from os.path import join
+import inspect
 
 from flask import current_app, Blueprint, render_template, _app_ctx_stack
 from werkzeug.local import LocalProxy
@@ -85,8 +86,17 @@ class ApiDoc:
                 if isinstance(obj, Blueprint):
                     doc = module.__doc__
                     if doc:
+                        doc = doc.lstrip('\r\n')
                         doc = doc.rstrip()
                     api_modules[obj.name] = dict(name=obj.name, url_prefix=obj.url_prefix, doc=doc)
+                if inspect.isclass(obj) and hasattr(obj, '__is_blueprint'):
+                    doc = obj.__doc__
+                    if doc:
+                        doc = doc.lstrip('\r\n')
+                        doc = doc.rstrip()
+                    api_modules[obj.__name__] = dict(name=obj.__name__,
+                                                     url_prefix=getattr(obj, '__options').get('url_prefix'),
+                                                     doc=doc)
         rules = {}
         for i in app.url_map.iter_rules():
             rules[i.endpoint] = i

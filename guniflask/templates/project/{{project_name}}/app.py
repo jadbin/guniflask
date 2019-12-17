@@ -2,16 +2,11 @@
 
 import logging
 
-from flask_sqlalchemy import SQLAlchemy
-
-from guniflask.config import Config
-from guniflask.security import JwtAuthManager
+from guniflask.app import new_sqlalchemy
 
 log = logging.getLogger(__name__)
 
-config = Config()
-db = SQLAlchemy()
-jwt_manager = JwtAuthManager()
+db = new_sqlalchemy()
 
 
 def make_settings(app, settings):
@@ -24,3 +19,4 @@ def init_app(app, settings):
     """
     This function is invoked before running app.
     """
+    db.init_app(app)

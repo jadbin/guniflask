@@ -1,5 +1,6 @@
 # coding=utf-8
 {% if authentication_type == 'jwt' %}
+jwt = True
 # Secret for JWT
 JWT_SECRET = '{{jwt_secret}}'
 {% endif %}

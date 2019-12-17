@@ -17,7 +17,7 @@ from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
 
 from guniflask.utils.config import walk_modules, load_profile_config, walk_files
-from guniflask.modelgen import SqlToModelGenerator
+from guniflask.model import SqlToModelGenerator
 from guniflask.errors import UsageError
 from guniflask.commands import Command
 from guniflask.app import create_app
