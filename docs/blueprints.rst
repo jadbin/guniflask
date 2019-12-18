@@ -8,9 +8,32 @@ Blueprint Concept
 
 Flask提供了blueprint的概念用于模块化构建服务端代码，详细文档可参考Flask文档: http://flask.pocoo.org/docs/blueprints/ 。
 
-Declaring Blueprints
---------------------
+Declaring Blueprint
+-------------------
 
-项目用到的blueprint可以在 ``foo`` 模块任意位置进行声明，项目启动时会自动将所有声明的 ``Blueprint`` 自动注册到Flask app中。
+项目用到的blueprint可以在 ``foo`` 模块任意位置进行声明，项目启动时会自动将所有声明的Flask ``Blueprint`` 自动注册到Flask app中。
 
-``foo.blueprints.hello_world`` 模块提供了一个简单的使用blueprint的示例。
+Using @blueprint
+----------------
+
+我们可以使用装饰器来替代显示的声明 ``BluePrint`` 。
+下面的代码给出了一个运算加法的接口的示例。
+
+.. code-block:: python
+
+    from flask import request
+
+    from guniflask.web import blueprint, post_route
+
+
+    @blueprint(url_prefix='/api')
+    class ExampleController:
+        def __init__(self):
+            self.add_service = lambda a, b: a + b
+
+        @post_route('/add')
+        def add(self):
+            data = request.json
+            return {'result': self.add_service(data.get('a'), data.get('b'))}
+
+``@blueprint`` 中的参数同 ``Blueprint`` 中的关键字参数， ``@route`` 中的参数同 ``Blueprint.route`` 中的参数， ``@get_route`` 、 ``@post_route`` 等会自动填充 ``methods`` 参数。
