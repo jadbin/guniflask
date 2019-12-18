@@ -3,12 +3,14 @@
 __all__ = ['blueprint', 'route', 'get_route', 'post_route', 'put_route', 'patch_route', 'delete_route']
 
 
-def blueprint(**options):
+def blueprint(_decorated_func=None, **options):
     def decorator(func):
         func.__is_blueprint = True
         func.__options = options
         return func
 
+    if _decorated_func is not None:
+        return decorator(_decorated_func)
     return decorator
 
 
