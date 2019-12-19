@@ -106,12 +106,15 @@ def create_app(name):
 
 
 def register_blueprints(app):
+    registered_blueprints = set()
+
     def iter_blueprints():
         for module in walk_modules(app.name):
             for obj in vars(module).values():
-                if isinstance(obj, Blueprint):
+                if isinstance(obj, Blueprint) and obj not in registered_blueprints:
                     yield obj
-                if inspect.isclass(obj) and hasattr(obj, '__is_blueprint'):
+                    registered_blueprints.add(obj)
+                if inspect.isclass(obj) and obj.__module__ == module.__name__ and hasattr(obj, '__is_blueprint'):
                     b = Blueprint(obj.__name__, obj.__module__, **getattr(obj, '__options'))
                     o = obj()
                     for k in dir(o):
@@ -123,6 +126,8 @@ def register_blueprints(app):
 
     for b in iter_blueprints():
         app.register_blueprint(b)
+
+    del registered_blueprints
 
 
 def create_bg_process_app(name):
