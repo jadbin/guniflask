@@ -7,10 +7,8 @@ import argparse
 import signal
 import time
 import multiprocessing
-from importlib import import_module
 import json
 
-from sqlalchemy.engine import create_engine
 from sqlalchemy.schema import MetaData
 
 from gunicorn.config import KNOWN_SETTINGS
@@ -22,7 +20,6 @@ from guniflask.errors import UsageError
 from guniflask.commands import Command
 from guniflask.app import create_app
 from guniflask.bg_process import BgProcessRunner
-from guniflask.config import load_app_settings
 
 
 def set_environ():
@@ -92,15 +89,14 @@ class InitDb(Command):
 
     def run(self, args):
         project_name = _get_project_name()
-        project_module = import_module(project_name)
-        db = getattr(project_module, 'db')
-        settings = load_app_settings(project_name)
 
         walk_modules(project_name)
         app = create_app(project_name)
         with app.app_context():
-            if settings.get('SQLALCHEMY_DATABASE_URI') is None:
-                raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
+            s = app.extensions.get('sqlalchemy')
+            if not s:
+                raise UsageError('Not found sqlalchemy')
+            db = s.db
             if args.force:
                 db.drop_all()
             else:
@@ -139,40 +135,43 @@ class TableToModel(Command):
 
     def run(self, args):
         project_name = _get_project_name()
-        settings = load_app_settings(project_name)
 
-        database_uri = settings.get('SQLALCHEMY_DATABASE_URI')
-        if database_uri is None:
-            raise UsageError("Please set 'SQLALCHEMY_DATABASE_URI' in configuration.")
-        engine = create_engine(database_uri)
+        app = create_app(project_name)
+        with app.app_context():
+            settings = app.extensions['settings']
+            s = app.extensions.get('sqlalchemy')
+            if not s:
+                raise UsageError('Not found sqlalchemy')
+            db = s.db
+            engine = db.engine
 
-        dest = []
-        default_dest = join(project_name, 'models')
-        if args.tables:
-            config_dest = args.dest
-            if config_dest is None:
-                config_dest = settings.get('table2model_dest')
-            if not isinstance(config_dest, str):
-                config_dest = default_dest
-            dest.append({'tables': args.tables, 'dest': config_dest})
-        else:
-            config_dest = args.dest
-            if config_dest is None:
-                config_dest = settings.get('table2model_dest', default_dest)
-            if isinstance(config_dest, str):
-                dest.append({'tables': None, 'dest': config_dest})
+            dest = []
+            default_dest = join(project_name, 'models')
+            if args.tables:
+                config_dest = args.dest
+                if config_dest is None:
+                    config_dest = settings.get('table2model_dest')
+                if not isinstance(config_dest, str):
+                    config_dest = default_dest
+                dest.append({'tables': args.tables, 'dest': config_dest})
             else:
-                for d in config_dest:
-                    t = d.get('tables')
-                    if isinstance(t, str):
-                        t = t.split(',')
-                    dest.append({'tables': t, 'dest': d.get('dest', default_dest)})
+                config_dest = args.dest
+                if config_dest is None:
+                    config_dest = settings.get('table2model_dest', default_dest)
+                if isinstance(config_dest, str):
+                    dest.append({'tables': None, 'dest': config_dest})
+                else:
+                    for d in config_dest:
+                        t = d.get('tables')
+                        if isinstance(t, str):
+                            t = t.split(',')
+                        dest.append({'tables': t, 'dest': d.get('dest', default_dest)})
 
-        for d in dest:
-            metadata = MetaData(engine)
-            metadata.reflect(only=d.get('tables'))
-            gen = SqlToModelGenerator(project_name, metadata)
-            gen.render(join(settings['home'], d.get('dest')))
+            for d in dest:
+                metadata = MetaData(engine)
+                metadata.reflect(only=d.get('tables'))
+                gen = SqlToModelGenerator(project_name, metadata)
+                gen.render(join(settings['home'], d.get('dest')))
 
 
 class Debug(Command):
