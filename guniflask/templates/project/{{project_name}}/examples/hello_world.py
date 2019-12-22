@@ -42,7 +42,7 @@ class HelloWorld:
     """
 
     def __init__(self):
-        self.jwt_manager = current_app.extensions['jwt_manager']
+        self.jwt_manager = current_app.extensions.get('jwt_manager')
 
     @get_route('/')
     def home_page(self):

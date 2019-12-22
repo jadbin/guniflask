@@ -251,6 +251,7 @@ class AuthenticationTypeStep(ChoiceStep):
     def __init__(self):
         super().__init__()
         self.tooltip = 'Use arrow keys'
+        self.add_choice('No authentication', None)
         self.add_choice('JWT authentication', 'jwt')
 
     def update_settings(self, settings):
