@@ -18,7 +18,7 @@ Getting Settings
 
 .. code-block:: python
 
-    from foo import settings
+    from guniflask.config import settings
 
 在 ``settings`` 中存放着项目所有的配置项， ``settings`` 是一个实现了 ``MutableMapping`` 接口的对象。
 我们可以通过 ``setings['key']`` 的方式获取配置项 ``key`` 的属性值，如果 ``key`` 不存在则返回 ``None`` 。

@@ -16,7 +16,7 @@ Declaring Blueprint
 Using @blueprint
 ----------------
 
-我们可以使用装饰器来替代显示的声明 ``BluePrint`` 。
+我们可以使用装饰器来替代显示的声明 ``Blueprint`` 。
 下面的代码给出了一个运算加法的接口的示例。
 
 .. code-block:: python
