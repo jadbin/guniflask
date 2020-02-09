@@ -4,11 +4,12 @@ import sys
 import argparse
 
 from guniflask.errors import UsageError
-from guniflask import commands
-from guniflask.commands import Command
 
 
 def _iter_command_classes():
+    from guniflask import commands
+    from guniflask.commands import Command
+
     for obj in vars(commands).values():
         if isinstance(obj, type) and issubclass(obj, Command) and obj is not Command:
             yield obj

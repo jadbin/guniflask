@@ -94,6 +94,59 @@ class Step:
     def clean_line(self):
         return '\r\033[K'
 
+    @property
+    def next_step(self):
+        return None
+
+
+class StepChain:
+    def __init__(self, step, length=0, next_steps=None):
+        self.step = step
+        self.length = length
+        self.next_steps = next_steps
+
+    def previous(self, father, siblings=None):
+        max_depth = self.length
+        next_steps = [self]
+        if siblings:
+            for s in siblings:
+                max_depth = max(max_depth, s.length)
+                next_steps.append(s)
+        s = StepChain(father, length=max_depth + 1, next_steps=next_steps)
+        return s
+
+    def __iter__(self):
+        return StepChainIter(self)
+
+
+class StepChainIter:
+    def __init__(self, step_chain):
+        self.step_chain = step_chain
+        self.total_steps = step_chain.length + 1
+
+    def __next__(self):
+        if not self.step_chain:
+            raise StopIteration
+        cur_step = self.total_steps - self.step_chain.length
+        step = self.step_chain.step
+
+        next_step = None
+        if self.step_chain.next_steps:
+            if len(self.step_chain.next_steps) == 1:
+                next_step = self.step_chain.next_steps[0]
+            else:
+                next_step_cls = self.step_chain.step.next_step
+                if next_step_cls:
+                    for s in self.step_chain.next_steps:
+                        if isinstance(s.step, next_step_cls):
+                            next_step = s
+                            break
+                if next_step is None:
+                    raise RuntimeError('No matching next step')
+        self.step_chain = next_step
+
+        return cur_step, self.total_steps, step
+
 
 class InputStep(Step):
     def show_question(self):
@@ -324,13 +377,12 @@ class InitCommand(Command):
             self.exitcode = 1
 
     def get_settings_by_steps(self, project_dir, old_settings=None):
-        steps = [BaseNameStep(), PortStep(), AuthenticationTypeStep()]
-        cur_step, total_steps = 1, len(steps)
+        step_chain = StepChain(AuthenticationTypeStep()).previous(PortStep()).previous(BaseNameStep())
         settings = {'project_dir': project_dir,
                     'old_settings': old_settings,
                     'guniflask_version': __version__}
         print(flush=True)
-        for step in steps:
+        for cur_step, total_steps, step in step_chain:
             step.title = '({}/{}) {}'.format(cur_step, total_steps, step.title)
             step.process_arguments(settings)
             step.process_user_input()
