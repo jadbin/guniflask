@@ -79,6 +79,8 @@ class InitDb(Command):
     def add_arguments(self, parser):
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
+        parser.add_argument('-b', '--bind', dest='bind', metavar='KEY',
+                            help='bind key')
         parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
                             help='force creating all tables')
 
@@ -102,7 +104,7 @@ class InitDb(Command):
             else:
                 print("\033[33mThe tables already exist will be skipped.\033[0m")
                 print("\033[33mYou can try '-f' option to force creating all tables.\033[0m")
-            db.create_all()
+            db.create_all(bind=args.bind)
 
 
 class TableToModel(Command):
@@ -125,6 +127,8 @@ class TableToModel(Command):
                             help='where to put the models generated from database tables')
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
+        parser.add_argument('-b', '--bind', dest='bind', metavar='KEY',
+                            help='bind key')
 
     def process_arguments(self, args):
         if args.tables is not None:
@@ -143,7 +147,6 @@ class TableToModel(Command):
             if not s:
                 raise UsageError('Not found sqlalchemy')
             db = s.db
-            engine = db.engine
 
             dest = []
             default_dest = join(project_name, 'models')
@@ -153,11 +156,11 @@ class TableToModel(Command):
                     config_dest = settings.get('table2model_dest')
                 if not isinstance(config_dest, str):
                     config_dest = default_dest
-                dest.append({'tables': args.tables, 'dest': config_dest})
+                dest.append({'tables': args.tables, 'dest': config_dest, 'bind': args.bind})
+            elif args.dest:
+                dest.append({'tables': None, 'dest': args.dest, 'bind': args.bind})
             else:
-                config_dest = args.dest
-                if config_dest is None:
-                    config_dest = settings.get('table2model_dest', default_dest)
+                config_dest = settings.get('table2model_dest', default_dest)
                 if isinstance(config_dest, str):
                     dest.append({'tables': None, 'dest': config_dest})
                 else:
@@ -165,12 +168,14 @@ class TableToModel(Command):
                         t = d.get('tables')
                         if isinstance(t, str):
                             t = t.split(',')
-                        dest.append({'tables': t, 'dest': d.get('dest', default_dest)})
+                        dest.append({'tables': t, 'dest': d.get('dest', default_dest),
+                                     'bind': d.get('bind')})
 
             for d in dest:
+                engine = db.get_engine(bind=d.get('bind'))
                 metadata = MetaData(engine)
                 metadata.reflect(only=d.get('tables'))
-                gen = SqlToModelGenerator(project_name, metadata)
+                gen = SqlToModelGenerator(project_name, metadata, bind=d.get('bind'))
                 gen.render(join(settings['home'], d.get('dest')))
 
 

@@ -20,7 +20,7 @@ inflect_engine = inflect.engine()
 
 
 class SqlToModelGenerator:
-    def __init__(self, name, metadata, indent=4):
+    def __init__(self, name, metadata, indent=4, bind=None):
         dialect_name = metadata.bind.dialect.name
         if dialect_name not in supported_dialects:
             raise ValueError('Unsupported dialect: {}'.format(dialect_name))
@@ -29,6 +29,7 @@ class SqlToModelGenerator:
         self.name = name
         self.metadata = metadata
         self.indent = ' ' * indent
+        self.bind = bind
 
         many_to_many_tables = set()
         many_to_many_links = defaultdict(list)
@@ -90,8 +91,11 @@ class SqlToModelGenerator:
         return imports
 
     def render_model(self, model):
-        header_str = "class {}(db.Model):\n".format(model.class_name)
-        header_str += "{}__tablename__ = '{}'\n\n".format(self.indent, model.table.name)
+        header_str = 'class {}(db.Model):\n'.format(model.class_name)
+        header_str += "{}__tablename__ = '{}'\n".format(self.indent, model.table.name)
+        if self.bind:
+            header_str += "{}__bind_key__ = '{}'\n".format(self.indent, self.bind)
+        header_str += '\n'
         columns_str = ''
         for col in model.table.columns:
             attr = convert_to_valid_identifier(col.name)
