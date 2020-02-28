@@ -3,11 +3,14 @@
 Changelog
 =========
 
-0.5.2 (2020-02-??)
+0.6.0 (2020-02-??)
 ------------------
 
 - initdb和table2model命令添加bind参数，以支持多数据库配置
-
+- 移除 ``bg_process`` 配置项，项目中实现的 ``active=True`` 的BgProcess会被自动运行
+- BgProcess改为用fork产生子进程，日志合并到gunicorn的error日志中
+- BgProcess的import方式变为 ``from guniflask.scheduling import BgProcess``
+- JwtManager创建access token的接口发生改变
 
 0.5.1 (2019-12-23)
 ------------------
@@ -15,7 +18,6 @@ Changelog
 - ``@blueprint`` 支持无括号形式
 - fix: 避免重复注册Blueprint
 - 项目初始化添加不使用认证方案的选项
-
 
 0.5.0 (2019-12-18)
 ------------------
@@ -31,7 +33,7 @@ Changelog
 
 - table2model命令提供设定profile的选项，默认为 ``dev``
 - table2model不再加载项目模块，避免因项目错误导致不能正常生成model
-- bg process捕获运行时异常并记录在日志中
+- BgProcess捕获运行时异常并记录在日志中
 - model添加 ``result_to_dict`` 方法
 
 0.4.2 (2019-08-20)
@@ -43,7 +45,7 @@ Changelog
 0.4.1 (2019-08-13)
 ------------------
 
-- 添加对后台进程(bg process)的支持
+- 添加对后台进程(BgProcess)的支持
 
 0.4.0 (2019-07-25)
 ------------------

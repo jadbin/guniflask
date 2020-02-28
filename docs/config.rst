@@ -12,8 +12,8 @@ app配置主要是业务相关的配置。
 
 部分配置也可以通过环境变量设定，环境变量的优先级高于配置文件。
 
-Gunicorn Config
----------------
+Gunicorn Configuration
+----------------------
 
 我们可以在 conf/gunicorn.py 中通过定义变量的方式添加gunicorn配置项，包括但不限于:
 
@@ -41,10 +41,10 @@ bg_process
 
 设置后台运行进程的class，需要继承 :class:`guniflask.bg_process.BgProcess` ，在启动gunicorn master时会启动配置的进程。
 
-Application Config
-------------------
+Application Configuration
+-------------------------
 
-我们在 conf/app.py 中通过定义变量的方式添加配置项，包括用户自定义配置。
+我们在 conf/foo.py 中通过定义变量的方式添加配置项，包括用户自定义配置。
 
 有关配置项的获取、内置配置项等详细信息可参考 :ref:`settings` 。
 

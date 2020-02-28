@@ -3,7 +3,7 @@
 Application Settings
 ====================
 
-项目的配置项在 conf/app.py 文件中定义。
+项目的配置项在 conf/foo.py 文件中定义。
 针对不同运行环境可以通过指定profile实现项目配置的切换，详见 :ref:`profile` 。
 
 Uppercase Settings
