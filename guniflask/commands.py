@@ -9,7 +9,7 @@ import json
 from guniflask.errors import AbortedError, TemplateError
 from guniflask.utils.template import string_lowercase_underscore, string_lowercase_hyphen, jinja2_env, template_folder
 from guniflask.utils.cli import readchar
-from guniflask.utils.security import generate_jwt_secret
+from guniflask.utils.jwt import generate_jwt_secret
 from guniflask import __version__
 
 

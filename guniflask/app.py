@@ -12,7 +12,7 @@ from guniflask.config import Config
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.model import wrap_model
 from guniflask.apidoc import ApiDoc
-from guniflask.security import JwtManager
+from guniflask.security import JwtManager, User
 from guniflask.utils.config import walk_modules
 
 log = logging.getLogger(__name__)
@@ -78,6 +78,8 @@ def init_app(app):
         wrap_model(db.Model)
 
     # authentication
+    if s['role_prefix']:
+        User.ROLE_PREFIX = s['role_prefix']
     if s['jwt']:
         jwt_manager = JwtManager()
         jwt_manager.init_app(app)
