@@ -12,7 +12,7 @@ from sqlalchemy import ForeignKeyConstraint, UniqueConstraint, PrimaryKeyConstra
 import inflect
 from sqlalchemy.util import OrderedDict
 
-from guniflask.utils.template import string_camelcase, string_lowercase_underscore
+from guniflask.utils.string import string_camelcase, string_lowercase_underscore
 
 __all__ = ['SqlToModelGenerator']
 

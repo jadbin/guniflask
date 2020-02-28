@@ -3,4 +3,5 @@
 from .sqlgen import *
 from .wrapper import *
 
-__all__ = sqlgen.__all__ + wrapper.__all__
+__all__ = (sqlgen.__all__ +
+           wrapper.__all__)

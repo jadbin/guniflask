@@ -8,7 +8,7 @@ from werkzeug.local import LocalProxy
 
 from guniflask.config import settings
 from guniflask.utils.template import template_folder
-from guniflask.utils.config import walk_modules
+from guniflask.utils.env import walk_modules
 
 static_folder = join(template_folder, 'static')
 
