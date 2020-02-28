@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.utils.template import *
+from guniflask.utils.string import *
 
 
 def test_string_camelcase():

@@ -1,9 +1,11 @@
 # coding=utf-8
 
+__all__ = ['UsageError', 'AbortedError', 'TemplateError']
+
 
 class UsageError(Exception):
     """
-    Usage error.
+    Usage error
     """
 
     def __init__(self, *args, print_help=False, **kwargs):
@@ -13,11 +15,11 @@ class UsageError(Exception):
 
 class AbortedError(Exception):
     """
-    Aborted error.
+    Aborted error
     """
 
 
 class TemplateError(Exception):
     """
-    Template error.
+    Template error
     """

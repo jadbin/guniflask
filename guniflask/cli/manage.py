@@ -2,24 +2,20 @@
 
 import sys
 import os
-from os.path import isfile, join, dirname, exists, isdir
+from os.path import isfile, join, isdir
 import argparse
 import signal
 import time
-import multiprocessing
 import json
 
 from sqlalchemy.schema import MetaData
 
-from gunicorn.config import KNOWN_SETTINGS
-from gunicorn.app.base import Application
-
-from guniflask.utils.config import walk_modules, load_profile_config, walk_files
+from guniflask.utils.config import walk_modules
 from guniflask.model import SqlToModelGenerator
-from guniflask.errors import UsageError
-from guniflask.commands import Command
-from guniflask.app import create_app
-from guniflask.bg_process import BgProcessRunner
+from guniflask.cli.errors import UsageError
+from guniflask.cli.command import Command
+from guniflask.app import create_app, GunicornApplication
+from guniflask.utils.process import pid_exists
 
 
 def set_environ():
@@ -203,8 +199,8 @@ class Debug(Command):
         app = GunicornApplication()
         if args.daemon:
             app.set_option('daemon', True)
-        pid = get_pid(app.options)
-        if pid is not None and is_started(pid):
+        pid = _read_pid(app.options)
+        if pid is not None and pid_exists(pid):
             print('Application is already started')
             self.exitcode = 1
         else:
@@ -234,8 +230,8 @@ class Start(Command):
         app = GunicornApplication()
         if args.daemon_off:
             app.set_option('daemon', False)
-        pid = get_pid(app.options)
-        if pid is not None and is_started(pid):
+        pid = _read_pid(app.options)
+        if pid is not None and pid_exists(pid):
             print('Application is already started')
             self.exitcode = 1
         else:
@@ -253,8 +249,8 @@ class Stop(Command):
 
     def run(self, args):
         app = GunicornApplication()
-        pid = get_pid(app.options)
-        if pid is None or not is_started(pid):
+        pid = _read_pid(app.options)
+        if pid is None or not pid_exists(pid):
             print('No application to stop')
             self.exitcode = 1
         else:
@@ -271,93 +267,7 @@ class Stop(Command):
                 os.kill(pid, signal.SIGKILL)
 
 
-class GunicornApplication(Application):
-    known_settings = {'bg_process'}
-
-    def __init__(self):
-        self.options = self._make_options()
-        super().__init__()
-
-    def set_option(self, key, value):
-        if key in self.cfg.settings:
-            self.cfg.set(key, value)
-
-    def load_config(self):
-        for key, value in self.options.items():
-            if key in self.cfg.settings and value is not None:
-                self.cfg.set(key.lower(), value)
-
-    def load(self):
-        return create_app(_get_project_name())
-
-    def _make_options(self):
-        pid_dir = os.environ['GUNIFLASK_PID_DIR']
-        log_dir = os.environ['GUNIFLASK_LOG_DIR']
-        id_string = os.environ['GUNIFLASK_ID_STRING']
-        project_name = _get_project_name()
-        options = {
-            'daemon': True,
-            'preload_app': True,
-            'workers': multiprocessing.cpu_count(),
-            'worker_class': 'gevent',
-            'pidfile': join(pid_dir, '{}-{}.pid'.format(project_name, id_string)),
-            'accesslog': join(log_dir, '{}-{}.access.log'.format(project_name, id_string)),
-            'errorlog': join(log_dir, '{}-{}.error.log'.format(project_name, id_string))
-        }
-        options.update(self._make_profile_options(os.environ.get('GUNIFLASK_ACTIVE_PROFILES')))
-        # if debug
-        if os.environ.get('GUNIFLASK_DEBUG'):
-            options.update(self._make_debug_options())
-        self._makedirs(options)
-        # bg process
-        self._set_bg_process(options)
-        return options
-
-    def _set_bg_process(self, options):
-        if 'bg_process' in options:
-            bg_cls = options['bg_process']
-            kwargs = dict(name=_get_project_name(), bg_cls=bg_cls, on_starting=options.get('on_starting'))
-            bg_runner = BgProcessRunner(**kwargs)
-            options['on_starting'] = bg_runner.start
-            options.pop('bg_process')
-
-    def _make_profile_options(self, active_profiles):
-        conf_dir = os.environ['GUNIFLASK_CONF_DIR']
-        gc = load_profile_config(conf_dir, 'gunicorn', profiles=active_profiles)
-        settings = {}
-        snames = set([i.name for i in KNOWN_SETTINGS])
-        snames.update(self.known_settings)
-        for name in gc:
-            if name in snames:
-                settings[name] = gc[name]
-        return settings
-
-    @staticmethod
-    def _make_debug_options():
-        conf_dir = os.environ['GUNIFLASK_CONF_DIR']
-        return {
-            'accesslog': '-',
-            'errorlog': '-',
-            'loglevel': 'debug',
-            'disable_redirect_access_to_syslog': True,
-            'preload_app': False,
-            'reload': True,
-            'reload_extra_files': walk_files(conf_dir),
-            'workers': 1,
-            'daemon': False
-        }
-
-    @staticmethod
-    def _makedirs(opts):
-        for c in ['pidfile', 'accesslog', 'errorlog']:
-            p = opts.get(c)
-            if p:
-                d = dirname(p)
-                if d and not exists(d):
-                    os.makedirs(d)
-
-
-def get_pid(options):
+def _read_pid(options):
     pidfile = options.get('pidfile')
     if isfile(pidfile):
         with open(pidfile, 'r') as f:
@@ -366,14 +276,6 @@ def get_pid(options):
                 pid = line.strip()
                 if pid:
                     return int(pid)
-
-
-def is_started(pid):
-    try:
-        os.kill(pid, 0)
-    except OSError:
-        return False
-    return True
 
 
 def _get_commands_from_module():

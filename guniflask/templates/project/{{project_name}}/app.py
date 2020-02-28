@@ -2,11 +2,11 @@
 
 import logging
 
-from guniflask.app import new_sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 
 log = logging.getLogger(__name__)
 
-db = new_sqlalchemy()
+db = SQLAlchemy()
 
 
 def make_settings(app, settings):

@@ -1,6 +1,9 @@
 # coding=utf-8
 
 import os
+import sys
+from os.path import isfile, join, isdir
+import json
 import copy
 from collections import MutableMapping
 
@@ -12,7 +15,7 @@ from guniflask.utils.config import load_profile_config
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
 
-class Config:
+class AppConfig:
     def __init__(self, app=None):
         if app:
             self.init_app(app)
@@ -23,11 +26,9 @@ class Config:
 
     @property
     def settings(self):
-        return self.app_settings()
+        return self.app_settings(current_app)
 
-    def app_settings(self, app=None):
-        if app is None:
-            return current_app.extensions['settings']
+    def app_settings(self, app):
         return app.extensions['settings']
 
 
@@ -35,7 +36,7 @@ def load_app_settings(app_name):
     c = {}
     conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
     active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
-    kwargs = get_default_args_from_env()
+    kwargs = get_default_settings_from_env()
     if conf_dir:
         c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
         c['active_profiles'] = active_profiles
@@ -47,7 +48,7 @@ def load_app_settings(app_name):
     return s
 
 
-def get_default_args_from_env():
+def get_default_settings_from_env():
     kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir),
               'project_name': os.environ.get('GUNIFLASK_PROJECT_NAME')}
     if os.environ.get('GUNIFLASK_DEBUG'):
@@ -55,6 +56,47 @@ def get_default_args_from_env():
     else:
         kwargs['debug'] = False
     return kwargs
+
+
+def set_default_env():
+    home_dir = os.environ.get('GUNIFLASK_HOME')
+    if home_dir is None:
+        home_dir = os.getcwd()
+        os.environ['GUNIFLASK_HOME'] = home_dir
+    if home_dir not in sys.path:
+        sys.path.append(home_dir)
+    if 'GUNIFLASK_PROJECT_NAME' not in os.environ:
+        project_name = infer_project_name(home_dir)
+        if project_name:
+            os.environ['GUNIFLASK_PROJECT_NAME'] = project_name
+    if 'GUNIFLASK_CONF_DIR' not in os.environ:
+        os.environ['GUNIFLASK_CONF_DIR'] = join(home_dir, 'conf')
+    if 'GUNIFLASK_LOG_DIR' not in os.environ:
+        os.environ['GUNIFLASK_LOG_DIR'] = join(home_dir, '.log')
+    if 'GUNIFLASK_PID_DIR' not in os.environ:
+        os.environ['GUNIFLASK_PID_DIR'] = join(home_dir, '.pid')
+    if 'GUNIFLASK_ID_STRING' not in os.environ:
+        os.environ['GUNIFLASK_ID_STRING'] = os.getlogin()
+
+
+def get_project_name_from_env():
+    return os.environ.get('GUNIFLASK_PROJECT_NAME')
+
+
+def infer_project_name(home_dir):
+    init_file = join(home_dir, '.guniflask-init.json')
+    if isfile(init_file):
+        try:
+            with open(init_file, 'r') as f:
+                data = json.load(f)
+            project_name = data.get('project_name')
+            if project_name and isdir(join(home_dir, project_name)):
+                return project_name
+        except Exception:
+            pass
+    for d in os.listdir(home_dir):
+        if not d.startswith('.') and isfile(join(home_dir, d, 'app.py')):
+            return d
 
 
 class Settings(MutableMapping):
