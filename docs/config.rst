@@ -70,13 +70,3 @@ gunicorn配置同样可以用profile后缀加以区分， conf 目录下配置�
         gunicorn.py
         gunicorn_dev.py
         gunicorn_prod.py
-
-在 app.py 中我们通过配置 :ref:`active_profiles` 来设定激活哪些profile，被激活的profile对应的配置文件会在项目运行时自动加载。
-例如， ``active_profiles=prod`` 表示激活prod对应的profile。
-如果同时激活多个profile，多个profile之间以 ``,`` 隔开。
-例如， ``active_profiles=prod,redis`` 表示同时激活prod和redis对应的profile。
-:ref:`active_profiles` 会同时作用于gunicorn配置和项目配置。
-
-.. note::
-    - :ref:`active_profiles` 在profile后缀的配置文件中配置无效。
-    - 高优先级配置文件会覆盖低优先级配置文件中相同的配置项，指定profile的配置的优先级高于未指定profile的配置，在 :ref:`active_profiles` 中越靠左边的profile优先级越高。
