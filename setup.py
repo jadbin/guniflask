@@ -38,8 +38,8 @@ extras_require = {
 
 
 def main():
-    if sys.version_info < (3, 5):
-        raise RuntimeError("The minimal supported Python version is 3.5")
+    if sys.version_info < (3, 6):
+        raise RuntimeError("The minimal supported Python version is 3.6")
 
     setup(
         name="guniflask",
@@ -57,7 +57,7 @@ def main():
             "console_scripts": ["guniflask = guniflask.cli.main:main",
                                 "guniflask-manage = guniflask.cli.manage:main"]
         },
-        python_requires='>=3.5',
+        python_requires='>=3.6',
         install_requires=install_requires,
         tests_require=tests_require,
         extras_require=extras_require,
@@ -67,7 +67,6 @@ def main():
             "Intended Audience :: Developers",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6",
             "Topic :: Software Development :: Libraries :: Python Modules"
         ]
