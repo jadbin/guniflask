@@ -38,7 +38,6 @@ class GunicornApplication(Application):
         project_name = get_project_name_from_env()
         options = {
             'daemon': True,
-            'preload_app': True,
             'workers': multiprocessing.cpu_count(),
             'worker_class': 'gevent',
             'pidfile': join(pid_dir, '{}-{}.pid'.format(project_name, id_string)),
@@ -75,7 +74,6 @@ class GunicornApplication(Application):
             'errorlog': '-',
             'loglevel': 'debug',
             'disable_redirect_access_to_syslog': True,
-            'preload_app': False,
             'reload': True,
             'reload_extra_files': walk_files(conf_dir),
             'workers': 1,

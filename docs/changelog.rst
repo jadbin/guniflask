@@ -12,6 +12,7 @@ Changelog
 - BgProcess改为用fork产生子进程，日志合并到gunicorn的error日志中
 - BgProcess的import方式变为 ``from guniflask.scheduling import BgProcess``
 - JwtManager创建access token的接口发生改变
+- 移除对gunicorn的默认配置 ``preload_app=True``
 - Python>=3.6
 
 0.5.1 (2019-12-23)
