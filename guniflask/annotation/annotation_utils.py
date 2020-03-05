@@ -2,7 +2,7 @@
 
 from typing import List
 
-from guniflask.annotation import Annotation, AnnotationMetadata
+from guniflask.annotation.core import Annotation, AnnotationMetadata
 
 __all__ = ['AnnotationUtils']
 
@@ -32,5 +32,5 @@ class AnnotationUtils:
         annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
         if annotation_metadata is None:
             annotation_metadata = AnnotationMetadata(source)
-            setattr(annotation, AnnotationMetadata.key, annotation_metadata)
+            setattr(source, AnnotationMetadata.key, annotation_metadata)
         annotation_metadata.add_annotation(annotation)
