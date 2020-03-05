@@ -1,16 +1,11 @@
 # coding=utf-8
 
-import datetime as dt
 from datetime import datetime
 
-from guniflask.security.authentication import Authentication, OAuth2Authentication
-
-__all__ = ['AccessToken', 'RefreshToken',
-           'AccessTokenConverter', 'UserAuthenticationConverter', 'TokenEnhancer',
-           'TokenService', 'TokenStore']
+__all__ = ['OAuth2AccessToken', 'OAuth2RefreshToken']
 
 
-class RefreshToken:
+class OAuth2RefreshToken:
     """
     OAuth2 refresh token
     """
@@ -20,7 +15,7 @@ class RefreshToken:
         self.expiration = expiration
 
 
-class AccessToken:
+class OAuth2AccessToken:
     """
     OAuth2 access token
     """
@@ -32,7 +27,7 @@ class AccessToken:
     EXPIRES_IN = 'expires_in'
     SCOPE = 'scope'
 
-    def __init__(self, value, refresh_token: RefreshToken = None, expiration: datetime = None, scope=None,
+    def __init__(self, value, refresh_token: OAuth2RefreshToken = None, expiration: datetime = None, scope=None,
                  additional_info=None):
         self.value = value
         self.token_type = self.BEARER_TYPE.lower()
@@ -65,132 +60,3 @@ class AccessToken:
         if self.additional_info is not None:
             res.update(self.additional_info)
         return res
-
-
-class AccessTokenConverter:
-    """
-    Converter interface for token service implementations that store authentication data inside the token.
-    """
-
-    AUD = 'aud'
-    CLIENT_ID = 'client_id'
-    EXP = 'exp'
-    JTI = 'jti'
-    ATI = 'ati'
-    SCOPE = AccessToken.SCOPE
-    AUTHORITIES = 'authorities'
-
-    def convert_access_token(self, access_token: AccessToken, authentication: OAuth2Authentication):
-        # TODO
-        pass
-
-    def extract_access_token(self, token_value: str, data):
-        # TODO
-        pass
-
-    def extract_authentication(self, data):
-        # TODO
-        pass
-
-
-class TokenEnhancer:
-    def enhance(self, access_token: AccessToken, authentication: OAuth2Authentication) -> AccessToken:
-        raise NotImplemented
-
-
-class UserAuthenticationConverter:
-    """
-    Utility interface for converting a user authentication to and from a Map.
-    """
-
-    USERNAME = 'user_name'
-
-    def convert_user_authentication(self, user_authentication: Authentication):
-        # TODO
-        pass
-
-    def extract_authentication(self, data):
-        # TODO
-        pass
-
-
-class TokenService:
-    """
-    Base implementation for token services using random UUID values for the access token and refresh token values.
-    """
-
-    def __init__(self):
-        self.token_store = None
-        self.token_converter = None
-        self.client_details_service = None
-
-    def init_app(self, app):
-        app.config.setdefault('ACCESS_TOKEN_EXPIRES_IN', dt.timedelta(days=1))
-        app.config.setdefault('REFRESH_TOKEN_EXPIRES_IN', dt.timedelta(days=365))
-
-    def create_access_token(self, authentication: OAuth2Authentication = None) -> AccessToken:
-        # TODO
-        pass
-
-    def refresh_access_token(self, refresh_token_value, token_request) -> AccessToken:
-        # TODO
-        pass
-
-    def get_access_token(self, authentication) -> AccessToken:
-        return self.token_store.get_access_token(authentication)
-
-    def load_authentication(self, access_token_value) -> OAuth2Authentication:
-        # TODO
-        pass
-
-    def read_access_token(self, access_token_value) -> AccessToken:
-        return self.token_store.read_access_token(access_token_value)
-
-    def revoke_token(self, access_token_value):
-        access_token = self.token_store.read_access_token(access_token_value)
-        if access_token:
-            if access_token.refresh_token:
-                self.token_store.remove_refresh_token(access_token.refresh_token)
-            self.token_store.remove_access_token(access_token)
-
-
-class TokenStore:
-    """
-    Persistence interface for OAuth2 tokens.
-    """
-
-    def read_authentication(self, access_token: AccessToken):
-        raise NotImplemented
-
-    def store_access_token(self, access_token: AccessToken, authentication: OAuth2Authentication):
-        raise NotImplemented
-
-    def read_access_token(self, access_token_value: str):
-        raise NotImplemented
-
-    def remove_access_token(self, access_token: AccessToken):
-        raise NotImplemented
-
-    def store_refresh_token(self, refresh_token: str, authentication: OAuth2Authentication):
-        raise NotImplemented
-
-    def read_refresh_token(self, refresh_token_value: str):
-        raise NotImplemented
-
-    def read_authentication_for_refresh_token(self, refresh_token: RefreshToken):
-        raise NotImplemented
-
-    def remove_refresh_token(self, refresh_token: RefreshToken):
-        raise NotImplemented
-
-    def remove_access_token_using_refresh_token(self, refresh_token: RefreshToken):
-        raise NotImplemented
-
-    def get_access_token(self, authentication: OAuth2Authentication):
-        raise NotImplemented
-
-    def find_tokens_by_client_id_and_username(self, client_id: str, username: str):
-        raise NotImplemented
-
-    def find_tokens_by_client_id(self, client_id: str):
-        raise NotImplemented

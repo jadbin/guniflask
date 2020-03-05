@@ -1,6 +1,6 @@
 # coding=utf-8
 
-__all__ = ['OAuth2Request', 'OAuth2RequestFactory']
+__all__ = ['OAuth2Request']
 
 
 class BaseRequest:
@@ -64,11 +64,3 @@ class OAuth2Request(BaseRequest):
     @property
     def response_types(self):
         return self._response_types
-
-
-class OAuth2RequestFactory:
-    """
-    Strategy for managing OAuth2 requests
-    """
-
-

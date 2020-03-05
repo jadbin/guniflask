@@ -1,13 +1,10 @@
 # coding=utf-8
 
-
-from functools import wraps
-
 from flask import current_app, _request_ctx_stack
 from werkzeug.local import LocalProxy
-from werkzeug.exceptions import Unauthorized
 
-from guniflask.security.authentication import current_auth, OAuth2Authentication, UserAuthentication
+from guniflask.security.authentication import OAuth2Authentication, UserAuthentication
+from guniflask.security.authentication_manager import current_auth
 
 __all__ = ['current_user', 'User']
 
@@ -76,39 +73,3 @@ class User:
         if role.startswith(prefix):
             return role
         return prefix + role
-
-
-def login_required(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if current_user is None:
-            raise Unauthorized
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def roles_required(*roles):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            if current_user is None or not current_user.has_any_role(*roles):
-                raise Unauthorized
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
-
-
-def authorities_required(*authorities):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            if current_user is None or not current_user.has_any_authority(*authorities):
-                raise Unauthorized
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator

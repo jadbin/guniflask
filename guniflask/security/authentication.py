@@ -1,27 +1,8 @@
 # coding=utf-8
 
-
-from flask import current_app, request, _request_ctx_stack
-from werkzeug.local import LocalProxy
-
-from guniflask.security.token import AccessToken
 from guniflask.security.request import OAuth2Request
 
-__all__ = ['current_auth', 'auth_manager', 'Authentication', 'OAuth2Authentication', 'UserAuthentication',
-           'AuthenticationManager', 'BearerTokenExtractor', 'PreAuthenticatedToken']
-
-auth_manager = LocalProxy(lambda: current_app.extensions['authentication_manager'])
-
-
-def _load_authentication():
-    ctx = _request_ctx_stack.top
-    if ctx is not None:
-        if not hasattr(ctx, 'authentication'):
-            return None
-        return ctx.authentication
-
-
-current_auth = LocalProxy(_load_authentication)
+__all__ = ['Authentication', 'OAuth2Authentication', 'UserAuthentication', 'PreAuthenticatedToken']
 
 
 class Authentication:
@@ -101,46 +82,6 @@ class OAuth2Authentication(Authentication):
     @property
     def user_authentication(self):
         return self._user_authentication
-
-
-class AuthenticationManager:
-    def __init__(self):
-        self.token_service = None
-        self.token_extractor = BearerTokenExtractor()
-
-    def init_app(self, app):
-        app.extensions['authentication_manager'] = self
-        app.before_request(self.do_authentication_filter)
-
-    def authenticate(self, authentication):
-        # TODO
-        pass
-
-    def do_authentication_filter(self):
-        authentication = self.token_extractor.extract()
-        auth_result = self.authenticate(authentication)
-        ctx = _request_ctx_stack.top
-        if ctx is not None:
-            ctx.authentication = auth_result
-
-
-class BearerTokenExtractor:
-    def extract(self):
-        token = self._extract_token_from_header()
-        if token is None:
-            token = self._extract_token_from_query()
-        if token is not None:
-            return PreAuthenticatedToken(token)
-
-    @staticmethod
-    def _extract_token_from_header():
-        auth = request.headers.get('Authorization')
-        if auth is not None and auth.lower().startswith(AccessToken.BEARER_TYPE.lower()):
-            return auth.split(' ', 1)[1]
-
-    @staticmethod
-    def _extract_token_from_query():
-        return request.args.get(AccessToken.ACCESS_TOKEN)
 
 
 class PreAuthenticatedToken(Authentication):
