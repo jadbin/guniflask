@@ -1,26 +1,36 @@
 # coding=utf-8
 
-from guniflask.annotation.core import Annotation, AnnotationMetadata
+from typing import List
+
+from guniflask.annotation import Annotation, AnnotationMetadata
+
+__all__ = ['AnnotationUtils']
 
 
-def get_annotation(annotated_element, annotation_type: Annotation):
-    if hasattr(annotated_element, AnnotationMetadata.key):
-        annotation_metadata = getattr(annotated_element, AnnotationMetadata.key)
-        return annotation_metadata.get_annotation(annotation_type)
-    return None
+class AnnotationUtils:
 
+    @staticmethod
+    def get_annotation_metadata(source) -> AnnotationMetadata:
+        if hasattr(source, AnnotationMetadata.key):
+            return getattr(source, AnnotationMetadata.key)
 
-def get_annotations(annotated_element):
-    if hasattr(annotated_element, AnnotationMetadata.key):
-        annotation_metadata = getattr(annotated_element, AnnotationMetadata.key)
-        return annotation_metadata.annotations
-    return []
+    @staticmethod
+    def get_annotation(source, annotation_type: Annotation) -> Annotation:
+        annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
+        if annotation_metadata is not None:
+            return annotation_metadata.get_annotation(annotation_type)
 
+    @staticmethod
+    def get_annotations(source) -> List[Annotation]:
+        annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
+        if annotation_metadata is not None:
+            return annotation_metadata.annotations
+        return []
 
-def add_annotation(annotated_element, annotation: Annotation):
-    if not hasattr(annotated_element, AnnotationMetadata.key):
-        annotation_meta = AnnotationMetadata(annotated_element)
-        setattr(annotation, AnnotationMetadata.key, annotation_meta)
-    else:
-        annotation_meta = getattr(annotated_element, AnnotationMetadata.key)
-    annotation_meta.add_annotation(annotation)
+    @staticmethod
+    def add_annotation(source, annotation: Annotation):
+        annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
+        if annotation_metadata is None:
+            annotation_metadata = AnnotationMetadata(source)
+            setattr(annotation, AnnotationMetadata.key, annotation_metadata)
+        annotation_metadata.add_annotation(annotation)

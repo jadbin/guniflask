@@ -24,13 +24,13 @@ class Annotation:
 class AnnotationMetadata:
     key = '__annotation_metadata'
 
-    def __init__(self, annotated_element):
-        self._annotated_element = annotated_element
+    def __init__(self, source):
+        self._source = source
         self._annotations = {}
 
     @property
-    def annotated_element(self):
-        return self._annotated_element
+    def source(self):
+        return self._source
 
     def add_annotation(self, annotation):
         self._annotations[annotation.annotation_type] = annotation
@@ -41,3 +41,9 @@ class AnnotationMetadata:
     @property
     def annotations(self):
         return list(self._annotations.values())
+
+    def is_annotated(self, annotation_type):
+        for a in self._annotations.values():
+            if isinstance(a, annotation_type):
+                return True
+        return False
