@@ -10,7 +10,6 @@ from flask_sqlalchemy import SQLAlchemy
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.config.app_config import AppConfig, SETTINGS
 from guniflask.model import wrap_model
-from guniflask.apidoc import ApiDoc
 from guniflask.security.jwt import JwtManager
 from guniflask.utils.env import walk_modules
 from guniflask.web.context import AnnotationConfigWebApplicationContext
@@ -73,11 +72,6 @@ class AppInitializer:
         if s[SETTINGS.JWT]:
             jwt_manager = JwtManager()
             jwt_manager.init_app(self.app)
-
-        # API doc
-        if s[SETTINGS.API_DOC] or (s[SETTINGS.API_DOC] is None and s[SETTINGS.DEBUG]):
-            apidoc = ApiDoc()
-            apidoc.init_app(self.app)
 
         _init_app = getattr(app_module, 'init_app', None)
         if _init_app:

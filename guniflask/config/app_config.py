@@ -21,7 +21,6 @@ class SETTINGS:
     CORS = 'cors'
     JWT = 'jwt'
     WRAP_SQLALCHEMY_MODEL = 'wrap_sqlalchemy_model'
-    API_DOC = 'apidoc'
 
 
 app_default_settings = {
