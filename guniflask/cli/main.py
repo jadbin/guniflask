@@ -10,9 +10,9 @@ import argparse
 from jinja2 import Environment
 
 from guniflask.cli.errors import AbortedError, TemplateError, UsageError
-from guniflask.utils.string import string_lowercase_underscore, string_lowercase_hyphen
-from guniflask.utils.template import template_folder
-from guniflask.utils.jwt import generate_jwt_secret
+from guniflask.utils.string import string_lowercase_underscore
+from guniflask.config.template import _template_folder
+from guniflask.security.jwt import JwtHelper
 from guniflask import __version__
 from guniflask.cli.command import Command
 from guniflask.cli.step import InputStep, ChoiceStep, StepChain
@@ -96,7 +96,7 @@ class AuthenticationTypeStep(ChoiceStep):
         security = self.selected_value
         settings['authentication_type'] = security
         if self.selected_value == 'jwt':
-            settings['jwt_secret'] = generate_jwt_secret()
+            settings['jwt_secret'] = JwtHelper.generate_jwt_secret()
 
 
 class ConflictFileStep(InputStep):
@@ -179,14 +179,12 @@ class InitCommand(Command):
 
     def copy_files(self, project_dir, settings):
         settings = dict(settings)
-        project_name = settings['project_name']
         settings['project_dir'] = project_dir
-        settings['project__name'] = string_lowercase_hyphen(project_name)
 
         print(flush=True)
         self.print_copying_files()
         self.force = False
-        self.copytree(join(template_folder, 'project'), project_dir, settings)
+        self.copytree(join(_template_folder, 'project'), project_dir, settings)
         print(flush=True)
         self.print_success()
 

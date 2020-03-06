@@ -1,58 +1,12 @@
 # coding=utf-8
 
-import os
 import copy
 from collections import MutableMapping
+import logging
 
-from flask import current_app
-from werkzeug.local import LocalProxy
+log = logging.getLogger(__name__)
 
-from guniflask.utils.config import load_profile_config
-
-settings = LocalProxy(lambda: current_app.extensions['settings'])
-
-
-class AppConfig:
-    def __init__(self, app=None):
-        if app:
-            self.init_app(app)
-
-    def init_app(self, app):
-        s = Settings(load_app_settings(app.name))
-        app.extensions['settings'] = s
-
-    @property
-    def settings(self):
-        return self.app_settings(current_app)
-
-    def app_settings(self, app):
-        return app.extensions['settings']
-
-
-def load_app_settings(app_name):
-    c = {}
-    conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
-    active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
-    kwargs = get_default_settings_from_env()
-    if conf_dir:
-        c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
-        c['active_profiles'] = active_profiles
-    c.update(kwargs)
-    s = {}
-    for name in c:
-        if not name.startswith('_'):
-            s[name] = c[name]
-    return s
-
-
-def get_default_settings_from_env():
-    kwargs = {'home': os.environ.get('GUNIFLASK_HOME', os.curdir),
-              'project_name': os.environ.get('GUNIFLASK_PROJECT_NAME')}
-    if os.environ.get('GUNIFLASK_DEBUG'):
-        kwargs['debug'] = True
-    else:
-        kwargs['debug'] = False
-    return kwargs
+__all__ = ['Settings']
 
 
 class Settings(MutableMapping):

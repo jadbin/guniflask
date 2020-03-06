@@ -6,12 +6,12 @@ from functools import wraps
 
 from flask import request, abort, jsonify, render_template, current_app
 
-from guniflask.utils.template import template_folder
+from guniflask.config.template import _template_folder
 from guniflask.config import settings
 from guniflask.security import roles_required
 from guniflask.web import blueprint, get_route, route
 
-static_folder = join(template_folder, 'static')
+static_folder = join(_template_folder, 'static')
 
 
 def debug_only(func):
@@ -33,7 +33,7 @@ accounts = {
 
 
 @blueprint(url_prefix='/hello-world',
-           template_folder=join(template_folder, 'hello_world'),
+           template_folder=join(_template_folder, 'hello_world'),
            static_folder=static_folder,
            static_url_path='/static')
 class HelloWorld:

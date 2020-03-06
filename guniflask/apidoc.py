@@ -7,13 +7,13 @@ from flask import current_app, Blueprint, render_template, _app_ctx_stack
 from werkzeug.local import LocalProxy
 
 from guniflask.config import settings
-from guniflask.utils.template import template_folder
+from guniflask.config.template import _template_folder
 from guniflask.utils.env import walk_modules
 
-static_folder = join(template_folder, 'static')
+static_folder = join(_template_folder, 'static')
 
 apidoc = Blueprint('apidoc', __name__, url_prefix='/_apidoc',
-                   template_folder=join(template_folder, 'apidoc'),
+                   template_folder=join(_template_folder, 'apidoc'),
                    static_folder=static_folder,
                    static_url_path='/static')
 

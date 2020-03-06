@@ -16,7 +16,7 @@ from guniflask.cli.command import Command
 from guniflask.app import create_app
 from guniflask.gunicorn import GunicornApplication
 from guniflask.utils.process import pid_exists
-from guniflask.utils.env import set_default_env, get_project_name_from_env
+from guniflask.cli.env import set_default_env, get_project_name_from_env
 
 
 class InitDb(Command):

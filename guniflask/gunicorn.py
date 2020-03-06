@@ -7,10 +7,11 @@ import multiprocessing
 from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
 
-from guniflask.utils.config import load_profile_config
-from guniflask.utils.env import walk_files, get_project_name_from_env
+from guniflask.config.app_config import load_profile_config
+from guniflask.utils.env import walk_files
 from guniflask.scheduling.background import BgProcessRunner
 from guniflask.app import create_app
+from guniflask.cli.env import get_project_name_from_env
 
 
 class GunicornApplication(Application):
