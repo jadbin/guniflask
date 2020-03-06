@@ -9,7 +9,6 @@ from gunicorn.app.base import Application
 
 from guniflask.config.app_config import load_profile_config
 from guniflask.utils.env import walk_files
-from guniflask.scheduling.background import BgProcessRunner
 from guniflask.app import create_app
 from guniflask.cli.env import get_project_name_from_env
 
@@ -100,9 +99,6 @@ class HookWrapper:
         self._on_reload = on_reload
         self._on_exit = on_exit
 
-        project_name = get_project_name_from_env()
-        self._bg_process_runner = BgProcessRunner(project_name, config)
-
     @classmethod
     def from_config(cls, config):
         kw = {}
@@ -116,14 +112,11 @@ class HookWrapper:
     def on_starting(self, server):
         if self._on_starting is not None:
             self._on_starting(server)
-        self._bg_process_runner.start()
 
     def on_reload(self, server):
         if self._on_reload is not None:
             self._on_reload(server)
-        # TODO: reload bg process
 
     def on_exit(self, server):
         if self._on_exit is not None:
             self._on_exit(server)
-        self._bg_process_runner.stop()

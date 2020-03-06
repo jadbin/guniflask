@@ -31,15 +31,6 @@ gunicorn详细的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/s
 - accesslog: 默认存放在根目录下的 .log 文件夹中
 - errorlog: 默认存放在根目录下的 .log 文件夹中
 
-以下为guniflask约定的配置:
-
-.. _bg_process:
-
-bg_process
-^^^^^^^^^^
-
-设置后台运行进程的class，需要继承 :class:`guniflask.bg_process.BgProcess` ，在启动gunicorn master时会启动配置的进程。
-
 Application Configuration
 -------------------------
 

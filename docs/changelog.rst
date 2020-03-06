@@ -8,9 +8,7 @@ Changelog
 
 - 提供面向对象的上下文管理功能，支持基于类型、名称的对象自动装配
 - initdb和table2model命令添加bind参数，以支持多数据库配置
-- 移除 ``bg_process`` 配置项，项目中实现的 ``active=True`` 的BgProcess会被自动运行
-- BgProcess改为用fork产生子进程，日志合并到gunicorn的error日志中
-- BgProcess的import方式变为 ``from guniflask.scheduling import BgProcess``
+- 移除BgProcess功能
 - JwtManager创建access token的接口发生改变
 - 移除对gunicorn的默认配置 ``preload_app=True``
 - Python>=3.6
