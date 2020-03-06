@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from typing import List
+
 __all__ = ['Annotation', 'AnnotationMetadata']
 
 
@@ -11,7 +13,7 @@ class Annotation:
         self.attributes.update(kwargs)
 
     @property
-    def annotation_type(self):
+    def annotation_type(self) -> type:
         return self._type
 
     def __setitem__(self, key, value):
@@ -32,17 +34,17 @@ class AnnotationMetadata:
     def source(self):
         return self._source
 
-    def add_annotation(self, annotation):
+    def add_annotation(self, annotation: Annotation):
         self._annotations[annotation.annotation_type] = annotation
 
-    def get_annotation(self, annotation_type):
+    def get_annotation(self, annotation_type: type) -> Annotation:
         return self._annotations.get(annotation_type)
 
     @property
-    def annotations(self):
+    def annotations(self) -> List[Annotation]:
         return list(self._annotations.values())
 
-    def is_annotated(self, annotation_type):
+    def is_annotated(self, annotation_type: type) -> bool:
         for a in self._annotations.values():
             if isinstance(a, annotation_type):
                 return True

@@ -18,7 +18,7 @@ class BeanContext:
         self._bean_factory_post_processors = []
 
     @property
-    def bean_factory(self):
+    def bean_factory(self) -> BeanFactory:
         raise NotImplemented
 
     def add_bean_factory_post_processor(self, post_processor: BeanFactoryPostProcessor):
@@ -35,10 +35,10 @@ class BeanContext:
         self._register_bean_post_processors(bean_factory)
         self._finish_bean_factory_initialization(bean_factory)
 
-    def _post_process_bean_factory(self, bean_factory):
+    def _post_process_bean_factory(self, bean_factory: BeanFactory):
         pass
 
-    def _invoke_bean_factory_post_processors(self, bean_factory):
+    def _invoke_bean_factory_post_processors(self, bean_factory: BeanFactory):
         def invoke_bean_factory_post_processors(post_processors, factory):
             for post_processor in post_processors:
                 post_processor.post_process_bean_factory(factory)
@@ -66,7 +66,7 @@ class BeanContext:
             invoke_bean_factory_post_processors(post_processor_beans, bean_factory)
             invoke_bean_factory_post_processors(self.bean_factory_post_processors, bean_factory)
 
-    def _register_bean_post_processors(self, bean_factory):
+    def _register_bean_post_processors(self, bean_factory: BeanFactory):
         def register_bean_post_processors(factory, post_processors):
             for post_processor in post_processors:
                 factory.add_bean_post_processor(post_processor)
@@ -74,7 +74,7 @@ class BeanContext:
         post_processor_beans = bean_factory.get_beans_of_type(BeanPostProcessor)
         register_bean_post_processors(bean_factory, post_processor_beans)
 
-    def _finish_bean_factory_initialization(self, bean_factory):
+    def _finish_bean_factory_initialization(self, bean_factory: BeanFactory):
         bean_factory.pre_instantiate_singletons()
 
 

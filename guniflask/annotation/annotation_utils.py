@@ -15,7 +15,7 @@ class AnnotationUtils:
             return getattr(source, AnnotationMetadata.key)
 
     @staticmethod
-    def get_annotation(source, annotation_type: Annotation) -> Annotation:
+    def get_annotation(source, annotation_type: type) -> Annotation:
         annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
         if annotation_metadata is not None:
             return annotation_metadata.get_annotation(annotation_type)
