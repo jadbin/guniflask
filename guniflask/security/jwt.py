@@ -52,6 +52,7 @@ class JwtManager(AuthenticationManager):
 
     def init_app(self, app):
         self._set_default_app_config(app)
+        app.before_request(self.do_authentication_filter)
         app.extensions['jwt_manager'] = self
 
     def _set_default_app_config(self, app):

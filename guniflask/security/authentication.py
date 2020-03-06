@@ -30,7 +30,7 @@ class Authentication:
 
     @property
     def authorities(self):
-        return self.authorities
+        return self._authorities
 
     @property
     def details(self):

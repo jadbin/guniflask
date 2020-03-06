@@ -13,7 +13,7 @@ def _load_user():
     ctx = _request_ctx_stack.top
     if ctx is not None:
         if not hasattr(ctx, 'user'):
-            user = None
+            user = AnonymousUser()
             auth = current_auth._get_current_object()
             if auth is not None:
                 if isinstance(auth, OAuth2Authentication):
@@ -73,3 +73,7 @@ class User:
         if role.startswith(prefix):
             return role
         return prefix + role
+
+
+class AnonymousUser(User):
+    pass
