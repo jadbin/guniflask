@@ -13,7 +13,7 @@ from guniflask.model import wrap_model
 from guniflask.apidoc import ApiDoc
 from guniflask.security.jwt import JwtManager
 from guniflask.utils.env import walk_modules
-from guniflask.context.bean_context import AnnotationConfigBeanContext
+from guniflask.web.context import AnnotationConfigWebApplicationContext
 
 __all__ = ['AppInitializer']
 
@@ -83,12 +83,12 @@ class AppInitializer:
         if _init_app:
             _init_app(self.app, s)
 
-    def _create_bean_context(self) -> AnnotationConfigBeanContext:
-        bean_context = AnnotationConfigBeanContext()
+    def _create_bean_context(self) -> AnnotationConfigWebApplicationContext:
+        bean_context = AnnotationConfigWebApplicationContext(self.app)
         bean_context.scan(self.app.name)
         return bean_context
 
-    def _refresh_bean_context(self, bean_context: AnnotationConfigBeanContext):
+    def _refresh_bean_context(self, bean_context: AnnotationConfigWebApplicationContext):
         bean_context.refresh()
 
     def _register_blueprints(self):
