@@ -23,7 +23,9 @@ def blueprint(url_prefix: str = None, **options):
         return func
 
     if inspect.isclass(url_prefix) or inspect.isfunction(url_prefix):
-        return wrap_func(url_prefix)
+        f = url_prefix
+        url_prefix = None
+        return wrap_func(f)
     return wrap_func
 
 
@@ -38,7 +40,9 @@ def route(rule: str = None, **options):
         return func
 
     if inspect.isclass(rule) or inspect.isfunction(rule):
-        return wrap_func(rule)
+        f = rule
+        rule = None
+        return wrap_func(f)
     return wrap_func
 
 

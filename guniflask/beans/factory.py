@@ -7,7 +7,7 @@ from functools import partial
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.errors import NoSuchBeanDefinitionError, BeanDefinitionStoreError, BeanTypeNotDeclaredError, \
-    BeanTypeNotAllowedError, BeanNotOfRequiredTypeError, BeanCreationError, NoUniqueBeanDefinitionError
+    BeanTypeNotAllowedError, BeanNotOfRequiredTypeError, BeanCreationError, NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.bean_registry import SingletonBeanRegistry
 
@@ -127,12 +127,13 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
 
     def _do_create_bean(self, bean_name: str, bean_definition: BeanDefinition):
         """
-        1. Find beans which matches the required bean type if exists.
-        2. If there is only one matched bean, set it to arg.
-        3. If there are more than one matched beans, choose the bean which has the same name with arg.
+        1. Find the bean with the same name as arg if the required bean type is missing.
+        2. Find beans which matches the required bean type.
+        3. If there is only one matched bean, set it to arg.
+        4. If there are more than one matched beans, choose the bean which has the same name with arg.
            Raise error if no such bean.
-        4. Set arg to its declared default value.
-        5. Raise error if there is any unassigned arg.
+        5. Set arg to its declared default value.
+        6. Raise error if there is any unassigned arg.
 
         Note: self and cls are special.
         """
@@ -171,14 +172,20 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
         def resolve_arg(arg):
             bean = None
             required_type = hints.get(arg)
-            candidates = self.get_beans_of_type(required_type)
-            if len(candidates) == 1:
-                bean = list(candidates.values())[0]
-            elif len(candidates) > 1:
-                if arg in candidates:
-                    bean = candidates[arg]
-                else:
-                    raise NoUniqueBeanDefinitionError(required_type)
+            if required_type is None:
+                try:
+                    bean = self.get_bean(arg)
+                except BeansError:
+                    pass
+            else:
+                candidates = self.get_beans_of_type(required_type)
+                if len(candidates) == 1:
+                    bean = list(candidates.values())[0]
+                elif len(candidates) > 1:
+                    if arg in candidates:
+                        bean = candidates[arg]
+                    else:
+                        raise NoUniqueBeanDefinitionError(required_type)
             return bean
 
         for i, a in enumerate(args):
@@ -195,9 +202,9 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
             if v == NO_VALUE:
                 no_value_args.append(args[i])
         if len(no_value_args) > 0:
-            raise BeanCreationError('Cannot create bean named "{}", '
-                                    'because the following arguments cannot be resolved: '
-                                    '{}'.format(bean_name, ', '.join(no_value_args)))
+            raise BeanCreationError(bean_name, message='Cannot create bean named "{}", '
+                                                       'because the following arguments cannot be resolved: '
+                                                       '{}'.format(bean_name, ', '.join(no_value_args)))
 
         bean = real_func(*args_value, **kwargs_value)
         bean = self._apply_bean_post_processors_after_initialization(bean, bean_name)

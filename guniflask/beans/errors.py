@@ -15,7 +15,7 @@ class BeansError(Exception):
 class NoSuchBeanDefinitionError(BeansError):
     def __init__(self, bean_name):
         self.bean_name = bean_name
-        super().__init__('No bean named "{}" available'.format(name))
+        super().__init__('No bean named "{}" available'.format(bean_name))
 
 
 class NoUniqueBeanDefinitionError(BeansError):

@@ -68,11 +68,15 @@ class ModuleBeanDefinitionScanner:
 
     def _find_candidate_components(self, module):
         candidates = []
+        selected_id = set()
         for obj in vars(module).values():
             if inspect.isclass(obj) or inspect.isfunction(obj):
                 if obj.__module__ == module.__name__:
                     annotation_metadata = AnnotationUtils.get_annotation_metadata(obj)
                     if annotation_metadata is not None and annotation_metadata.is_annotated(Component):
-                        bean_definition = BeanDefinition(obj)
-                        candidates.append(bean_definition)
+                        obj_id = id(obj)
+                        if obj_id not in selected_id:
+                            selected_id.add(obj_id)
+                            bean_definition = BeanDefinition(obj)
+                            candidates.append(bean_definition)
         return candidates

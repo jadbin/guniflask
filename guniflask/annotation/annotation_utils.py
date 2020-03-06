@@ -12,7 +12,10 @@ class AnnotationUtils:
     @staticmethod
     def get_annotation_metadata(source) -> AnnotationMetadata:
         if hasattr(source, AnnotationMetadata.key):
-            return getattr(source, AnnotationMetadata.key)
+            metadata = getattr(source, AnnotationMetadata.key)
+            # annotations on class cannot be inherited
+            if not isinstance(metadata.source, type) or metadata.source == source:
+                return metadata
 
     @staticmethod
     def get_annotation(source, annotation_type: type) -> Annotation:
