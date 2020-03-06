@@ -12,7 +12,7 @@ class AnnotationConfigUtils:
 
     @staticmethod
     def register_annotation_config_processors(registry: BeanDefinitionRegistry):
-        if not registry.contains_bean_definition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME):
+        if not registry.contains_bean_definition(CONFIGURATION_ANNOTATION_PROCESSOR):
             bean_definition = BeanDefinition(ConfigurationClassPostProcessor)
-            registry.register_bean_definition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME,
+            registry.register_bean_definition(CONFIGURATION_ANNOTATION_PROCESSOR,
                                               bean_definition)
