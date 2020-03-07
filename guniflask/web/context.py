@@ -5,7 +5,7 @@ from flask import Flask
 from guniflask.context.bean_context import AnnotationConfigBeanContext
 from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
 
-CONFIGURATION_BLUEPRINT_POST_PROCESSOR = '__configuration_blueprint_post_processor'
+__all__ = ['AnnotationConfigWebApplicationContext']
 
 
 class AnnotationConfigWebApplicationContext(AnnotationConfigBeanContext):

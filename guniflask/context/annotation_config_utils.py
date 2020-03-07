@@ -2,7 +2,7 @@
 
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.definition import BeanDefinition
-from guniflask.context.configuration_post_processor import ConfigurationClassPostProcessor
+from guniflask.context.config_post_processor import ConfigurationClassPostProcessor
 from guniflask.context.annotation_config_constants import *
 
 __all__ = ['AnnotationConfigUtils']

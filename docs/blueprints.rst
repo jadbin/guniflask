@@ -26,7 +26,7 @@ Using @blueprint
     from guniflask.web import blueprint, post_route
 
 
-    @blueprint(url_prefix='/api')
+    @blueprint('/api')
     class ExampleController:
         def __init__(self):
             self.add_service = lambda a, b: a + b
@@ -35,5 +35,3 @@ Using @blueprint
         def add(self):
             data = request.json
             return {'result': self.add_service(data.get('a'), data.get('b'))}
-
-``@blueprint`` 中的参数同 ``Blueprint`` 中的关键字参数， ``@route`` 中的参数同 ``Blueprint.route`` 中的参数， ``@get_route`` 、 ``@post_route`` 等会自动填充 ``methods`` 参数。

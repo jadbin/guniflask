@@ -12,6 +12,8 @@ from guniflask.utils.env import walk_files
 from guniflask.app import create_app
 from guniflask.cli.env import get_project_name_from_env
 
+__all__ = ['GunicornApplication']
+
 
 class GunicornApplication(Application):
 

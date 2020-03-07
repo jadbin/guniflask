@@ -1,6 +1,9 @@
 # coding=utf-8
 
-from .blueprint_post_processor import *
 from .bind_annotation import *
+from .blueprint_post_processor import *
+from .context import *
 
-__all__ = bind_annotation.__all__
+__all__ = (bind_annotation.__all__ +
+           blueprint_post_processor.__all__ +
+           context.__all__)
