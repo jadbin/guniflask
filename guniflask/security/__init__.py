@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .access_decorator import *
+from .access_annotation import *
 from .authentication import *
 from .authentication_manager import *
 from .client_details import *
@@ -14,7 +14,7 @@ from .token_service import *
 from .token_store import *
 from .user_details import *
 
-__all__ = (access_decorator.__all__ +
+__all__ = (access_annotation.__all__ +
            authentication.__all__ +
            authentication_manager.__all__ +
            client_details.__all__ +
