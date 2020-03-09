@@ -6,8 +6,8 @@ from functools import partial
 
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
-from guniflask.beans.errors import NoSuchBeanDefinitionError, BeanDefinitionStoreError, BeanTypeNotDeclaredError, \
-    BeanTypeNotAllowedError, BeanNotOfRequiredTypeError, BeanCreationError, NoUniqueBeanDefinitionError, BeansError
+from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, BeanNotOfRequiredTypeError, \
+    BeanCreationError, NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.bean_registry import SingletonBeanRegistry
 
@@ -18,9 +18,8 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
 
     def __init__(self):
         SingletonBeanRegistry.__init__(self)
-        self._bean_definition_map = {}
+        BeanDefinitionRegistry.__init__(self)
         self._bean_post_processors = []
-        self._allow_bean_definition_overriding = True
 
     def get_bean(self, bean_name, required_type: type = None):
         bean = None
@@ -86,37 +85,6 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
     @property
     def bean_post_processors(self) -> List[BeanPostProcessor]:
         return self._bean_post_processors
-
-    def set_allow_bean_definition_overriding(self, allow_bean_definition_overriding: bool):
-        self._allow_bean_definition_overriding = allow_bean_definition_overriding
-
-    @property
-    def is_allow_bean_definition_overriding(self) -> bool:
-        return self._allow_bean_definition_overriding
-
-    def register_bean_definition(self, bean_name: str, bean_definition: BeanDefinition):
-        old_bean_definition = self._bean_definition_map.get(bean_name)
-        if old_bean_definition is not None:
-            if not self.is_allow_bean_definition_overriding:
-                raise BeanDefinitionStoreError('A bean named "{}" is already bound'.format(bean_name))
-        self._bean_definition_map[bean_name] = bean_definition
-
-    def get_bean_definition(self, bean_name: str) -> BeanDefinition:
-        bean_definition = self._bean_definition_map.get(bean_name)
-        if bean_definition is None:
-            raise NoSuchBeanDefinitionError(bean_name)
-        return bean_definition
-
-    def get_bean_definition_names(self) -> List[str]:
-        return list(self._bean_definition_map.keys())
-
-    def contains_bean_definition(self, bean_name: str) -> bool:
-        return bean_name in self._bean_definition_map
-
-    def remove_bean_definition(self, bean_name: str):
-        if bean_name not in self._bean_definition_map:
-            raise NoSuchBeanDefinitionError(bean_name)
-        self._bean_definition_map.pop(bean_name)
 
     def _create_bean(self, bean_name: str, bean_definition: BeanDefinition):
         bean = self._resolve_before_instantiation(bean_name, bean_definition)
