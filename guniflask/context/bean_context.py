@@ -13,13 +13,10 @@ from guniflask.context.annotation_config_constants import *
 __all__ = ['BeanContext', 'AnnotationConfigBeanContext']
 
 
-class BeanContext:
+class BeanContext(BeanFactory):
     def __init__(self):
+        super().__init__()
         self._bean_factory_post_processors = []
-
-    @property
-    def bean_factory(self) -> BeanFactory:
-        raise NotImplemented
 
     def add_bean_factory_post_processor(self, post_processor: BeanFactoryPostProcessor):
         self._bean_factory_post_processors.append(post_processor)
@@ -29,11 +26,10 @@ class BeanContext:
         return self._bean_factory_post_processors
 
     def refresh(self):
-        bean_factory = self.bean_factory
-        self._post_process_bean_factory(bean_factory)
-        self._invoke_bean_factory_post_processors(bean_factory)
-        self._register_bean_post_processors(bean_factory)
-        self._finish_bean_factory_initialization(bean_factory)
+        self._post_process_bean_factory(self)
+        self._invoke_bean_factory_post_processors(self)
+        self._register_bean_post_processors(self)
+        self._finish_bean_factory_initialization(self)
 
     def _post_process_bean_factory(self, bean_factory: BeanFactory):
         pass
@@ -82,12 +78,8 @@ class AnnotationConfigBeanContext(BeanContext, AnnotationConfigRegistry):
     def __init__(self):
         BeanContext.__init__(self)
         self._bean_factory = BeanFactory()
-        self._reader = AnnotatedBeanDefinitionReader(self.bean_factory)
-        self._scanner = ModuleBeanDefinitionScanner(self.bean_factory)
-
-    @property
-    def bean_factory(self):
-        return self._bean_factory
+        self._reader = AnnotatedBeanDefinitionReader(self)
+        self._scanner = ModuleBeanDefinitionScanner(self)
 
     def register(self, *annotated_elements):
         self._reader.register(*annotated_elements)
@@ -98,4 +90,4 @@ class AnnotationConfigBeanContext(BeanContext, AnnotationConfigRegistry):
     def set_bean_name_generator(self, bean_name_generator):
         self._reader.set_bean_name_generator(bean_name_generator)
         self._scanner.set_bean_name_generator(bean_name_generator)
-        self.bean_factory.register_singleton(CONFIGURATION_BEAN_NAME_GENERATOR, bean_name_generator)
+        self.register_singleton(CONFIGURATION_BEAN_NAME_GENERATOR, bean_name_generator)

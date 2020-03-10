@@ -42,6 +42,13 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 raise BeanNotOfRequiredTypeError(bean, required_type, type(bean))
         return bean
 
+    def get_bean_of_type(self, required_type: type):
+        candidates = self.get_beans_of_type(required_type)
+        if len(candidates) == 1:
+            return list(candidates.values())[0]
+        if len(candidates) > 1:
+            raise NoUniqueBeanDefinitionError(required_type)
+
     def get_beans_of_type(self, required_type: type):
         names = self.get_bean_names_for_type(required_type)
         result = {}
