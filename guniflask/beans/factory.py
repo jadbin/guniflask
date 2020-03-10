@@ -9,7 +9,7 @@ from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, BeanNotOfRequiredTypeError, \
     BeanCreationError, NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.beans.bean_registry import SingletonBeanRegistry
+from guniflask.beans.registry import SingletonBeanRegistry
 
 __all__ = ['BeanFactory']
 

@@ -8,7 +8,10 @@ from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor, BeanDefinitionRegistryPostProcessor
 from guniflask.context.annotation_config_registry import AnnotationConfigRegistry
 from guniflask.context.annotation_config_registry import AnnotatedBeanDefinitionReader, ModuleBeanDefinitionScanner
-from guniflask.context.annotation_config_constants import *
+from guniflask.context.config_constants import *
+from guniflask.context.event import ApplicationEvent, ContextRefreshedEvent
+from guniflask.context.event_listener import ApplicationEventListener
+from guniflask.context.event_publisher import ApplicationEventPublisher
 
 __all__ = ['BeanContext', 'AnnotationConfigBeanContext']
 
@@ -17,6 +20,8 @@ class BeanContext(BeanFactory):
     def __init__(self):
         super().__init__()
         self._bean_factory_post_processors = []
+        self._app_listeners = set()
+        self._app_event_publisher = None
 
     def add_bean_factory_post_processor(self, post_processor: BeanFactoryPostProcessor):
         self._bean_factory_post_processors.append(post_processor)
@@ -29,7 +34,16 @@ class BeanContext(BeanFactory):
         self._post_process_bean_factory(self)
         self._invoke_bean_factory_post_processors(self)
         self._register_bean_post_processors(self)
+        self._init_application_event_publisher(self)
+        self._register_application_listeners(self)
         self._finish_bean_factory_initialization(self)
+        self._finish_refresh()
+
+    def add_application_listener(self, listener: ApplicationEventListener):
+        self._app_listeners.add(listener)
+
+    def publish_event(self, event: ApplicationEvent):
+        self._app_event_publisher.publish_event(event)
 
     def _post_process_bean_factory(self, bean_factory: BeanFactory):
         pass
@@ -70,14 +84,27 @@ class BeanContext(BeanFactory):
         post_processor_beans = bean_factory.get_beans_of_type(BeanPostProcessor)
         register_bean_post_processors(bean_factory, post_processor_beans)
 
+    def _init_application_event_publisher(self, bean_factory: BeanFactory):
+        self._app_event_publisher = ApplicationEventPublisher(bean_factory)
+        bean_factory.register_singleton(APPLICATION_EVENT_PUBLISHER, self._app_event_publisher)
+
+    def _register_application_listeners(self, bean_factory: BeanFactory):
+        for listener in self._app_listeners:
+            self._app_event_publisher.add_application_listener(listener)
+        bean_names = bean_factory.get_bean_names_for_type(ApplicationEventListener)
+        for bean_name in bean_names:
+            self._app_event_publisher.add_application_listener_bean(bean_name)
+
     def _finish_bean_factory_initialization(self, bean_factory: BeanFactory):
         bean_factory.pre_instantiate_singletons()
+
+    def _finish_refresh(self):
+        self._app_event_publisher.publish_event(ContextRefreshedEvent(self))
 
 
 class AnnotationConfigBeanContext(BeanContext, AnnotationConfigRegistry):
     def __init__(self):
         BeanContext.__init__(self)
-        self._bean_factory = BeanFactory()
         self._reader = AnnotatedBeanDefinitionReader(self)
         self._scanner = ModuleBeanDefinitionScanner(self)
 

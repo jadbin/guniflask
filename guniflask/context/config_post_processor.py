@@ -5,12 +5,12 @@ import inspect
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.factory_post_processor import BeanDefinitionRegistryPostProcessor
 from guniflask.context.bean_name_generator import AnnotationBeanNameGenerator
-from guniflask.beans.bean_registry import SingletonBeanRegistry
+from guniflask.beans.registry import SingletonBeanRegistry
 from guniflask.annotation.annotation_utils import AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.context.annotation import Bean, Component, Configuration
 from guniflask.annotation.core import AnnotationMetadata
-from guniflask.context.annotation_config_constants import *
+from guniflask.context.config_constants import *
 
 __all__ = ['ConfigurationClassPostProcessor']
 
