@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from abc import ABCMeta, abstractmethod
 from typing import List, get_type_hints
 import inspect
 from functools import partial
@@ -11,7 +12,7 @@ from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedE
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.registry import SingletonBeanRegistry
 
-__all__ = ['BeanFactory']
+__all__ = ['BeanFactory', 'BeanFactoryAware']
 
 
 class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
@@ -101,6 +102,11 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
         return bean
 
     def _do_create_bean(self, bean_name: str, bean_definition: BeanDefinition):
+        bean = self._create_bean_instance(bean_name, bean_definition)
+        bean = self._initialize_bean(bean, bean_name)
+        return bean
+
+    def _create_bean_instance(self, bean_name: str, bean_definition: BeanDefinition):
         """
         1. Find the bean with the same name as arg if the required bean type is missing.
         2. Find beans which matches the required bean type.
@@ -182,7 +188,6 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                                                        '{}'.format(bean_name, ', '.join(no_value_args)))
 
         bean = real_func(*args_value, **kwargs_value)
-        bean = self._apply_bean_post_processors_after_initialization(bean, bean_name)
         return bean
 
     def _resolve_bean_type(self, bean_name: str, bean_definition: BeanDefinition) -> type:
@@ -198,7 +203,7 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 raise BeanTypeNotAllowedError(bean_name, bean_type)
             return bean_type
 
-    def _resolve_before_instantiation(self, bean_name, bean_definition: BeanDefinition):
+    def _resolve_before_instantiation(self, bean_name: str, bean_definition: BeanDefinition):
         bean = None
         bean_type = self._resolve_bean_type(bean_name, bean_definition)
         if bean_type is not None:
@@ -207,16 +212,60 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 bean = self._apply_bean_post_processors_after_initialization(bean, bean_name)
         return bean
 
+    def _initialize_bean(self, bean, bean_name: str):
+        self._invoke_aware_methods(bean, bean_name)
+        wrapped_bean = bean
+        wrapped_bean = self._apply_bean_post_processors_before_initialization(wrapped_bean, bean_name)
+        self._invoke_init_methods(wrapped_bean)
+        wrapped_bean = self._apply_bean_post_processors_after_initialization(wrapped_bean, bean_name)
+        return wrapped_bean
+
+    def _invoke_aware_methods(self, bean, bean_name: str):
+        if isinstance(bean, BeanNameAware):
+            bean.set_bean_name(bean_name)
+        if isinstance(bean, BeanFactoryAware):
+            bean.set_bean_factory(self)
+
+    def _invoke_init_methods(self, bean):
+        if isinstance(bean, InitializingBean):
+            bean.after_properties_set()
+
     def _apply_bean_post_processors_before_instantiation(self, bean_type: type, bean_name: str):
         for post_processor in self.bean_post_processors:
             result = post_processor.post_process_before_instantiation(bean_type, bean_name)
             if result is not None:
                 return result
 
-    def _apply_bean_post_processors_after_initialization(self, bean, bean_name: str):
+    def _apply_bean_post_processors_before_initialization(self, bean, bean_name: str):
         result = bean
         for post_processor in self.bean_post_processors:
-            result = post_processor.post_process_after_initialization(bean, bean_name)
+            result = post_processor.post_process_before_initialization(result, bean_name)
             if result is None:
                 return result
         return result
+
+    def _apply_bean_post_processors_after_initialization(self, bean, bean_name: str):
+        result = bean
+        for post_processor in self.bean_post_processors:
+            result = post_processor.post_process_after_initialization(result, bean_name)
+            if result is None:
+                return result
+        return result
+
+
+class BeanNameAware(metaclass=ABCMeta):
+    @abstractmethod
+    def set_bean_name(self, bean_name: str):
+        pass
+
+
+class BeanFactoryAware(metaclass=ABCMeta):
+    @abstractmethod
+    def set_bean_factory(self, bean_factory: BeanFactory):
+        pass
+
+
+class InitializingBean(metaclass=ABCMeta):
+    @abstractmethod
+    def after_properties_set(self):
+        pass
