@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from typing import List
+import logging
 
 from guniflask.beans.factory import BeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
@@ -9,11 +10,13 @@ from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor, Bea
 from guniflask.context.annotation_config_registry import AnnotationConfigRegistry
 from guniflask.context.annotation_config_registry import AnnotatedBeanDefinitionReader, ModuleBeanDefinitionScanner
 from guniflask.context.config_constants import *
-from guniflask.context.event import ApplicationEvent, ContextRefreshedEvent
+from guniflask.context.event import ApplicationEvent, ContextRefreshedEvent, ContextClosedEvent
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event_publisher import ApplicationEventPublisher
 
 __all__ = ['BeanContext', 'AnnotationConfigBeanContext']
+
+log = logging.getLogger(__name__)
 
 
 class BeanContext(BeanFactory):
@@ -31,13 +34,22 @@ class BeanContext(BeanFactory):
         return self._bean_factory_post_processors
 
     def refresh(self):
-        self._post_process_bean_factory(self)
-        self._invoke_bean_factory_post_processors(self)
-        self._register_bean_post_processors(self)
-        self._init_application_event_publisher(self)
-        self._register_application_listeners(self)
-        self._finish_bean_factory_initialization(self)
-        self._finish_refresh()
+        try:
+            self._post_process_bean_factory(self)
+            self._invoke_bean_factory_post_processors(self)
+            self._register_bean_post_processors(self)
+            self._init_application_event_publisher(self)
+            self._register_application_listeners(self)
+            self._finish_bean_factory_initialization(self)
+            self._finish_refresh()
+        except Exception:
+            log.warning('Exception encountered during context initialization')
+            self._destroy_beans()
+            raise
+
+    def close(self):
+        self.publish_event(ContextClosedEvent(self))
+        self._destroy_beans()
 
     def add_application_listener(self, listener: ApplicationEventListener):
         self._app_listeners.add(listener)
@@ -100,6 +112,9 @@ class BeanContext(BeanFactory):
 
     def _finish_refresh(self):
         self._app_event_publisher.publish_event(ContextRefreshedEvent(self))
+
+    def _destroy_beans(self):
+        self.destroy_singletons()
 
 
 class AnnotationConfigBeanContext(BeanContext, AnnotationConfigRegistry):

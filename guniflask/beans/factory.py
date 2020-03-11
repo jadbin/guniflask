@@ -12,7 +12,7 @@ from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedE
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.registry import SingletonBeanRegistry
 
-__all__ = ['BeanFactory', 'BeanFactoryAware']
+__all__ = ['BeanFactory', 'BeanFactoryAware', 'InitializingBean', 'SmartInitializingSingleton', 'DisposableBean']
 
 
 class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
@@ -83,6 +83,11 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
             if bean_definition.is_singleton():
                 self.get_bean(bean_name)
 
+        for bean_name in bean_names:
+            singleton = self.get_singleton(bean_name)
+            if isinstance(singleton, SmartInitializingSingleton):
+                singleton.after_singletons_instantiated()
+
     def add_bean_post_processor(self, bean_post_processor: BeanPostProcessor):
         try:
             self._bean_post_processors.remove(bean_post_processor)
@@ -104,6 +109,7 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
     def _do_create_bean(self, bean_name: str, bean_definition: BeanDefinition):
         bean = self._create_bean_instance(bean_name, bean_definition)
         bean = self._initialize_bean(bean, bean_name)
+        self._register_disposable_bean_if_necessary(bean_name, bean, bean_definition)
         return bean
 
     def _create_bean_instance(self, bean_name: str, bean_definition: BeanDefinition):
@@ -252,6 +258,10 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 return result
         return result
 
+    def _register_disposable_bean_if_necessary(self, bean_name: str, bean, bean_definition: BeanDefinition):
+        if bean_definition.is_singleton() and isinstance(bean, DisposableBean):
+            self.register_disposable_bean(bean_name, bean)
+
 
 class BeanNameAware(metaclass=ABCMeta):
     @abstractmethod
@@ -268,4 +278,16 @@ class BeanFactoryAware(metaclass=ABCMeta):
 class InitializingBean(metaclass=ABCMeta):
     @abstractmethod
     def after_properties_set(self):
+        pass
+
+
+class SmartInitializingSingleton(metaclass=ABCMeta):
+    @abstractmethod
+    def after_singletons_instantiated(self):
+        pass
+
+
+class DisposableBean(metaclass=ABCMeta):
+    @abstractmethod
+    def destroy(self):
         pass

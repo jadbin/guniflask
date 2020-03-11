@@ -1,6 +1,7 @@
 # coding=utf-8
 
-__all__ = ['ApplicationEvent', 'ContextRefreshedEvent']
+__all__ = ['ApplicationEvent',
+           'ContextRefreshedEvent', 'ContextClosedEvent']
 
 
 class ApplicationEvent:
@@ -9,4 +10,8 @@ class ApplicationEvent:
 
 
 class ContextRefreshedEvent(ApplicationEvent):
+    pass
+
+
+class ContextClosedEvent(ApplicationEvent):
     pass

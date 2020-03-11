@@ -1,16 +1,21 @@
 # coding=utf-8
 
 from typing import List
+import logging
 
 from guniflask.beans.errors import BeanCurrentlyInCreationError
+from guniflask.beans.factory import DisposableBean
 
 __all__ = ['SingletonBeanRegistry']
+
+log = logging.getLogger(__name__)
 
 
 class SingletonBeanRegistry:
     def __init__(self):
         self._singleton_objects = {}
         self._singletons_currently_in_creation = set()
+        self._disposable_beans = {}
 
     def register_singleton(self, bean_name: str, singleton_obj):
         old_object = self._singleton_objects.get(bean_name)
@@ -43,6 +48,20 @@ class SingletonBeanRegistry:
     def is_singleton_currently_in_creation(self, bean_name: str) -> bool:
         return bean_name in self._singletons_currently_in_creation
 
+    def register_disposable_bean(self, bean_name: str, bean):
+        self._disposable_beans[bean_name] = bean
+
+    def destroy_singletons(self):
+        disposable_bean_names = list(self._disposable_beans.keys())
+        for bean_name in disposable_bean_names:
+            self.destroy_singleton(bean_name)
+
+    def destroy_singleton(self, bean_name: str):
+        self._remove_singleton(bean_name)
+        if bean_name in self._disposable_beans:
+            bean = self._disposable_beans.pop(bean_name)
+            self._destroy_bean(bean_name, bean)
+
     def _before_singleton_creation(self, bean_name):
         if self.is_singleton_currently_in_creation(bean_name):
             raise BeanCurrentlyInCreationError(bean_name)
@@ -53,3 +72,13 @@ class SingletonBeanRegistry:
 
     def _add_singleton(self, bean_name, singleton_obj):
         self._singleton_objects[bean_name] = singleton_obj
+
+    def _remove_singleton(self, bean_name):
+        if bean_name in self._singleton_objects:
+            self._singleton_objects.pop(bean_name)
+
+    def _destroy_bean(self, bean_name, bean: DisposableBean):
+        try:
+            bean.destroy()
+        except Exception:
+            log.error('Failed to destroy the bean named "{}"'.format(bean_name), exc_info=True)
