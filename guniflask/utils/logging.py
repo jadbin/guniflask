@@ -2,6 +2,8 @@
 
 import logging
 
+from flask import Flask
+
 
 def redirect_logger(name, logger):
     log = logging.getLogger(name)
@@ -9,6 +11,6 @@ def redirect_logger(name, logger):
     log.setLevel(logger.level)
 
 
-def redirect_app_logger(app, logger):
+def redirect_app_logger(app: Flask, logger):
     app.logger.handlers = logger.handlers
     app.logger.setLevel(logger.level)

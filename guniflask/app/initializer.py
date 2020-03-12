@@ -22,6 +22,7 @@ class AppInitializer:
         self.app = app
 
     def init(self):
+        self._configure_logger()
         config = AppConfig()
         config.init_app(self.app)
         s = config.app_settings(self.app)
@@ -38,6 +39,7 @@ class AppInitializer:
         Reuse gunicorn logger
         """
         gunicorn_logger = logging.getLogger('gunicorn.error')
+        redirect_logger('guniflask', gunicorn_logger)
         redirect_app_logger(self.app, gunicorn_logger)
         redirect_logger(self.app.name, gunicorn_logger)
 
