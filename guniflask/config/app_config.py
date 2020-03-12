@@ -7,7 +7,7 @@ from os.path import isfile, join
 from flask import current_app
 from werkzeug.local import LocalProxy
 
-from guniflask.config.property import Settings
+from guniflask.config.setting import Settings
 
 log = logging.getLogger(__name__)
 
