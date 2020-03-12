@@ -4,9 +4,12 @@ from flask import current_app, Flask
 from functools import wraps, partial
 
 from guniflask.context.annotation import bean, configuration
-from guniflask.scheduling import AsyncRun, AsyncConfiguration, AsyncPostProcessor, ASYNC_ANNOTATION_PROCESSOR
-from guniflask.scheduling import Scheduled, ScheduledPostProcessor, SchedulingConfiguration, \
-    SCHEDULED_ANNOTATION_PROCESSOR
+from guniflask.scheduling.config_constants import ASYNC_ANNOTATION_PROCESSOR, SCHEDULED_ANNOTATION_PROCESSOR
+from guniflask.scheduling.annotation import AsyncRun, Scheduled
+from guniflask.scheduling.async_config import AsyncConfiguration
+from guniflask.scheduling.async_post_processor import AsyncPostProcessor
+from guniflask.scheduling.scheduling_config import SchedulingConfiguration
+from guniflask.scheduling.scheduling_post_processor import ScheduledPostProcessor
 
 __all__ = ['WebAsyncConfiguration', 'WebAsyncPostProcessor',
            'WebSchedulingConfiguration', 'WebScheduledPostProcessor']

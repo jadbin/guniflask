@@ -4,9 +4,8 @@ import logging
 from functools import wraps, partial
 
 from guniflask.annotation.annotation_utils import AnnotationUtils
-from guniflask.beans import BeanFactory
 from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.beans.factory import BeanFactoryAware
+from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.beans.factory_hook import SmartInitializingSingleton
 from guniflask.scheduling.async_executor import AsyncExecutor
 from guniflask.scheduling.annotation import AsyncRun

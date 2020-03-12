@@ -10,7 +10,7 @@ import time
 from sqlalchemy.schema import MetaData
 
 from guniflask.utils.env import walk_modules
-from guniflask.model import SqlToModelGenerator
+from guniflask.model.sqlgen import SqlToModelGenerator
 from guniflask.cli.errors import UsageError
 from guniflask.cli.command import Command
 from guniflask.app import create_app

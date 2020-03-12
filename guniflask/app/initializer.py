@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.config.app_config import AppConfig, SETTINGS
-from guniflask.model import wrap_model
+from guniflask.model.wrapper import wrap_model
 from guniflask.security.jwt import JwtManager
 from guniflask.utils.env import walk_modules
 from guniflask.web.context import AnnotationConfigWebApplicationContext

@@ -2,7 +2,7 @@
 
 from abc import ABCMeta, abstractmethod
 
-from guniflask.context import configuration, bean
+from guniflask.context.annotation import configuration, bean
 from guniflask.scheduling.config_constants import *
 from guniflask.scheduling.scheduling_post_processor import ScheduledPostProcessor
 from guniflask.scheduling.task_scheduler import TaskScheduler, DefaultTaskScheduler
