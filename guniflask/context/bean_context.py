@@ -93,7 +93,7 @@ class BeanContext(BeanFactory):
             for post_processor in post_processors:
                 factory.add_bean_post_processor(post_processor)
 
-        post_processor_beans = bean_factory.get_beans_of_type(BeanPostProcessor)
+        post_processor_beans = list(bean_factory.get_beans_of_type(BeanPostProcessor).values())
         register_bean_post_processors(bean_factory, post_processor_beans)
 
     def _init_application_event_publisher(self, bean_factory: BeanFactory):

@@ -1,9 +1,9 @@
 # coding=utf-8
 
-from abc import ABCMeta, abstractmethod
 from typing import List, get_type_hints
 import inspect
 from functools import partial
+from abc import ABCMeta, abstractmethod
 
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
@@ -11,8 +11,10 @@ from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedE
     BeanCreationError, NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.registry import SingletonBeanRegistry
+from guniflask.beans.factory_hook import InitializingBean, SmartInitializingSingleton, DisposableBean
 
-__all__ = ['BeanFactory', 'BeanFactoryAware', 'InitializingBean', 'SmartInitializingSingleton', 'DisposableBean']
+__all__ = ['BeanFactory',
+           'BeanNameAware', 'BeanFactoryAware']
 
 
 class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
@@ -136,7 +138,7 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 func = source
             else:
                 func = getattr(factory_bean, source.__name__)
-            real_func = source
+            real_func = func
         else:
             raise BeanCreationError(bean_name)
 
@@ -243,20 +245,18 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                 return result
 
     def _apply_bean_post_processors_before_initialization(self, bean, bean_name: str):
-        result = bean
         for post_processor in self.bean_post_processors:
-            result = post_processor.post_process_before_initialization(result, bean_name)
-            if result is None:
-                return result
-        return result
+            result = post_processor.post_process_before_initialization(bean, bean_name)
+            if result is not None:
+                bean = result
+        return bean
 
     def _apply_bean_post_processors_after_initialization(self, bean, bean_name: str):
-        result = bean
         for post_processor in self.bean_post_processors:
-            result = post_processor.post_process_after_initialization(result, bean_name)
-            if result is None:
-                return result
-        return result
+            result = post_processor.post_process_after_initialization(bean, bean_name)
+            if result is not None:
+                bean = result
+        return bean
 
     def _register_disposable_bean_if_necessary(self, bean_name: str, bean, bean_definition: BeanDefinition):
         if bean_definition.is_singleton() and isinstance(bean, DisposableBean):
@@ -272,22 +272,4 @@ class BeanNameAware(metaclass=ABCMeta):
 class BeanFactoryAware(metaclass=ABCMeta):
     @abstractmethod
     def set_bean_factory(self, bean_factory: BeanFactory):
-        pass
-
-
-class InitializingBean(metaclass=ABCMeta):
-    @abstractmethod
-    def after_properties_set(self):
-        pass
-
-
-class SmartInitializingSingleton(metaclass=ABCMeta):
-    @abstractmethod
-    def after_singletons_instantiated(self):
-        pass
-
-
-class DisposableBean(metaclass=ABCMeta):
-    @abstractmethod
-    def destroy(self):
         pass

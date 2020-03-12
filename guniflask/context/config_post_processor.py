@@ -75,7 +75,7 @@ class ConfigurationClassBeanDefinitionReader:
             if inspect.isfunction(method) or inspect.ismethod(method):
                 method_metadata = AnnotationUtils.get_annotation_metadata(method)
                 if method_metadata is not None and method_metadata.is_annotated(Bean):
-                    self._load_bean_definition_for_bean_method(bean_name, method)
+                    self._load_bean_definition_for_bean_method(bean_name, method_metadata)
 
     def _load_bean_definition_for_bean_method(self, factory_bean_name: str, method_metadata: AnnotationMetadata):
         method = method_metadata.source
