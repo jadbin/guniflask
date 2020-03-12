@@ -7,7 +7,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
-from apscheduler.triggers.combining import AndTrigger
 from guniflask.beans.factory_hook import SmartInitializingSingleton, DisposableBean
 
 __all__ = ['TaskScheduler', 'DefaultTaskScheduler']
@@ -42,20 +41,16 @@ class DefaultTaskScheduler(TaskScheduler, SmartInitializingSingleton, Disposable
         self._scheduler.add_job(task, trigger=trigger)
 
     def schedule_with_cron(self, task, cron: str, start_time: dt.datetime = None):
-        cron_trigger = CronTrigger.from_crontab(cron)
-        if start_time is not None:
-            trigger = AndTrigger([cron_trigger, DateTrigger(start_time)])
-        else:
-            trigger = cron_trigger
-        self._scheduler.add_job(task, trigger=trigger)
+        values = cron.split()
+        if len(values) != 5:
+            raise ValueError('Wrong number of fields: got {}, expected 5'.format(len(values)))
+        cron_trigger = CronTrigger(minute=values[0], hour=values[1], day=values[2], month=values[3],
+                                   day_of_week=values[4], start_date=start_time)
+        self._scheduler.add_job(task, trigger=cron_trigger)
 
     def schedule_with_fixed_interval(self, task, interval: int, start_time: dt.datetime = None):
-        interval_trigger = IntervalTrigger(seconds=interval)
-        if start_time is not None:
-            trigger = AndTrigger([interval_trigger, DateTrigger(start_time)])
-        else:
-            trigger = interval_trigger
-        self._scheduler.add_job(task, trigger=trigger)
+        interval_trigger = IntervalTrigger(seconds=interval, start_date=start_time)
+        self._scheduler.add_job(task, trigger=interval_trigger)
 
     def start(self):
         self._scheduler.start(paused=False)
