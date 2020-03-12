@@ -4,10 +4,12 @@ import inspect
 
 from guniflask.annotation.core import Annotation
 from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.context.condition import Condition
 
 __all__ = ['Bean', 'bean',
            'Component', 'component',
            'Configuration', 'configuration',
+           'Conditional', 'conditional',
            'Repository', 'repository',
            'Service', 'service',
            'Controller', 'controller']
@@ -61,6 +63,19 @@ def configuration(name: str = None):
         f = name
         name = None
         return wrap_func(f)
+    return wrap_func
+
+
+class Conditional(Annotation):
+    def __init__(self, condition: Condition):
+        super().__init__(condition=condition)
+
+
+def conditional(condition: Condition):
+    def wrap_func(func):
+        AnnotationUtils.add_annotation(func, Conditional(condition))
+        return func
+
     return wrap_func
 
 

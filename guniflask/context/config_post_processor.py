@@ -11,6 +11,7 @@ from guniflask.beans.definition import BeanDefinition
 from guniflask.context.annotation import Bean, Component, Configuration
 from guniflask.annotation.core import AnnotationMetadata
 from guniflask.context.config_constants import *
+from guniflask.context.condition_evaluator import ConditionEvaluator
 
 __all__ = ['ConfigurationClassPostProcessor']
 
@@ -67,6 +68,7 @@ class ConfigurationClassPostProcessor(BeanDefinitionRegistryPostProcessor):
 class ConfigurationClassBeanDefinitionReader:
     def __init__(self, registry: BeanDefinitionRegistry):
         self._registry = registry
+        self._condition_evaluator = ConditionEvaluator(registry)
 
     def load_bean_definitions(self, bean_name: str, bean_definition: BeanDefinition):
         source = bean_definition.source
@@ -78,6 +80,8 @@ class ConfigurationClassBeanDefinitionReader:
                     self._load_bean_definition_for_bean_method(bean_name, method_metadata)
 
     def _load_bean_definition_for_bean_method(self, factory_bean_name: str, method_metadata: AnnotationMetadata):
+        if self._condition_evaluator.should_skip(method_metadata):
+            return
         method = method_metadata.source
         method_name = method.__name__
         bean_definition = BeanDefinition(method)
