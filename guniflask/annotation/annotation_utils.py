@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import List
+from typing import List, Type
 
 from guniflask.annotation.core import Annotation, AnnotationMetadata
 
@@ -18,7 +18,7 @@ class AnnotationUtils:
                 return metadata
 
     @staticmethod
-    def get_annotation(source, annotation_type: type) -> Annotation:
+    def get_annotation(source, annotation_type: Type[Annotation]) -> Annotation:
         annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
         if annotation_metadata is not None:
             return annotation_metadata.get_annotation(annotation_type)

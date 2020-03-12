@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import inspect
+from typing import Type
 
 from guniflask.annotation.core import Annotation
 from guniflask.annotation.annotation_utils import AnnotationUtils
@@ -67,11 +68,11 @@ def configuration(name: str = None):
 
 
 class Conditional(Annotation):
-    def __init__(self, condition: Condition):
+    def __init__(self, condition: Type[Condition]):
         super().__init__(condition=condition)
 
 
-def conditional(condition: Condition):
+def conditional(condition: Type[Condition]):
     def wrap_func(func):
         AnnotationUtils.add_annotation(func, Conditional(condition))
         return func

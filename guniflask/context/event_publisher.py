@@ -1,6 +1,7 @@
 # coding=utf-8
 
 import inspect
+from typing import Type
 
 from guniflask.beans.factory import BeanFactory
 from guniflask.context.event import ApplicationEvent
@@ -36,7 +37,7 @@ class ApplicationEventPublisher:
             if listener is not None:
                 yield listener
 
-    def _resolve_accepted_event_type(self, method) -> type:
+    def _resolve_accepted_event_type(self, method) -> Type[ApplicationEvent]:
         args_spec = inspect.getfullargspec(method)
         args = args_spec.args
         event_type_arg = None
