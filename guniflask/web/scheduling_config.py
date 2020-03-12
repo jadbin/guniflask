@@ -5,11 +5,11 @@ from functools import wraps, partial
 
 from guniflask.context.annotation import bean, configuration
 from guniflask.scheduling import AsyncRun, AsyncConfiguration, AsyncPostProcessor, ASYNC_ANNOTATION_PROCESSOR
-from guniflask.scheduling import Scheduled, ScheduledPostProcessor, ScheduledConfiguration, \
+from guniflask.scheduling import Scheduled, ScheduledPostProcessor, SchedulingConfiguration, \
     SCHEDULED_ANNOTATION_PROCESSOR
 
 __all__ = ['WebAsyncConfiguration', 'WebAsyncPostProcessor',
-           'WebScheduledConfiguration', 'WebScheduledPostProcessor']
+           'WebSchedulingConfiguration', 'WebScheduledPostProcessor']
 
 
 @configuration
@@ -30,7 +30,7 @@ class WebAsyncPostProcessor(AsyncPostProcessor):
 
 
 @configuration
-class WebScheduledConfiguration(ScheduledConfiguration):
+class WebSchedulingConfiguration(SchedulingConfiguration):
 
     @bean(SCHEDULED_ANNOTATION_PROCESSOR)
     def scheduled_annotation_processor(self) -> ScheduledPostProcessor:
