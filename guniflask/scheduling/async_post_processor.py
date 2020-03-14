@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import logging
-from functools import wraps, partial
+from functools import partial, update_wrapper
 
 from guniflask.annotation.annotation_utils import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
@@ -54,9 +54,12 @@ class AsyncPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializingS
             setattr(bean, method_name, wrapped_method)
 
     def wrap_async_func(self, func, async_executor):
-        @wraps(func)
         def wrapper(*args, **kwargs):
-            task = partial(func, *args, **kwargs)
+            wrapped_func = self._post_process_async_method(func)
+            task = partial(wrapped_func, *args, **kwargs)
             async_executor.submit(task)
 
-        return wrapper
+        return update_wrapper(wrapper, func)
+
+    def _post_process_async_method(self, method):
+        return method

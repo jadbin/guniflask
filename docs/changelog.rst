@@ -7,6 +7,7 @@ Changelog
 ------------------
 
 - 修复@async_run修饰带参数方法时的bug
+- 修复调用@async_run修饰的方法时的requst context
 
 0.6.0 (2020-03-13)
 ------------------

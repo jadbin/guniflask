@@ -40,9 +40,10 @@ class ScheduledPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializ
             self.task_scheduler = self.bean_factory.get_bean_of_type(TaskScheduler)
 
         for scheduled, method in self._scheduled_tasks:
-            self._process_scheduled(scheduled, method)
+            method = self._post_process_scheduled_method(method)
+            self._schedule_task(scheduled, method)
 
-    def _process_scheduled(self, scheduled: Scheduled, method):
+    def _schedule_task(self, scheduled: Scheduled, method):
         start_time = None
         if scheduled['initial_delay'] is not None:
             start_time = dt.datetime.now() + dt.timedelta(seconds=scheduled['initial_delay'])
@@ -52,3 +53,6 @@ class ScheduledPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializ
             self.task_scheduler.schedule_with_fixed_interval(method, scheduled['interval'], start_time=start_time)
         else:
             self.task_scheduler.schedule(method, start_time=start_time)
+
+    def _post_process_scheduled_method(self, method):
+        return method
