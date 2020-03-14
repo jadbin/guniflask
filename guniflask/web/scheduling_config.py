@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from flask import current_app, Flask
-from functools import wraps, partial
+from functools import wraps
 
 from guniflask.context.annotation import bean, configuration
 from guniflask.scheduling.config_constants import ASYNC_ANNOTATION_PROCESSOR, SCHEDULED_ANNOTATION_PROCESSOR
@@ -27,8 +27,7 @@ class WebAsyncPostProcessor(AsyncPostProcessor):
 
     def _process_async(self, async_run: AsyncRun, bean, method):
         app = current_app._get_current_object()
-        wrapped_method = partial(run_with_app_context, method, app=app)
-        wraps(method)(wrapped_method)
+        wrapped_method = run_with_app_context(method, app=app)
         super()._process_async(async_run, bean, wrapped_method)
 
 
@@ -44,13 +43,16 @@ class WebScheduledPostProcessor(ScheduledPostProcessor):
 
     def _process_scheduled(self, scheduled: Scheduled, method):
         app = current_app._get_current_object()
-        wrapped_method = partial(run_with_app_context, method, app=app)
-        wraps(method)(wrapped_method)
+        wrapped_method = run_with_app_context(method, app=app)
         super()._process_scheduled(scheduled, wrapped_method)
 
 
 def run_with_app_context(func, app: Flask = None):
-    if app is not None:
-        with app.app_context():
-            return func()
-    return func()
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if app is not None:
+            with app.app_context():
+                return func(*args, **kwargs)
+        return func(*args, **kwargs)
+
+    return wrapper
