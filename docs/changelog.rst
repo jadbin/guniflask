@@ -3,7 +3,7 @@
 Changelog
 =========
 
-0.6.1 (2020-03-??)
+0.6.1 (2020-03-15)
 ------------------
 
 - 修复@async_run修饰带参数方法时的bug
@@ -18,6 +18,7 @@ Changelog
 - 移除BgProcess功能
 - JwtManager创建access token的接口发生改变
 - 移除对gunicorn的默认配置 ``preload_app=True``
+- 移除apidoc
 - Python>=3.6
 
 0.5.1 (2019-12-23)
