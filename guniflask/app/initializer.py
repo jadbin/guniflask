@@ -4,13 +4,9 @@ import logging
 from importlib import import_module
 
 from flask import Blueprint
-from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
-from guniflask.config.app_config import AppConfig, SETTINGS
-from guniflask.model.wrapper import wrap_model
-from guniflask.security.jwt import JwtManager
+from guniflask.config.app_config import AppConfig
 from guniflask.utils.env import walk_modules
 from guniflask.web.context import AnnotationConfigWebApplicationContext
 
@@ -20,16 +16,14 @@ __all__ = ['AppInitializer']
 class AppInitializer:
     def __init__(self, app):
         self.app = app
+        self.config = AppConfig(self.app)
 
     def init(self):
         self._configure_logger()
-        config = AppConfig()
-        config.init_app(self.app)
-        s = config.app_settings(self.app)
-        self._make_settings(s)
+        self._make_settings()
         bean_context = self._create_bean_context()
         self.app.bean_context = bean_context  # register bean context for app
-        self._init_app(config.app_settings(self.app))
+        self._init_app()
         with self.app.app_context():
             self._register_blueprints()
             self._refresh_bean_context(bean_context)
@@ -43,40 +37,19 @@ class AppInitializer:
         redirect_app_logger(self.app, gunicorn_logger)
         redirect_logger(self.app.name, gunicorn_logger)
 
-    def _make_settings(self, s):
+    def _make_settings(self):
         app_module = self._get_app_module()
         _make_settings = getattr(app_module, 'make_settings', None)
         if _make_settings:
+            s = self.config.app_settings(self.app)
             _make_settings(self.app, s)
 
-        for k, v in s.items():
-            if k.isupper():
-                self.app.config[k] = v
-
-    def _init_app(self, s):
+    def _init_app(self):
+        self.config.init_app()
         app_module = self._get_app_module()
-
-        # CORS
-        if s[SETTINGS.CORS]:
-            cors = s[SETTINGS.CORS]
-            if isinstance(cors, dict):
-                CORS(self.app, **s[cors])
-            else:
-                CORS(self.app)
-
-        # database configuration
-        if s[SETTINGS.WRAP_SQLALCHEMY_MODEL]:
-            for v in vars(app_module).values():
-                if isinstance(v, SQLAlchemy):
-                    wrap_model(v.Model)
-
-        # authentication
-        if s[SETTINGS.JWT]:
-            jwt_manager = JwtManager()
-            jwt_manager.init_app(self.app)
-
         _init_app = getattr(app_module, 'init_app', None)
         if _init_app:
+            s = self.config.app_settings(self.app)
             _init_app(self.app, s)
 
     def _create_bean_context(self) -> AnnotationConfigWebApplicationContext:
@@ -107,8 +80,3 @@ class AppInitializer:
 
     def _get_app_module(self):
         return import_module(self.app.name + '.app')
-
-    def _get_instance_from_app(self, name):
-        app_module = self._get_app_module()
-        obj = getattr(app_module, name, None)
-        return obj
