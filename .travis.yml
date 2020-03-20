@@ -1,6 +1,7 @@
+dist: xenial
+os: linux
 language: python
-sudo: false
-matrix:
+jobs:
   include:
     - python: 3.6
       env: TOXENV=py36
