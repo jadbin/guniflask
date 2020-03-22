@@ -4,6 +4,9 @@ import datetime as dt
 
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token_store import TokenStore
+from guniflask.oauth2.token_converter import TokenEnhancer
+from guniflask.oauth2.client_details_service import ClientDetailsService
 
 __all__ = ['TokenServices']
 
@@ -14,9 +17,9 @@ class TokenServices:
     """
 
     def __init__(self):
-        self.token_store = None
-        self.token_converter = None
-        self.client_details_service = None
+        self.token_store: TokenStore = None
+        self.token_enhancer: TokenEnhancer = None
+        self.client_details_service: ClientDetailsService = None
         self.access_token_expires_in = dt.timedelta(days=1)
         self.refresh_token_expires_in = dt.timedelta(days=365)
 

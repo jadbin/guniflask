@@ -5,13 +5,14 @@ from flask import request, _request_ctx_stack
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token_service import TokenServices
 
 __all__ = ['OAuth2AuthenticationManager', 'BearerTokenExtractor']
 
 
 class OAuth2AuthenticationManager(AuthenticationManager):
     def __init__(self):
-        self.token_service = None
+        self.token_service: TokenServices = None
         self.token_extractor = BearerTokenExtractor()
 
     def init_app(self, app):

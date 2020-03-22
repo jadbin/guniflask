@@ -5,6 +5,7 @@ from typing import Union, Collection
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 from guniflask.oauth2.errors import InvalidTokenError
+from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 
 __all__ = ['TokenStore', 'JwtTokenStore']
 
@@ -53,7 +54,7 @@ class TokenStore:
 
 class JwtTokenStore(TokenStore):
     def __init__(self):
-        self.jwt_token_converter = None
+        self.jwt_token_converter: JwtAccessTokenConverter = None
 
     def read_authentication(self, access_token):
         if isinstance(access_token, OAuth2AccessToken):

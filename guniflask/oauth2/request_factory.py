@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from guniflask.oauth2.client_details import ClientDetails
+from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.request import AuthorizationRequest, OAuth2Request, TokenRequest
 from guniflask.oauth2.errors import InvalidClientError
@@ -14,7 +15,7 @@ class OAuth2RequestFactory:
     """
 
     def __int__(self):
-        self.client_details_service = None
+        self.client_details_service: ClientDetailsService = None
 
     def create_authorization_request(self, authorization_parameters: dict):
         client_id = authorization_parameters.get(OAuth2Utils.CLIENT_ID)

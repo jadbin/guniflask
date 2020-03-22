@@ -1,8 +1,11 @@
 # coding=utf-8
 
-from typing import Mapping
+from typing import Mapping, Union
+from abc import ABCMeta, abstractmethod
 
 from guniflask.security.authentication import Authentication
+from guniflask.security.authentication_token import UserAuthentication
+from guniflask.security.user_details_service import UserDetailsService
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token import OAuth2AccessToken
 
@@ -36,9 +39,11 @@ class AccessTokenConverter:
         pass
 
 
-class TokenEnhancer:
+class TokenEnhancer(metaclass=ABCMeta):
+
+    @abstractmethod
     def enhance(self, access_token: OAuth2AccessToken, authentication: OAuth2Authentication) -> OAuth2AccessToken:
-        raise NotImplemented
+        pass
 
 
 class UserAuthenticationConverter:
