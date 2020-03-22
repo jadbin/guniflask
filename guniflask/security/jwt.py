@@ -11,7 +11,7 @@ from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.security.errors import InvalidTokenError
+from guniflask.oauth2.errors import InvalidTokenError
 from guniflask.config.utils import map_dict_config
 from guniflask.oauth2.authentication_manager import BearerTokenExtractor
 from guniflask.oauth2.token import OAuth2AccessToken

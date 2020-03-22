@@ -14,8 +14,8 @@ __all__ = (access_annotation.__all__ +
            authentication.__all__ +
            authentication_manager.__all__ +
            authentication_token.__all__ +
-           errors.__all__ +
            jwt.__all__ +
            preauth_token.__all__ +
            user.__all__,
-           user_details.__all__)
+           user_details.__all__,
+           user_details_service.__all__)

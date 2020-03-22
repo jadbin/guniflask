@@ -2,7 +2,8 @@
 
 __all__ = ['OAuth2Error',
            'ClientAuthenticationError',
-           'InvalidClientError']
+           'InvalidClientError',
+           'InvalidTokenError']
 
 
 class OAuth2Error(Exception):
@@ -20,4 +21,10 @@ class ClientAuthenticationError(OAuth2Error):
 class InvalidClientError(ClientAuthenticationError):
     """
     Invalid Client Exception
+    """
+
+
+class InvalidTokenError(ClientAuthenticationError):
+    """
+    Invalid token error
     """
