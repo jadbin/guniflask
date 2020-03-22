@@ -6,6 +6,7 @@ from os.path import isfile, join
 import argparse
 import signal
 import time
+from collections import defaultdict
 
 from sqlalchemy.schema import MetaData
 
@@ -35,8 +36,6 @@ class InitDb(Command):
     def add_arguments(self, parser):
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
-        parser.add_argument('-b', '--bind', dest='bind', metavar='KEY',
-                            help='bind key')
         parser.add_argument('-f', '--force', dest='force', action='store_true', default=False,
                             help='force creating all tables')
 
@@ -60,7 +59,7 @@ class InitDb(Command):
             else:
                 print("\033[33mThe tables already exist will be skipped.\033[0m")
                 print("\033[33mYou can try '-f' option to force creating all tables.\033[0m")
-            db.create_all(bind=args.bind)
+            db.create_all()
 
 
 class TableToModel(Command):
@@ -77,18 +76,10 @@ class TableToModel(Command):
         return 'Convert database tables to definition of models'
 
     def add_arguments(self, parser):
-        parser.add_argument('--tables', dest='tables',
-                            help='tables to process (comma-separated, default: all)')
-        parser.add_argument('--dest', dest='dest',
-                            help='where to put the models generated from database tables')
         parser.add_argument('-p', '--active-profiles', dest='active_profiles', metavar='PROFILES',
                             help='active profiles (comma-separated)')
-        parser.add_argument('-b', '--bind', dest='bind', metavar='KEY',
-                            help='bind key')
 
     def process_arguments(self, args):
-        if args.tables is not None:
-            args.tables = args.tables.split(',')
         if args.active_profiles:
             os.environ['GUNIFLASK_ACTIVE_PROFILES'] = args.active_profiles
         os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
@@ -101,38 +92,34 @@ class TableToModel(Command):
             settings = app.extensions['settings']
             s = app.extensions.get('sqlalchemy')
             if not s:
-                raise UsageError('Not found sqlalchemy')
+                raise UsageError('Not found SQLAlchemy')
             db = s.db
-
-            dest = []
-            default_dest = join(project_name, 'models')
-            if args.tables:
-                config_dest = args.dest
-                if config_dest is None:
-                    config_dest = settings.get_by_prefix('guniflask.table2model_dest')
-                if not isinstance(config_dest, str):
-                    config_dest = default_dest
-                dest.append({'tables': args.tables, 'dest': config_dest, 'bind': args.bind})
-            elif args.dest:
-                dest.append({'tables': None, 'dest': args.dest, 'bind': args.bind})
-            else:
-                config_dest = settings.get_by_prefix('guniflask.table2model_dest', default_dest)
-                if isinstance(config_dest, str):
-                    dest.append({'tables': None, 'dest': config_dest})
+            default_dest = defaultdict(dict)
+            binds = [None] + list(app.config.get('SQLALCHEMY_BINDS') or ())
+            for b in binds:
+                if b is None:
+                    default_dest[b] = {'dest': join(project_name, 'models')}
                 else:
-                    for d in config_dest:
-                        t = d.get('tables')
-                        if isinstance(t, str):
-                            t = t.split(',')
-                        dest.append({'tables': t, 'dest': d.get('dest', default_dest),
-                                     'bind': d.get('bind')})
-
-            for d in dest:
-                engine = db.get_engine(bind=d.get('bind'))
+                    default_dest[b] = {'dest': join(project_name, 'models_{}'.format(b))}
+            dest_config = settings.get_by_prefix('guniflask.table2model_dest', default_dest)
+            if isinstance(default_dest, str):
+                default_dest[None]['dest'] = dest_config
+            else:
+                for b in dest_config:
+                    if b not in default_dest:
+                        raise UsageError('"{}" is not configured in binds'.format(b))
+                    c = dest_config[b]
+                    if isinstance(c, str):
+                        default_dest[b]['dest'] = c
+                    else:
+                        default_dest[b].update(c)
+            for b in default_dest:
+                c = default_dest[b]
+                engine = db.get_engine(bind=b)
                 metadata = MetaData(engine)
-                metadata.reflect(only=d.get('tables'))
-                gen = SqlToModelGenerator(project_name, metadata, bind=d.get('bind'))
-                gen.render(join(settings['home'], d.get('dest')))
+                metadata.reflect()
+                gen = SqlToModelGenerator(project_name, metadata, bind=b)
+                gen.render(join(settings['home'], c.get('dest')))
 
 
 class Debug(Command):

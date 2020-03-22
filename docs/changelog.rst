@@ -7,6 +7,7 @@ Changelog
 ------------------
 
 - 对于guniflask的内置扩展功能提供更为统一的配置方式，包括jwt和cors模块
+- 减少了initdb和table2model命令的参数，model所在路径的修改、多数据库相关配置等统一在table2model_dest中设置
 
 0.6.1 (2020-03-15)
 ------------------
