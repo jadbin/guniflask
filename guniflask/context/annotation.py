@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import inspect
-from typing import Type
+from typing import Type, Collection
 
 from guniflask.annotation.core import Annotation
 from guniflask.annotation.annotation_utils import AnnotationUtils
@@ -13,7 +13,8 @@ __all__ = ['Bean', 'bean',
            'Conditional', 'conditional',
            'Repository', 'repository',
            'Service', 'service',
-           'Controller', 'controller']
+           'Controller', 'controller',
+           'Include', 'include']
 
 
 class Bean(Annotation):
@@ -128,4 +129,17 @@ def controller(name: str = None):
         f = name
         name = None
         return wrap_func(f)
+    return wrap_func
+
+
+class Include(Annotation):
+    def __init__(self, values: Collection = None):
+        super().__init__(values=values)
+
+
+def include(*values):
+    def wrap_func(func):
+        AnnotationUtils.add_annotation(func, Include(values))
+        return func
+
     return wrap_func
