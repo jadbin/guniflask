@@ -10,12 +10,13 @@ from flask import current_app, _request_ctx_stack
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication import UserAuthentication
-from guniflask.security.authentication_manager import AuthenticationManager, BearerTokenExtractor
-from guniflask.security.token import OAuth2AccessToken
+from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.errors import InvalidTokenError
-from guniflask.security.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
-    UserAuthenticationConverter
 from guniflask.config.utils import map_dict_config
+from guniflask.oauth2.authentication_manager import BearerTokenExtractor
+from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
+    UserAuthenticationConverter
 
 __all__ = ['JwtHelper', 'jwt_manager', 'JwtManager']
 

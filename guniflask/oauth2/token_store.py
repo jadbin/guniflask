@@ -2,8 +2,8 @@
 
 from typing import Union, Collection
 
-from guniflask.security.authentication import OAuth2Authentication
-from guniflask.security.token import OAuth2AccessToken, OAuth2RefreshToken
+from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 
 __all__ = ['TokenStore', 'JwtTokenStore']
 

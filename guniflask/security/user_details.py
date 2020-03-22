@@ -3,8 +3,9 @@
 from flask import current_app, _request_ctx_stack
 from werkzeug.local import LocalProxy
 
-from guniflask.security.authentication import OAuth2Authentication, UserAuthentication
+from guniflask.security.authentication import UserAuthentication
 from guniflask.security.authentication_manager import current_auth
+from guniflask.oauth2.authentication import OAuth2Authentication
 
 __all__ = ['current_user', 'User']
 

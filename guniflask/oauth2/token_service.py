@@ -2,8 +2,8 @@
 
 import datetime as dt
 
-from guniflask.security.authentication import OAuth2Authentication
-from guniflask.security.token import OAuth2AccessToken
+from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.token import OAuth2AccessToken
 
 __all__ = ['TokenServices']
 

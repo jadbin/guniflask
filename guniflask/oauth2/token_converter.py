@@ -2,8 +2,9 @@
 
 from typing import Mapping
 
-from guniflask.security.authentication import Authentication, OAuth2Authentication
-from guniflask.security.token import OAuth2AccessToken
+from guniflask.security.authentication import Authentication
+from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.token import OAuth2AccessToken
 
 __all__ = ['AccessTokenConverter', 'TokenEnhancer', 'UserAuthenticationConverter',
            'JwtAccessTokenConverter']
