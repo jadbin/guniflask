@@ -48,18 +48,39 @@ class TokenEnhancer(metaclass=ABCMeta):
 
 class UserAuthenticationConverter:
     """
-    Utility interface for converting a user authentication to and from a Map.
+    Utility interface for converting a user authentication to and from a dict.
     """
 
     USERNAME = 'username'
+    AUTHORITIES = AccessTokenConverter.AUTHORITIES
 
-    def convert_user_authentication(self, user_authentication: Authentication):
-        # TODO
-        pass
+    def __init__(self):
+        self.default_authorities = set()
+        self.user_details_service: UserDetailsService = None
 
-    def extract_authentication(self, data):
-        # TODO
-        pass
+    def convert_user_authentication(self, user_authentication: Authentication) -> dict:
+        result = {}
+        result[self.USERNAME] = user_authentication.name
+        if user_authentication.authorities:
+            result[self.AUTHORITIES] = set(user_authentication.authorities)
+        return result
+
+    def extract_authentication(self, data: dict) -> Union[Authentication, None]:
+        if self.USERNAME in data:
+            principal = data[self.USERNAME]
+            authorities = self._get_authorities(data)
+            if self.user_details_service is not None:
+                user = self.user_details_service.load_user_by_username(str(principal))
+                authorities = user.authorities
+                principal = user
+            return UserAuthentication(principal, authorities)
+
+    def _get_authorities(self, data: dict):
+        if self.AUTHORITIES not in data:
+            return self.default_authorities
+        authorities = set()
+        authorities.update(data[self.AUTHORITIES])
+        return authorities
 
 
 class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
