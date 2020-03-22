@@ -109,14 +109,14 @@ class TableToModel(Command):
             if args.tables:
                 config_dest = args.dest
                 if config_dest is None:
-                    config_dest = settings.get('table2model_dest')
+                    config_dest = settings.get_by_prefix('guniflask.table2model_dest')
                 if not isinstance(config_dest, str):
                     config_dest = default_dest
                 dest.append({'tables': args.tables, 'dest': config_dest, 'bind': args.bind})
             elif args.dest:
                 dest.append({'tables': None, 'dest': args.dest, 'bind': args.bind})
             else:
-                config_dest = settings.get('table2model_dest', default_dest)
+                config_dest = settings.get_by_prefix('guniflask.table2model_dest', default_dest)
                 if isinstance(config_dest, str):
                     dest.append({'tables': None, 'dest': config_dest})
                 else:

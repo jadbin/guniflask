@@ -15,6 +15,7 @@ from guniflask.security.token import OAuth2AccessToken
 from guniflask.security.errors import InvalidTokenError
 from guniflask.security.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
     UserAuthenticationConverter
+from guniflask.config.utils import map_dict_config
 
 __all__ = ['JwtHelper', 'jwt_manager', 'JwtManager']
 
@@ -46,27 +47,31 @@ class JwtManager(AuthenticationManager):
     USERNAME = UserAuthenticationConverter.USERNAME
     USER_DETAILS = 'user_details'
 
+    class JwtManagerConfig:
+        secret = ''
+        public_key = None
+        private_key = None
+        algorithm = 'HS256'
+        access_token_expires_in = dt.timedelta(days=1)
+        refresh_token_expires_in = dt.timedelta(days=365)
+
     def __init__(self):
         self.token_extractor = BearerTokenExtractor()
         self.token_converter = JwtAccessTokenConverter()
+        self.config = self.JwtManagerConfig()
+
+    @classmethod
+    def from_config(cls, config: dict):
+        obj = cls()
+        map_dict_config(config, obj.config)
+        return obj
 
     def init_app(self, app):
-        self._set_default_app_config(app)
         app.before_request(self.do_authentication_filter)
         app.extensions['jwt_manager'] = self
 
-    def _set_default_app_config(self, app):
-        app.config.setdefault('JWT_ALGORITHM', 'HS256')
-        app.config.setdefault('JWT_SECRET', None)
-        app.config.setdefault('JWT_PRIVATE_KEY', None)
-        app.config.setdefault('JWT_PUBLIC_KEY', None)
-        app.config.setdefault('ACCESS_TOKEN_EXPIRES_IN', dt.timedelta(days=1))
-        app.config.setdefault('REFRESH_TOKEN_EXPIRES_IN', dt.timedelta(days=365))
-
     def create_access_token(self, authorities=None, username=None, user_details=None) -> str:
-        app_config = current_app.config
-
-        expires_in = app_config['ACCESS_TOKEN_EXPIRES_IN']
+        expires_in = self.config.access_token_expires_in
         payload = {
             self.JTI: str(uuid.uuid4())
         }
@@ -77,8 +82,8 @@ class JwtManager(AuthenticationManager):
         payload[self.USERNAME] = username
         payload[self.USER_DETAILS] = user_details
 
-        return JwtHelper.encode_jwt(payload, app_config['JWT_SECRET'] or app_config['JWT_PRIVATE_KEY'],
-                                    app_config['JWT_ALGORITHM'])
+        return JwtHelper.encode_jwt(payload, self.config.secret or self.config.private_key,
+                                    self.config.algorithm)
 
     def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
         payload = self._decode(access_token_value)
@@ -96,10 +101,9 @@ class JwtManager(AuthenticationManager):
         return user_auth
 
     def _decode(self, access_token_value):
-        app_config = current_app.config
         try:
-            payload = JwtHelper.decode_jwt(access_token_value, app_config['JWT_SECRET'] or app_config['JWT_PUBLIC_KEY'],
-                                           app_config['JWT_ALGORITHM'])
+            payload = JwtHelper.decode_jwt(access_token_value, self.config.secret or self.config.public_key,
+                                           self.config.algorithm)
         except Exception as e:
             raise InvalidTokenError(e)
         return payload

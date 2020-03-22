@@ -55,23 +55,23 @@ debug
 
 在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``manage debug`` 命令会自动设置。
 
+
+Settings to Configure the Built-in Functions
+---------------------------------------------
+
+我们在名为 ``guniflask`` 的dict对象下配置guniflask提供的内置功能。
+可用的配置项包括：
+
 cors
 ^^^^
 
-- Default: ``True``
-
-跨域相关配置。
-
-如果为 ``True`` 表示开启跨域。
-项目基于Flask-Cors实现跨域，``cors`` 也可以设置为 ``dict`` 类型，并用作传入对跨域进行详细配置的关键字参数。
-详细配置可参考Flask-Cors文档: https://flask-cors.readthedocs.io/en/latest/api.html 。
+跨域相关配置，默认开启跨域。
+如需关闭跨域功能可以设置为 ``cors=False`` 。
 
 jwt
 ^^^
 
-- Default: ``False``
-
-是否开启基于JWT的认证功能。
+是否开启基于JWT的认证功能及相关配配置。
 
 .. _table2model_dest:
 
@@ -80,6 +80,12 @@ table2model_dest
 
 - Default: ``'foo/models'``
 
-配置table2model生成结果存储的路径。
+配置table2model生成结果存储的模块路径，路径为相对于项目根目录的相对路径。
+默认存储在项目根模块下的 ``models`` 模块中。
 
-路径为相对于项目根目录的相对路径。
+wrap_sqlalchemy_model
+^^^^^^^^^^^^^^^^^^^^^
+
+- Default: ``True``
+
+为SQLAlchemy的Model对象动态添加工具函数。

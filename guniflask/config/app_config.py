@@ -9,11 +9,11 @@ from importlib import import_module
 
 from flask import current_app
 from werkzeug.local import LocalProxy
-from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.model.wrapper import wrap_model
 from guniflask.security.jwt import JwtManager
+from guniflask.web.cors import CorsManager
 
 log = logging.getLogger(__name__)
 
@@ -23,19 +23,7 @@ __all__ = ['settings', 'app_default_settings',
 
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
-
-class S:
-    DEBUG = 'debug'
-    CORS = 'cors'
-    JWT = 'jwt'
-    WRAP_SQLALCHEMY_MODEL = 'wrap_sqlalchemy_model'
-
-
 app_default_settings = {
-    S.DEBUG: False,
-    S.CORS: True,
-    S.JWT: False,
-    S.WRAP_SQLALCHEMY_MODEL: True,
     # Flask-SQLAlchemy
     'SQLALCHEMY_TRACK_MODIFICATIONS': False
 }
@@ -44,7 +32,6 @@ app_default_settings = {
 class AppConfig:
     def __init__(self, app):
         s = Settings(self._load_app_settings(app.name))
-        self._set_default_settings(s)
         app.extensions['settings'] = s
         self.app = app
 
@@ -55,24 +42,25 @@ class AppConfig:
         for k, v in s.items():
             if k.isupper():
                 self.app.config[k] = v
+        self._set_app_default_settings(self.app)
 
         # CORS
-        if s[S.CORS]:
-            cors = s[S.CORS]
-            if isinstance(cors, dict):
-                CORS(self.app, **s[cors])
-            else:
-                CORS(self.app)
+        cors_config = s.get_by_prefix('guniflask.cors', {'resources': r'/*'})
+        if cors_config:
+            cors_manager = CorsManager.from_config(cors_config)
+            cors_manager.init_app(self.app)
 
         # database configuration
-        if s[S.WRAP_SQLALCHEMY_MODEL]:
+        do_wrap = s.get_by_prefix('guniflask.wrap_sqlalchemy_model', True)
+        if do_wrap:
             for v in vars(app_module).values():
                 if isinstance(v, SQLAlchemy):
                     wrap_model(v.Model)
 
         # authentication
-        if s[S.JWT]:
-            jwt_manager = JwtManager()
+        jwt_config = s.get_by_prefix('guniflask.jwt')
+        if jwt_config is not None:
+            jwt_manager = JwtManager.from_config(jwt_config)
             jwt_manager.init_app(self.app)
 
     @property
@@ -80,7 +68,7 @@ class AppConfig:
         return self.app_settings(current_app)
 
     def app_settings(self, app):
-        return app.extensions['settings']
+        return app.extensions.get('settings')
 
     def _load_app_settings(self, app_name):
         c = {}
@@ -106,9 +94,9 @@ class AppConfig:
             kwargs['debug'] = False
         return kwargs
 
-    def _set_default_settings(self, s):
+    def _set_app_default_settings(self, app):
         for k, v in app_default_settings.items():
-            s.setdefault(k, v)
+            app.config.setdefault(k, v)
 
 
 def load_config(fname, **kwargs):
@@ -156,6 +144,23 @@ class Settings(MutableMapping):
 
     def get(self, name, default=None):
         return self[name] if self[name] is not None else default
+
+    def get_by_prefix(self, prefix, default=None):
+        s = prefix.split('.')
+        obj = self
+        for i in s:
+            if hasattr(obj, i):
+                obj = getattr(obj, i)
+            elif hasattr(obj, '__getitem__') and hasattr(obj, '__contains__'):
+                if i in obj:
+                    obj = obj[i]
+                else:
+                    obj = None
+            else:
+                obj = None
+            if obj is None:
+                break
+        return obj or default
 
     def getbool(self, name, default=None):
         v = self.get(name, default)
