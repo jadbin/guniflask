@@ -9,7 +9,7 @@ import jwt
 from flask import current_app, _request_ctx_stack
 from werkzeug.local import LocalProxy
 
-from guniflask.security.authentication import UserAuthentication
+from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.errors import InvalidTokenError
 from guniflask.config.utils import map_dict_config
@@ -17,6 +17,7 @@ from guniflask.oauth2.authentication_manager import BearerTokenExtractor
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
     UserAuthenticationConverter
+from guniflask.security.user import User
 
 __all__ = ['JwtHelper', 'jwt_manager', 'JwtManager']
 
@@ -96,8 +97,8 @@ class JwtManager(AuthenticationManager):
         authorities = payload[self.AUTHORITIES]
         username = payload[self.USERNAME]
         user_details = payload[self.USER_DETAILS]
-        user_auth = UserAuthentication(username, authorities=authorities)
-        user_auth.details = user_details
+        user = User(username=username, authorities=authorities, details=user_details)
+        user_auth = UserAuthentication(user, authorities=authorities)
         user_auth.authenticate(True)
         return user_auth
 

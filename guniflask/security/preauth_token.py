@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from guniflask.security.authentication import Authentication
+from guniflask.security.authentication_token import AuthenticationToken
 
 __all__ = ['PreAuthenticatedToken']
 
 
-class PreAuthenticatedToken(Authentication):
+class PreAuthenticatedToken(AuthenticationToken):
     def __init__(self, token):
         super().__init__()
         self._token = token

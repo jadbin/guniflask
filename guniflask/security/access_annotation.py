@@ -4,14 +4,15 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import Unauthorized
 
-from guniflask.security.user_details import current_user, AnonymousUser
+from guniflask.security.user import current_user
 
 __all__ = ['login_required', 'roles_required', 'authorities_required']
 
 
 def login_required(func):
     def wrapper(*args, **kwargs):
-        if isinstance(current_user._get_current_object(), AnonymousUser):
+        user = current_user._get_current_object()
+        if user is None:
             raise Unauthorized
         return func(*args, **kwargs)
 
