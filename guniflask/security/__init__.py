@@ -4,11 +4,11 @@ from .access_annotation import *
 from .authentication import *
 from .authentication_manager import *
 from .authentication_token import *
-from .errors import *
 from .jwt import *
 from .preauth_token import *
 from .user import *
 from .user_details import *
+from .user_details_service import *
 
 __all__ = (access_annotation.__all__ +
            authentication.__all__ +
