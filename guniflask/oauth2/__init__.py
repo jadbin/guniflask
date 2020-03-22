@@ -3,6 +3,8 @@
 from .authentication import *
 from .authentication_manager import *
 from .client_details import *
+from .errors import *
+from .oauth2_utils import *
 from .request import *
 from .request_factory import *
 from .token import *
@@ -14,6 +16,8 @@ __all__ = (
         authentication.__all__ +
         authentication_manager.__all__ +
         client_details.__all__ +
+        errors.__all__ +
+        oauth2_utils.__all__ +
         request.__all__ +
         request_factory.__all__ +
         token.__all__ +

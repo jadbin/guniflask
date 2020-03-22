@@ -1,66 +1,83 @@
 # coding=utf-8
 
-__all__ = ['OAuth2Request']
+from guniflask.oauth2.client_details import ClientDetails
+from guniflask.oauth2.oauth2_utils import OAuth2Utils
+
+__all__ = ['AuthorizationRequest', 'OAuth2Request', 'TokenRequest']
 
 
 class BaseRequest:
-    def __init__(self, client_id=None, scope=None, request_parameters=None):
-        self._client_id = client_id
-        self._scope = set()
+    def __init__(self, client_id: str = None, scope: set = None, request_parameters: dict = None):
+        self.client_id = client_id
+        self.scope = set()
         if scope is not None:
-            self._scope.update(scope)
-        self._request_parameters = {}
+            self.scope.update(scope)
+        self.request_parameters = {}
         if request_parameters is not None:
-            self._request_parameters.update(request_parameters)
+            self.request_parameters.update(request_parameters)
 
-    @property
-    def client_id(self):
-        return self._client_id
 
-    @property
-    def scope(self):
-        return self._scope
+class AuthorizationRequest(BaseRequest):
+    def __init__(self, approval_parameters: dict = None, authorities: set = None, approved: bool = None,
+                 resource_ids: set = None, redirect_uri: str = None, response_types: set = None, state: str = None,
+                 **kwargs):
+        super().__init__(**kwargs)
+        self.approval_parameters = {}
+        if approval_parameters is not None:
+            self.approval_parameters.update(approval_parameters)
+        self.resource_ids = set()
+        self.authorities = set()
+        if authorities is not None:
+            self.authorities.update(authorities)
+        self.approved = False
+        if approved is not None:
+            self.approved = approved
+        self.resource_ids = {}
+        if resource_ids is not None:
+            self.resource_ids = {}
+        if resource_ids is not None:
+            self.resource_ids.update(resource_ids)
+        self.redirect_uri = redirect_uri
+        self.response_types = set()
+        if response_types is not None:
+            self.response_types.update(response_types)
+        self.state = state
 
-    @property
-    def request_parameters(self):
-        return self._request_parameters
+    def set_from_client_details(self, client_details: ClientDetails):
+        self.resource_ids = client_details.resource_ids
+        self.authorities = client_details.authorities
 
 
 class OAuth2Request(BaseRequest):
-    def __init__(self, authorities=None, approved=None, resource_ids=None, redirect_uri=None, response_types=None,
-                 **kwargs):
+    def __init__(self, authorities: set = None, approved: bool = None, resource_ids: set = None,
+                 redirect_uri: str = None, response_types: set = None, **kwargs):
         super().__init__(**kwargs)
-        self._authorities = set()
+        self.authorities = set()
         if authorities is not None:
-            self._authorities.update(authorities)
-        self._approved = False
+            self.authorities.update(authorities)
+        self.approved = False
         if approved is not None:
-            self._approved = approved
-        self._resource_ids = {}
+            self.approved = approved
+        self.resource_ids = {}
         if resource_ids is not None:
-            self._resource_ids.update(resource_ids)
-        self._redirect_uri = redirect_uri
-        self._response_types = set()
+            self.resource_ids.update(resource_ids)
+        self.redirect_uri = redirect_uri
+        self.response_types = set()
         if response_types is not None:
-            self._response_types.update(response_types)
-        self._refresh = None
+            self.response_types.update(response_types)
+        self.refresh = None
 
     @property
-    def is_approved(self):
-        return self._approved
+    def grant_type(self):
+        if OAuth2Utils.GRANT_TYPE in self.request_parameters:
+            return self.request_parameters[OAuth2Utils.GRANT_TYPE]
+        if OAuth2Utils.RESPONSE_TYPE in self.request_parameters:
+            response = self.request_parameters[OAuth2Utils.RESPONSE_TYPE]
+            if 'token' in response:
+                return 'implicit'
 
-    @property
-    def authorities(self):
-        return self._authorities
 
-    @property
-    def resource_ids(self):
-        return self._resource_ids
-
-    @property
-    def redirect_uri(self):
-        return self._redirect_uri
-
-    @property
-    def response_types(self):
-        return self._response_types
+class TokenRequest(BaseRequest):
+    def __init__(self, grant_type: str = None, **kwargs):
+        self.grant_type = grant_type
+        super().__init__(**kwargs)
