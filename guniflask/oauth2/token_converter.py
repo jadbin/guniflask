@@ -7,9 +7,11 @@ import datetime as dt
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security.jwt import JwtHelper
 from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 from guniflask.oauth2.request import OAuth2Request
+from guniflask.oauth2.errors import InvalidTokenError
 
 __all__ = ['AccessTokenConverter', 'TokenEnhancer', 'UserAuthenticationConverter',
            'JwtAccessTokenConverter']
@@ -161,29 +163,61 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
     TOKEN_ID = AccessTokenConverter.JTI
     ACCESS_TOKEN_ID = AccessTokenConverter.ATI
 
-    def convert_access_token(self, access_token, authentication):
-        # TODO
-        pass
+    def __init__(self):
+        self.token_converter = AccessTokenConverter()
+        AccessTokenConverter.__init__(self)
+        self.signing_algorithm = 'HS256'
+        self.signing_key = JwtHelper.generate_jwt_secret()
+        self.verifying_key = self.signing_key
 
-    def extract_access_token(self, token_value, data):
-        # TODO
-        pass
+    def convert_access_token(self, token: OAuth2AccessToken, authentication: OAuth2Authentication) -> dict:
+        return self.token_converter.convert_access_token(token, authentication)
 
-    def extract_authentication(self, data):
-        # TODO
-        pass
+    def extract_access_token(self, token_value: str, data: dict) -> OAuth2AccessToken:
+        return self.token_converter.extract_access_token(token_value, data)
 
-    def _enhance(self, access_token, authentication):
-        # TODO
-        pass
+    def extract_authentication(self, data: dict) -> OAuth2Authentication:
+        return self.token_converter.extract_authentication(data)
 
-    def _encode(self, access_token, authentication):
-        # TODO
-        pass
+    def enhance(self, access_token: OAuth2AccessToken, authentication: OAuth2Authentication) -> OAuth2AccessToken:
+        result = access_token.copy()
+        info = dict(access_token.additional_info)
+        token_id = result.value
+        if self.TOKEN_ID not in info:
+            info[self.TOKEN_ID] = token_id
+        else:
+            token_id = str(info[self.TOKEN_ID])
+        result.additional_info = info
+        result.value = self.encode(result, authentication)
 
-    def _decode(self, token_value):
-        # TODO
-        pass
+        refresh_token = result.refresh_token
+        if refresh_token:
+            encoded_refresh_token = access_token.copy()
+            encoded_refresh_token.value = refresh_token.value
+            encoded_refresh_token.expiration = refresh_token.expiration
+            claims = JwtHelper.decode_jwt(refresh_token.value, self.verifying_key, self.signing_algorithm)
+            if self.TOKEN_ID in claims:
+                encoded_refresh_token.value = str(claims[self.TOKEN_ID])
+            refresh_token_info = dict(access_token.additional_info)
+            refresh_token_info[self.TOKEN_ID] = encoded_refresh_token.value
+            refresh_token_info[self.ACCESS_TOKEN_ID] = token_id
+            encoded_refresh_token.additional_info = refresh_token_info
+            token = OAuth2RefreshToken(self.encode(encoded_refresh_token, authentication),
+                                       expiration=refresh_token.expiration)
+            result.refresh_token = token
+        return result
+
+    def encode(self, access_token: OAuth2AccessToken, authentication: OAuth2Authentication) -> str:
+        payload = self.token_converter.convert_access_token(access_token, authentication)
+        token = JwtHelper.encode_jwt(payload, self.signing_key, self.signing_algorithm)
+        return token
+
+    def decode(self, token_value: str) -> dict:
+        try:
+            payload = JwtHelper.decode_jwt(token_value, self.verifying_key, algorithm=self.signing_algorithm)
+        except Exception as e:
+            raise InvalidTokenError(e)
+        return payload
 
     def is_refresh_token(self, token):
-        return self.ACCESS_TOKEN_ID in token.additional_information()
+        return self.ACCESS_TOKEN_ID in token.additional_information

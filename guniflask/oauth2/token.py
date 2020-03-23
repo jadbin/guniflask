@@ -60,3 +60,11 @@ class OAuth2AccessToken:
         if self.additional_info is not None:
             res.update(self.additional_info)
         return res
+
+    def copy(self):
+        token = self.__class__(self.value,
+                               refresh_token=self.refresh_token,
+                               expiration=self.expiration,
+                               scope=self.scope,
+                               additional_info=dict(self.additional_info))
+        return token
