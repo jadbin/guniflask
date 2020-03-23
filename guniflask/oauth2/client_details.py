@@ -8,7 +8,7 @@ class ClientDetails:
     Client details for OAuth2
     """
 
-    def __init__(self, client_id=None, client_secret=None, resources_ids=None, scopes=None, grant_types=None,
+    def __init__(self, client_id=None, client_secret=None, resources_ids=None, scope=None, grant_types=None,
                  authorities=None, redirect_uris=None, auto_approve_scopes=None,
                  access_token_expires_in=None, refresh_token_expires_in=None,
                  additional_information=None):
@@ -17,9 +17,9 @@ class ClientDetails:
         self.resource_ids = set()
         if resources_ids is not None:
             self.resource_ids.update(resources_ids)
-        self.scopes = set()
-        if scopes is not None:
-            self.scopes.update(scopes)
+        self.scope = set()
+        if scope is not None:
+            self.scope.update(scope)
         self.grant_types = set()
         if grant_types is not None:
             self.grant_types.update(grant_types)
@@ -39,7 +39,7 @@ class ClientDetails:
             self.additional_information.update(additional_information)
 
     def is_scoped(self):
-        return self.scopes is not None and len(self.scopes) > 0
+        return self.scope is not None and len(self.scope) > 0
 
     def is_auto_approve(self, scope):
         return self.auto_approve_scopes is not None and scope in self.auto_approve_scopes

@@ -86,5 +86,5 @@ class OAuth2RequestFactory:
         scopes = OAuth2Utils.parse_parameter_list(request_parameters.get(OAuth2Utils.SCOPE))
         client_details = self.client_details_service.load_client_details_by_client_id(client_id)
         if not scopes:
-            scopes = client_details.scopes
+            scopes = client_details.scope
         return scopes

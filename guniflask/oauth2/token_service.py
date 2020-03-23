@@ -13,11 +13,12 @@ from guniflask.oauth2.request import TokenRequest, OAuth2Request
 from guniflask.oauth2.errors import InvalidTokenError, InvalidGrantError, InvalidScopeError
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
+from guniflask.beans.factory_hook import InitializingBean
 
 __all__ = ['TokenServices']
 
 
-class TokenServices:
+class TokenServices(InitializingBean):
     """
     Base implementation for token services using random UUID values for the access token and refresh token values.
     """
@@ -30,6 +31,9 @@ class TokenServices:
         self.refresh_token_expires_in = 365 * 24 * 60 * 60
         self.support_refresh_token = False
         self.authentication_manager: AuthenticationManager = None
+
+    def after_properties_set(self):
+        assert self.token_store is not None, 'Token store must be set'
 
     def create_access_token(self, authentication: OAuth2Authentication = None) -> OAuth2AccessToken:
         existing_access_token = self.token_store.get_access_token(authentication)

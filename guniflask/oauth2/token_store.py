@@ -66,8 +66,8 @@ class TokenStore(metaclass=ABCMeta):
 
 
 class JwtTokenStore(TokenStore):
-    def __init__(self):
-        self.jwt_token_converter: JwtAccessTokenConverter = None
+    def __init__(self, jwt_token_converter: JwtAccessTokenConverter):
+        self.jwt_token_converter = jwt_token_converter
 
     def read_authentication(self, access_token):
         if isinstance(access_token, OAuth2AccessToken):
