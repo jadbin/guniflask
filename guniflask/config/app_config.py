@@ -12,7 +12,7 @@ from werkzeug.local import LocalProxy
 from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.model.wrapper import wrap_model
-from guniflask.security.jwt import JwtManager
+from guniflask.security.jwt_provider import JwtManager
 from guniflask.web.cors import CorsManager
 
 log = logging.getLogger(__name__)
