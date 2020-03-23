@@ -7,18 +7,18 @@ __all__ = ['OAuth2Authentication']
 
 
 class OAuth2Authentication(Authentication):
-    def __init__(self, stored_request: OAuth2Request, user_authentication: Authentication = None):
+    def __init__(self, oauth2_request: OAuth2Request, user_authentication: Authentication = None):
         authorities = None
         if user_authentication is not None:
             authorities = user_authentication.authorities
         super().__init__(authorities=authorities)
-        self._stored_request = stored_request
+        self._oauth2_request = oauth2_request
         self._user_authentication = user_authentication
 
     @property
     def principal(self):
         if self._user_authentication is None:
-            return self._stored_request.client_id
+            return self._oauth2_request.client_id
         return self.user_authentication.principal
 
     @property
@@ -26,9 +26,13 @@ class OAuth2Authentication(Authentication):
         return None
 
     @property
-    def stored_request(self):
-        return self._stored_request
+    def oauth2_request(self):
+        return self._oauth2_request
 
     @property
     def user_authentication(self):
         return self._user_authentication
+
+    @property
+    def is_client_only(self):
+        return self._user_authentication is None
