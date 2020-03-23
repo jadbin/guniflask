@@ -34,8 +34,8 @@ class JwtManager(AuthenticationManager):
         public_key = None
         private_key = None
         algorithm = 'HS256'
-        access_token_expires_in = dt.timedelta(days=1)
-        refresh_token_expires_in = dt.timedelta(days=365)
+        access_token_expires_in = 24 * 60 * 60
+        refresh_token_expires_in = 365 * 24 * 60 * 60
 
     def __init__(self):
         self.token_extractor = BearerTokenExtractor()
@@ -55,9 +55,9 @@ class JwtManager(AuthenticationManager):
     def create_access_token(self, authorities=None, username=None, user_details=None) -> str:
         expires_in = self.config.access_token_expires_in
         payload = {
-            self.JTI: str(uuid.uuid4())
+            self.JTI: uuid.uuid4().hex
         }
-        exp = dt.datetime.utcnow() + expires_in
+        exp = dt.datetime.utcnow() + dt.timedelta(seconds=expires_in)
         payload[self.EXP] = exp
 
         payload[self.AUTHORITIES] = authorities

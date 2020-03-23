@@ -3,28 +3,42 @@
 __all__ = ['OAuth2Error',
            'ClientAuthenticationError',
            'InvalidClientError',
-           'InvalidTokenError']
+           'InvalidTokenError',
+           'InvalidGrantError',
+           'InvalidScopeError']
 
 
 class OAuth2Error(Exception):
     """
-    OAuth2 Exception
+    OAuth2 exception
     """
 
 
 class ClientAuthenticationError(OAuth2Error):
     """
-    Client Authentication Exception
+    Client authentication exception
     """
 
 
 class InvalidClientError(ClientAuthenticationError):
     """
-    Invalid Client Exception
+    Invalid client exception
     """
 
 
 class InvalidTokenError(ClientAuthenticationError):
     """
-    Invalid token error
+    Invalid token exception
+    """
+
+
+class InvalidGrantError(ClientAuthenticationError):
+    """
+    Invalid grant exception
+    """
+
+
+class InvalidScopeError(OAuth2Error):
+    """
+    Invalid scope exception
     """

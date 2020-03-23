@@ -3,7 +3,7 @@
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 
-__all__ = ['AuthorizationRequest', 'OAuth2Request', 'TokenRequest']
+__all__ = ['AuthorizationRequest', 'TokenRequest', 'OAuth2Request']
 
 
 class BaseRequest:
@@ -48,6 +48,12 @@ class AuthorizationRequest(BaseRequest):
         self.authorities = client_details.authorities
 
 
+class TokenRequest(BaseRequest):
+    def __init__(self, grant_type: str = None, **kwargs):
+        self.grant_type = grant_type
+        super().__init__(**kwargs)
+
+
 class OAuth2Request(BaseRequest):
     def __init__(self, authorities: set = None, approved: bool = None, resource_ids: set = None,
                  redirect_uri: str = None, response_types: set = None, **kwargs):
@@ -65,7 +71,7 @@ class OAuth2Request(BaseRequest):
         self.response_types = set()
         if response_types is not None:
             self.response_types.update(response_types)
-        self.refresh = None
+        self.refresh: TokenRequest = None
 
     @property
     def grant_type(self):
@@ -76,8 +82,24 @@ class OAuth2Request(BaseRequest):
             if 'token' in response:
                 return 'implicit'
 
+    def copy(self):
+        request = self.__class__(request_parameters=self.request_parameters,
+                                 client_id=self.client_id,
+                                 scope=self.scope,
+                                 authorities=self.authorities,
+                                 approved=self.approved,
+                                 resource_ids=self.resource_ids,
+                                 redirect_uri=self.redirect_uri,
+                                 response_types=self.response_types)
+        request.refresh = self.refresh
+        return request
 
-class TokenRequest(BaseRequest):
-    def __init__(self, grant_type: str = None, **kwargs):
-        self.grant_type = grant_type
-        super().__init__(**kwargs)
+    def do_refresh(self, token_request: TokenRequest):
+        request = self.copy()
+        request.refresh = token_request
+        return request
+
+    def narrow_scope(self, scope: set):
+        request = self.copy()
+        request.scope = scope
+        return request

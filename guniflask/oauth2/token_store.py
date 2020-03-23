@@ -17,7 +17,7 @@ class TokenStore(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def read_authentication(self, access_token: Union[OAuth2AccessToken, str]) -> OAuth2AccessToken:
+    def read_authentication(self, access_token: Union[OAuth2AccessToken, str]) -> OAuth2Authentication:
         pass
 
     @abstractmethod

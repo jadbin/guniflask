@@ -14,6 +14,16 @@ class OAuth2RefreshToken:
         self.value = value
         self.expiration = expiration
 
+    @property
+    def expires_in(self):
+        if self.expiration is None:
+            return 0
+        return int(self.expiration.timestamp() - datetime.now().timestamp())
+
+    @property
+    def is_expired(self):
+        return self.expiration is not None and self.expires_in > 0
+
 
 class OAuth2AccessToken:
     """
@@ -48,6 +58,10 @@ class OAuth2AccessToken:
         if self.expiration is None:
             return 0
         return int(self.expiration.timestamp() - datetime.now().timestamp())
+
+    @property
+    def is_expired(self):
+        return self.expiration is not None and self.expires_in > 0
 
     def to_dict(self):
         res = {self.ACCESS_TOKEN: self.value, self.TOKEN_TYPE: self.token_type}
