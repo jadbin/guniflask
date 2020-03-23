@@ -1,9 +1,12 @@
 # coding=utf-8
 
+from typing import Union
+
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
+from guniflask.oauth2.errors import InvalidScopeError
 
-__all__ = ['AuthorizationRequest', 'TokenRequest', 'OAuth2Request']
+__all__ = ['AuthorizationRequest', 'TokenRequest', 'OAuth2Request', 'OAuth2RequestValidator']
 
 
 class BaseRequest:
@@ -103,3 +106,14 @@ class OAuth2Request(BaseRequest):
         request = self.copy()
         request.scope = scope
         return request
+
+
+class OAuth2RequestValidator:
+    def validate_scope(self, request: Union[AuthorizationRequest, TokenRequest], client: ClientDetails):
+        self._validate_request_scope(request.scope, client.scope)
+
+    def _validate_request_scope(self, request_scopes: set, client_scopes: set):
+        if client_scopes:
+            for scope in request_scopes:
+                if scope not in client_scopes:
+                    raise InvalidScopeError('Invalid scope: {}'.format(scope))

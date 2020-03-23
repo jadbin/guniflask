@@ -10,6 +10,7 @@ from .request import *
 from .request_factory import *
 from .token import *
 from .token_converter import *
+from .token_granter import *
 from .token_service import *
 from .token_store import *
 
@@ -23,5 +24,6 @@ __all__ = (authentication.__all__ +
            request_factory.__all__ +
            token.__all__ +
            token_converter.__all__ +
+           token_granter.__all__ +
            token_service.__all__ +
            token_store.__all__)
