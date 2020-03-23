@@ -6,6 +6,8 @@ from .client_details import *
 from .client_details_service import *
 from .errors import *
 from .oauth2_utils import *
+from .password import *
+from .refresh import *
 from .request import *
 from .request_factory import *
 from .token import *
@@ -20,6 +22,8 @@ __all__ = (authentication.__all__ +
            client_details_service.__all__ +
            errors.__all__ +
            oauth2_utils.__all__ +
+           password.__all__ +
+           refresh.__all__ +
            request.__all__ +
            request_factory.__all__ +
            token.__all__ +
