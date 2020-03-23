@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from typing import Union, Collection
+from abc import ABCMeta, abstractmethod
 
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
@@ -10,46 +11,58 @@ from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 __all__ = ['TokenStore', 'JwtTokenStore']
 
 
-class TokenStore:
+class TokenStore(metaclass=ABCMeta):
     """
     Persistence interface for OAuth2 tokens.
     """
 
+    @abstractmethod
     def read_authentication(self, access_token: Union[OAuth2AccessToken, str]) -> OAuth2AccessToken:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def store_access_token(self, access_token: OAuth2AccessToken, authentication: OAuth2Authentication):
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def remove_access_token(self, access_token: OAuth2AccessToken):
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def store_refresh_token(self, refresh_token: str, authentication: OAuth2Authentication):
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def read_refresh_token(self, refresh_token_value: str) -> OAuth2RefreshToken:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def read_authentication_for_refresh_token(self, refresh_token: OAuth2RefreshToken) -> OAuth2Authentication:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def remove_refresh_token(self, refresh_token: OAuth2RefreshToken):
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def remove_access_token_using_refresh_token(self, refresh_token: OAuth2RefreshToken):
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def get_access_token(self, authentication: OAuth2Authentication) -> OAuth2AccessToken:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def find_tokens_by_client_id_and_username(self, client_id: str, username: str) -> Collection:
-        raise NotImplemented
+        pass
 
+    @abstractmethod
     def find_tokens_by_client_id(self, client_id: str) -> Collection:
-        raise NotImplemented
+        pass
 
 
 class JwtTokenStore(TokenStore):
@@ -77,8 +90,9 @@ class JwtTokenStore(TokenStore):
         return None
 
     def read_refresh_token(self, refresh_token_value):
-        # TODO
-        pass
+        encoded_refresh_token = self._convert_access_token(refresh_token_value)
+        refresh_token = self._create_refresh_token(encoded_refresh_token)
+        return refresh_token
 
     def read_authentication_for_refresh_token(self, refresh_token):
         return self.read_authentication(refresh_token.value)
@@ -98,6 +112,12 @@ class JwtTokenStore(TokenStore):
     def find_tokens_by_client_id(self, client_id):
         return []
 
-    def _convert_access_token(self, access_token_value):
+    def _convert_access_token(self, access_token_value: str):
         return self.jwt_token_converter.extract_access_token(access_token_value,
                                                              self.jwt_token_converter.decode(access_token_value))
+
+    def _create_refresh_token(self, encoded_refresh_token: OAuth2AccessToken):
+        if not self.jwt_token_converter.is_refresh_token(encoded_refresh_token):
+            raise InvalidTokenError('Encoded token is not a refresh token')
+        token = OAuth2RefreshToken(encoded_refresh_token.value, encoded_refresh_token.expiration)
+        return token
