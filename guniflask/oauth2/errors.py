@@ -2,11 +2,13 @@
 
 __all__ = ['OAuth2Error',
            'ClientAuthenticationError',
+           'InvalidRequestError',
            'InvalidClientError',
            'InvalidTokenError',
            'InvalidGrantError',
            'InvalidScopeError',
            'OAuth2AccessDeniedError',
+           'UnsupportedGrantTypeError',
            'ClientRegistrationError',
            'NoSuchClientError',
            'ClientAlreadyExistsError']
@@ -21,6 +23,12 @@ class OAuth2Error(Exception):
 class ClientAuthenticationError(OAuth2Error):
     """
     Client authentication exception
+    """
+
+
+class InvalidRequestError(ClientAuthenticationError):
+    """
+    Invalid request exception
     """
 
 
@@ -51,6 +59,12 @@ class InvalidScopeError(OAuth2Error):
 class OAuth2AccessDeniedError(OAuth2Error):
     """
     OAuth2 access denied
+    """
+
+
+class UnsupportedGrantTypeError(OAuth2Error):
+    """
+    Unsupported grant type exception
     """
 
 

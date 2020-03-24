@@ -3,6 +3,7 @@
 from typing import Union
 from abc import ABCMeta, abstractmethod
 import datetime as dt
+import re
 
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_token import UserAuthentication
@@ -221,3 +222,14 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
 
     def is_refresh_token(self, token):
         return self.ACCESS_TOKEN_ID in token.additional_information
+
+    @property
+    def is_public(self):
+        if re.match(r'^(RS|ES|PS)\d+$', self.signing_algorithm) is not None:
+            return True
+        return False
+
+    def get_key(self):
+        result = {'alg': self.signing_algorithm,
+                  'value': self.verifying_key}
+        return result
