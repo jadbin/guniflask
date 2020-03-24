@@ -58,8 +58,8 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
     Base implementation for token services using random UUID values for the access token and refresh token values.
     """
 
-    def __init__(self):
-        self.token_store: TokenStore = None
+    def __init__(self, token_store: TokenStore):
+        self.token_store = token_store
         self.access_token_enhancer: TokenEnhancer = None
         self.client_details_service: ClientDetailsService = None
         self.access_token_expires_in = 24 * 60 * 60
@@ -137,10 +137,9 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
             raise InvalidTokenError('Invalid access token: {}'.format(access_token_value))
         if self.client_details_service is not None:
             client_id = result.oauth2_request.client_id
-            try:
-                self.client_details_service.load_client_details_by_client_id(client_id)
-            except Exception as e:
-                raise InvalidTokenError('Client not valid: {}'.format(client_id), e)
+            client = self.client_details_service.load_client_details_by_client_id(client_id)
+            if client is None:
+                raise InvalidTokenError('Client not valid: {}'.format(client_id))
         return result
 
     def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
