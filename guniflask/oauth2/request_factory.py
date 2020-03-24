@@ -1,20 +1,46 @@
 # coding=utf-8
 
+from abc import ABCMeta, abstractmethod
+
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.request import AuthorizationRequest, OAuth2Request, TokenRequest
 from guniflask.oauth2.errors import InvalidClientError
 
-__all__ = ['OAuth2RequestFactory']
+__all__ = ['OAuth2RequestFactory', 'DefaultOAuth2RequestFactory']
 
 
-class OAuth2RequestFactory:
+class OAuth2RequestFactory(metaclass=ABCMeta):
+    @abstractmethod
+    def create_authorization_request(self, authorization_parameters: dict) -> AuthorizationRequest:
+        pass
+
+    @abstractmethod
+    def create_oauth2_request_from_authorization_request(self, request: AuthorizationRequest) -> OAuth2Request:
+        pass
+
+    @abstractmethod
+    def create_oauth2_request_from_token_request(self, request: TokenRequest,
+                                                 client_details: ClientDetails) -> OAuth2Request:
+        pass
+
+    @abstractmethod
+    def create_token_request(self, request_parameters: dict, authenticated_client: ClientDetails) -> TokenRequest:
+        pass
+
+    @abstractmethod
+    def create_token_request_from_authorization_request(self, request: AuthorizationRequest,
+                                                        grant_type: str) -> TokenRequest:
+        pass
+
+
+class DefaultOAuth2RequestFactory(OAuth2RequestFactory):
     """
     Strategy for managing OAuth2 requests
     """
 
-    def __int__(self, client_details_service: ClientDetailsService = None):
+    def __int__(self, client_details_service: ClientDetailsService):
         self.client_details_service = client_details_service
 
     def create_authorization_request(self, authorization_parameters: dict):
