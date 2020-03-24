@@ -1,5 +1,6 @@
 # coding=utf-8
-from guniflask.oauth2 import OAuth2Authentication
+
+from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token_granter import AbstractTokenGranter
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
