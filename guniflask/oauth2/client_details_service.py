@@ -3,6 +3,7 @@
 from abc import ABCMeta, abstractmethod
 
 from guniflask.oauth2.client_details import ClientDetails
+from guniflask.oauth2.errors import NoSuchClientError
 
 __all__ = ['ClientDetailsService', 'InMemoryClientDetailsService']
 
@@ -18,16 +19,12 @@ class ClientDetailsService(metaclass=ABCMeta):
 
 
 class InMemoryClientDetailsService(ClientDetailsService):
-    def __init__(self):
-        self._client_details_store = {}
+    def __init__(self, client_details_store: dict):
+        self.client_details_store = {}
+        if client_details_store:
+            self.client_details_store.update(client_details_store)
 
     def load_client_details_by_client_id(self, client_id: str) -> ClientDetails:
-        return self._client_details_store.get(client_id)
-
-    def add_client_details(self, client_details):
-        self._client_details_store[client_details.client_id] = client_details
-
-    def remove_client_details(self, client_details):
-        client_id = client_details.client_id
-        if client_id in self._client_details_store:
-            self._client_details_store.pop(client_id)
+        if client_id not in self.client_details_store:
+            raise NoSuchClientError('No client found with id = {}'.format(client_id))
+        return self.client_details_store[client_id]

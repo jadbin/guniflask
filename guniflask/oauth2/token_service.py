@@ -11,7 +11,7 @@ from guniflask.oauth2.token_store import TokenStore
 from guniflask.oauth2.token_converter import TokenEnhancer
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.request import TokenRequest, OAuth2Request
-from guniflask.oauth2.errors import InvalidTokenError, InvalidGrantError, InvalidScopeError
+from guniflask.oauth2.errors import InvalidTokenError, InvalidGrantError, InvalidScopeError, ClientRegistrationError
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.beans.factory_hook import InitializingBean
@@ -137,8 +137,9 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
             raise InvalidTokenError('Invalid access token: {}'.format(access_token_value))
         if self.client_details_service is not None:
             client_id = result.oauth2_request.client_id
-            client = self.client_details_service.load_client_details_by_client_id(client_id)
-            if client is None:
+            try:
+                self.client_details_service.load_client_details_by_client_id(client_id)
+            except ClientRegistrationError:
                 raise InvalidTokenError('Client not valid: {}'.format(client_id))
         return result
 

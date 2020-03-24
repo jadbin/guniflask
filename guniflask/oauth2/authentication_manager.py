@@ -1,13 +1,13 @@
 # coding=utf-8
 
-from flask import request, _request_ctx_stack
+from flask import request
 
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_service import ResourceServerTokenServices
 from guniflask.beans.factory_hook import InitializingBean
-from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError
+from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError, ClientRegistrationError
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.security.context import SecurityContext
@@ -54,9 +54,15 @@ class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):
     def _check_client_details(self, auth: OAuth2Authentication):
         if self.client_details_service is not None:
             client_id = auth.oauth2_request.client_id
-            client = self.client_details_service.load_client_details_by_client_id(client_id)
-            if client is None:
+            try:
+                client = self.client_details_service.load_client_details_by_client_id(client_id)
+            except ClientRegistrationError:
                 raise OAuth2AccessDeniedError('Invalid token contains invalid client id ({})'.format(client_id))
+            allowed = client.scope
+            for scope in auth.oauth2_request.scope:
+                if scope not in allowed:
+                    raise OAuth2AccessDeniedError(
+                        'Invalid token contains disallowed scope ({}) for this client'.format(scope))
 
 
 class BearerTokenExtractor:

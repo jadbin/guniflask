@@ -6,7 +6,10 @@ __all__ = ['OAuth2Error',
            'InvalidTokenError',
            'InvalidGrantError',
            'InvalidScopeError',
-           'OAuth2AccessDeniedError']
+           'OAuth2AccessDeniedError',
+           'ClientRegistrationError',
+           'NoSuchClientError',
+           'ClientAlreadyExistsError']
 
 
 class OAuth2Error(Exception):
@@ -48,4 +51,22 @@ class InvalidScopeError(OAuth2Error):
 class OAuth2AccessDeniedError(OAuth2Error):
     """
     OAuth2 access denied
+    """
+
+
+class ClientRegistrationError(Exception):
+    """
+    Client registration exception
+    """
+
+
+class NoSuchClientError(ClientRegistrationError):
+    """
+    No such client exception
+    """
+
+
+class ClientAlreadyExistsError(ClientRegistrationError):
+    """
+    Client already exists exception
     """
