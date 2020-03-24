@@ -5,7 +5,8 @@ __all__ = ['OAuth2Error',
            'InvalidClientError',
            'InvalidTokenError',
            'InvalidGrantError',
-           'InvalidScopeError']
+           'InvalidScopeError',
+           'OAuth2AccessDeniedError']
 
 
 class OAuth2Error(Exception):
@@ -41,4 +42,10 @@ class InvalidGrantError(ClientAuthenticationError):
 class InvalidScopeError(OAuth2Error):
     """
     Invalid scope exception
+    """
+
+
+class OAuth2AccessDeniedError(OAuth2Error):
+    """
+    OAuth2 access denied
     """
