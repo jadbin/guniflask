@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
-from typing import Union
+from typing import Union, Collection
 
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
@@ -12,7 +12,7 @@ from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.errors import InvalidClientError
 
-__all__ = ['TokenGranter', 'AbstractTokenGranter']
+__all__ = ['TokenGranter', 'AbstractTokenGranter', 'CompositeTokenGranter']
 
 
 class TokenGranter(metaclass=ABCMeta):
@@ -50,3 +50,17 @@ class AbstractTokenGranter(TokenGranter):
         authorized_grant_types = client_details.grant_types
         if authorized_grant_types and grant_type not in authorized_grant_types:
             raise InvalidClientError('Unauthorized grant type: {}'.format(grant_type))
+
+
+class CompositeTokenGranter(TokenGranter):
+    def __init__(self, token_granters: Collection[TokenGranter] = None):
+        self.token_granters = [] if token_granters is None else list(token_granters)
+
+    def grant(self, grant_type: str, token_request: TokenRequest) -> Union[OAuth2AccessToken, None]:
+        for granter in self.token_granters:
+            result = granter.grant(grant_type, token_request)
+            if result is not None:
+                return result
+
+    def add_token_granter(self, token_granter):
+        self.token_granters.append(token_granter)
