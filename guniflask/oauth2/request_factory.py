@@ -40,7 +40,7 @@ class DefaultOAuth2RequestFactory(OAuth2RequestFactory):
     Strategy for managing OAuth2 requests
     """
 
-    def __int__(self, client_details_service: ClientDetailsService):
+    def __init__(self, client_details_service: ClientDetailsService):
         self.client_details_service = client_details_service
 
     def create_authorization_request(self, authorization_parameters: dict):
