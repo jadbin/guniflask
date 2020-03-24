@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from typing import Union
+
 from flask import _request_ctx_stack
 
 from guniflask.security.authentication import Authentication
@@ -11,7 +13,7 @@ class SecurityContext:
     AUTHENTICATION = '__authentication'
 
     @classmethod
-    def get_authentication(cls):
+    def get_authentication(cls) -> Union[Authentication, None]:
         ctx = _request_ctx_stack.top
         if ctx is not None:
             if not hasattr(ctx, cls.AUTHENTICATION):
