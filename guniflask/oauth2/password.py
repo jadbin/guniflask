@@ -1,7 +1,7 @@
 # coding=utf-8
 from guniflask.oauth2 import OAuth2Authentication
 from guniflask.oauth2.token_granter import AbstractTokenGranter
-from guniflask.oauth2.token_service import TokenServices
+from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.request_factory import OAuth2RequestFactory
 from guniflask.oauth2.request import TokenRequest
@@ -17,7 +17,7 @@ class PasswordTokenGranter(AbstractTokenGranter):
     GRANT_TYPE = 'password'
 
     def __init__(self, authentication_manager: AuthenticationManager,
-                 token_services: TokenServices,
+                 token_services: AuthorizationServerTokenServices,
                  client_details_service: ClientDetailsService,
                  request_factory: OAuth2RequestFactory):
         super().__init__(token_services, client_details_service, request_factory, self.GRANT_TYPE)

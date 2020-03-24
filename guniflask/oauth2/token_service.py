@@ -3,6 +3,7 @@
 import datetime as dt
 from typing import Union
 import uuid
+from abc import ABCMeta, abstractmethod
 
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
@@ -15,10 +16,44 @@ from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.beans.factory_hook import InitializingBean
 
-__all__ = ['TokenServices']
+__all__ = ['AuthorizationServerTokenServices',
+           'ResourceServerTokenServices',
+           'ConsumerTokenServices',
+           'DefaultTokenServices']
 
 
-class TokenServices(InitializingBean):
+class AuthorizationServerTokenServices(metaclass=ABCMeta):
+    @abstractmethod
+    def create_access_token(self, authentication: OAuth2Authentication = None) -> OAuth2AccessToken:
+        pass
+
+    @abstractmethod
+    def refresh_access_token(self, refresh_token_value: str, token_request: TokenRequest) -> OAuth2AccessToken:
+        pass
+
+    @abstractmethod
+    def get_access_token(self, authentication) -> OAuth2AccessToken:
+        pass
+
+
+class ResourceServerTokenServices(metaclass=ABCMeta):
+    @abstractmethod
+    def load_authentication(self, access_token_value: str) -> OAuth2Authentication:
+        pass
+
+    @abstractmethod
+    def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
+        pass
+
+
+class ConsumerTokenServices(metaclass=ABCMeta):
+    @abstractmethod
+    def revoke_token(self, access_token_value: str):
+        pass
+
+
+class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerTokenServices, ConsumerTokenServices,
+                           InitializingBean):
     """
     Base implementation for token services using random UUID values for the access token and refresh token values.
     """

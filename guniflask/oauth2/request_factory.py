@@ -14,8 +14,8 @@ class OAuth2RequestFactory:
     Strategy for managing OAuth2 requests
     """
 
-    def __int__(self):
-        self.client_details_service: ClientDetailsService = None
+    def __int__(self, client_details_service: ClientDetailsService = None):
+        self.client_details_service = client_details_service
 
     def create_authorization_request(self, authorization_parameters: dict):
         client_id = authorization_parameters.get(OAuth2Utils.CLIENT_ID)

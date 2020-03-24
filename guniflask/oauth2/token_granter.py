@@ -3,7 +3,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union
 
-from guniflask.oauth2.token_service import TokenServices
+from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.request_factory import OAuth2RequestFactory
 from guniflask.oauth2.request import TokenRequest
@@ -23,7 +23,7 @@ class TokenGranter(metaclass=ABCMeta):
 
 
 class AbstractTokenGranter(TokenGranter):
-    def __init__(self, token_services: TokenServices, client_details_service: ClientDetailsService,
+    def __init__(self, token_services: AuthorizationServerTokenServices, client_details_service: ClientDetailsService,
                  request_factory: OAuth2RequestFactory, grant_type: str):
         self.token_services = token_services
         self.client_details_service = client_details_service
