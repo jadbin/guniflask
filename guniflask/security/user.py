@@ -4,7 +4,7 @@ from flask import current_app, _request_ctx_stack
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.authentication_manager import current_auth
+from guniflask.security.context import SecurityContext
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.user_details import UserDetails
 
@@ -16,7 +16,7 @@ def _load_user():
     if ctx is not None:
         if not hasattr(ctx, 'user'):
             user = None
-            auth = current_auth._get_current_object()
+            auth = SecurityContext.get_authentication()
             if auth is not None:
                 if isinstance(auth, OAuth2Authentication):
                     auth = auth.user_authentication

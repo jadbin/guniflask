@@ -4,6 +4,7 @@ from .access_annotation import *
 from .authentication import *
 from .authentication_manager import *
 from .authentication_token import *
+from .context import *
 from .jwt import *
 from .jwt_provider import *
 from .preauth_token import *
@@ -15,6 +16,7 @@ __all__ = (access_annotation.__all__ +
            authentication.__all__ +
            authentication_manager.__all__ +
            authentication_token.__all__ +
+           context.__all__ +
            jwt.__all__ +
            jwt_provider.__all__ +
            preauth_token.__all__ +

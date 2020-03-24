@@ -16,6 +16,7 @@ from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessToke
     UserAuthenticationConverter
 from guniflask.security.user import User
 from guniflask.security.jwt import JwtHelper
+from guniflask.security.context import SecurityContext
 
 __all__ = ['jwt_manager', 'JwtManager']
 
@@ -94,6 +95,4 @@ class JwtManager(AuthenticationManager):
         auth = self.token_extractor.extract()
         if auth is not None:
             user_auth = self.authenticate(auth)
-            ctx = _request_ctx_stack.top
-            if ctx is not None:
-                ctx.authentication = user_auth
+            SecurityContext.set_authentication(user_auth)

@@ -10,6 +10,7 @@ from guniflask.beans.factory_hook import InitializingBean
 from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.security.context import SecurityContext
 
 __all__ = ['OAuth2AuthenticationManager', 'BearerTokenExtractor']
 
@@ -48,9 +49,7 @@ class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):
     def do_authentication_filter(self):
         authentication = self.token_extractor.extract()
         auth_result = self.authenticate(authentication)
-        ctx = _request_ctx_stack.top
-        if ctx is not None:
-            ctx.authentication = auth_result
+        SecurityContext.set_authentication(auth_result)
 
     def _check_client_details(self, auth: OAuth2Authentication):
         if self.client_details_service is not None:
