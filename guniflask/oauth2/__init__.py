@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from .abstract_endpoint import *
 from .authentication import *
 from .authentication_manager import *
 from .client_details import *
@@ -16,7 +17,8 @@ from .token_granter import *
 from .token_service import *
 from .token_store import *
 
-__all__ = (authentication.__all__ +
+__all__ = (abstract_endpoint.__all__ +
+           authentication.__all__ +
            authentication_manager.__all__ +
            client_details.__all__ +
            client_details_service.__all__ +
