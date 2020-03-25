@@ -10,7 +10,7 @@ from guniflask.oauth2.errors import OAuth2AccessDeniedError, InvalidClientError,
 from guniflask.security.context import SecurityContext
 from guniflask.security.authentication import Authentication
 from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.request import OAuth2RequestValidator
+from guniflask.oauth2.request_factory import OAuth2RequestValidator
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_granter import TokenGranter

@@ -1,14 +1,15 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
+from typing import Union
 
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.request import AuthorizationRequest, OAuth2Request, TokenRequest
-from guniflask.oauth2.errors import InvalidClientError
+from guniflask.oauth2.errors import InvalidClientError, InvalidScopeError
 
-__all__ = ['OAuth2RequestFactory', 'DefaultOAuth2RequestFactory']
+__all__ = ['OAuth2RequestFactory', 'DefaultOAuth2RequestFactory', 'OAuth2RequestValidator']
 
 
 class OAuth2RequestFactory(metaclass=ABCMeta):
@@ -114,3 +115,14 @@ class DefaultOAuth2RequestFactory(OAuth2RequestFactory):
         if not scopes:
             scopes = client_details.scope
         return scopes
+
+
+class OAuth2RequestValidator:
+    def validate_scope(self, request: Union[AuthorizationRequest, TokenRequest], client: ClientDetails):
+        self._validate_request_scope(request.scope, client.scope)
+
+    def _validate_request_scope(self, request_scopes: set, client_scopes: set):
+        if client_scopes:
+            for scope in request_scopes:
+                if scope not in client_scopes:
+                    raise InvalidScopeError('Invalid scope: {}'.format(scope))
