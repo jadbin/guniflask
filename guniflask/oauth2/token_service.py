@@ -60,7 +60,7 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
 
     def __init__(self, token_store: TokenStore):
         self.token_store = token_store
-        self.access_token_enhancer: TokenEnhancer = None
+        self.token_enhancer: TokenEnhancer = None
         self.client_details_service: ClientDetailsService = None
         self.access_token_expires_in = 24 * 60 * 60
         self.refresh_token_expires_in = 365 * 24 * 60 * 60
@@ -190,8 +190,8 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
         token.refresh_token = refresh_token
         token.scope = authentication.oauth2_request.scope
 
-        if self.access_token_enhancer is not None:
-            return self.access_token_enhancer.enhance(token, authentication)
+        if self.token_enhancer is not None:
+            return self.token_enhancer.enhance(token, authentication)
         return token
 
     def _get_access_token_expires_in(self, client_auth: OAuth2Request) -> int:
