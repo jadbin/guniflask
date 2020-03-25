@@ -28,6 +28,6 @@ class AsyncConfiguration:
     def async_annotation_processor(self) -> AsyncPostProcessor:
         return AsyncPostProcessor()
 
-    @bean(ASYNC_EXECUTOR)
+    @bean
     def async_executor(self) -> AsyncExecutor:
         return self._async_executor

@@ -28,6 +28,6 @@ class SchedulingConfiguration:
     def scheduled_annotation_processor(self) -> ScheduledPostProcessor:
         return ScheduledPostProcessor()
 
-    @bean(TASK_SCHEDULER)
+    @bean
     def task_scheduler(self) -> TaskScheduler:
         return self._task_scheduler
