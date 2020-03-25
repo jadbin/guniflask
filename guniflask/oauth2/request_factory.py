@@ -9,7 +9,8 @@ from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.request import AuthorizationRequest, OAuth2Request, TokenRequest
 from guniflask.oauth2.errors import InvalidClientError, InvalidScopeError
 
-__all__ = ['OAuth2RequestFactory', 'DefaultOAuth2RequestFactory', 'OAuth2RequestValidator']
+__all__ = ['OAuth2RequestFactory', 'DefaultOAuth2RequestFactory',
+           'OAuth2RequestValidator', 'DefaultOAuth2RequestValidator']
 
 
 class OAuth2RequestFactory(metaclass=ABCMeta):
@@ -117,7 +118,13 @@ class DefaultOAuth2RequestFactory(OAuth2RequestFactory):
         return scopes
 
 
-class OAuth2RequestValidator:
+class OAuth2RequestValidator(metaclass=ABCMeta):
+    @abstractmethod
+    def validate_scope(self, request: Union[AuthorizationRequest, TokenRequest], client: ClientDetails):
+        pass
+
+
+class DefaultOAuth2RequestValidator(OAuth2RequestValidator):
     def validate_scope(self, request: Union[AuthorizationRequest, TokenRequest], client: ClientDetails):
         self._validate_request_scope(request.scope, client.scope)
 
