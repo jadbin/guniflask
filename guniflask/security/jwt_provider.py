@@ -3,14 +3,14 @@
 import datetime as dt
 import uuid
 
-from flask import current_app, _request_ctx_stack
+from flask import current_app
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.errors import InvalidTokenError
 from guniflask.config.utils import map_dict_config
-from guniflask.oauth2.authentication_manager import BearerTokenExtractor
+from guniflask.oauth2.token_extractor import BearerTokenExtractor
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
     UserAuthenticationConverter
