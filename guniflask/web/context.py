@@ -6,10 +6,10 @@ from guniflask.context.bean_context import AnnotationConfigBeanContext
 from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
 from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 
-__all__ = ['AnnotationConfigWebApplicationContext']
+__all__ = ['WebApplicationContext']
 
 
-class AnnotationConfigWebApplicationContext(AnnotationConfigBeanContext):
+class WebApplicationContext(AnnotationConfigBeanContext):
     def __init__(self, app: Flask):
         super().__init__()
         self.app = app

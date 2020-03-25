@@ -8,7 +8,7 @@ from flask import Blueprint
 from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.config.app_config import AppConfig
 from guniflask.utils.env import walk_modules
-from guniflask.web.context import AnnotationConfigWebApplicationContext
+from guniflask.web.context import WebApplicationContext
 
 __all__ = ['AppInitializer']
 
@@ -52,12 +52,12 @@ class AppInitializer:
             s = self.config.app_settings(self.app)
             _init_app(self.app, s)
 
-    def _create_bean_context(self) -> AnnotationConfigWebApplicationContext:
-        bean_context = AnnotationConfigWebApplicationContext(self.app)
+    def _create_bean_context(self) -> WebApplicationContext:
+        bean_context = WebApplicationContext(self.app)
         bean_context.scan(self.app.name)
         return bean_context
 
-    def _refresh_bean_context(self, bean_context: AnnotationConfigWebApplicationContext):
+    def _refresh_bean_context(self, bean_context: WebApplicationContext):
         bean_context.refresh()
 
     def _register_blueprints(self):
