@@ -7,7 +7,8 @@ from guniflask.oauth2_config.authorization_server import AuthorizationServerConf
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices, DefaultTokenServices
 from guniflask.oauth2.token_store import TokenStore, JwtTokenStore
-from guniflask.oauth2.token_converter import TokenEnhancer, AccessTokenConverter, JwtAccessTokenConverter
+from guniflask.oauth2.token_converter import TokenEnhancer, AccessTokenConverter, JwtAccessTokenConverter, \
+    DefaultAccessTokenConverter
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.request_factory import OAuth2RequestFactory, OAuth2RequestValidator, \
     DefaultOAuth2RequestValidator, DefaultOAuth2RequestFactory
@@ -42,6 +43,9 @@ class AuthorizationServerEndpointsConfigurer:
             access_token_converter = self.get_access_token_converter()
             if isinstance(access_token_converter, JwtAccessTokenConverter):
                 self.token_store = JwtTokenStore(access_token_converter)
+            else:
+                # FIXME: default in memory token store
+                self.token_store = None
         return self.token_store
 
     def get_token_enhancer(self) -> TokenEnhancer:
@@ -53,7 +57,7 @@ class AuthorizationServerEndpointsConfigurer:
 
     def get_access_token_converter(self) -> AccessTokenConverter:
         if self.access_token_converter is None:
-            self.access_token_converter = JwtAccessTokenConverter()
+            self.access_token_converter = DefaultAccessTokenConverter()
         return self.access_token_converter
 
     def get_token_granter(self) -> TokenGranter:
@@ -100,22 +104,23 @@ class AuthorizationServerEndpointsConfigurer:
 
 @configuration
 class AuthorizationServerEndpointsConfiguration:
-    def __init__(self, authorization_server_configurer: AuthorizationServerConfigurer,
-                 client_details_service: ClientDetailsService):
+    def __init__(self, configurer: AuthorizationServerConfigurer = None,
+                 client_details_service: ClientDetailsService = None):
         self.client_details_service = client_details_service
-        self.endpoints = AuthorizationServerEndpointsConfigurer(client_details_service)
-        authorization_server_configurer.configure_endpoints(self.endpoints)
+        self.endpoints_configurer = AuthorizationServerEndpointsConfigurer(client_details_service)
+        if configurer:
+            configurer.configure_endpoints(self.endpoints_configurer)
 
     @bean
     def token_endpoint(self) -> TokenEndpoint:
-        token_endpoint = TokenEndpoint(self.endpoints.get_token_granter(), self.client_details_service)
-        token_endpoint.oauth2_request_factory = self.endpoints.get_request_factory()
-        token_endpoint.oauth2_request_validator = self.endpoints.get_request_validator()
+        token_endpoint = TokenEndpoint(self.endpoints_configurer.get_token_granter(), self.client_details_service)
+        token_endpoint.oauth2_request_factory = self.endpoints_configurer.get_request_factory()
+        token_endpoint.oauth2_request_validator = self.endpoints_configurer.get_request_validator()
         return token_endpoint
 
     @bean
     def token_key_endpoint(self) -> TokenKeyEndpoint:
-        access_token_converter = self.endpoints.get_access_token_converter()
+        access_token_converter = self.endpoints_configurer.get_access_token_converter()
         if isinstance(access_token_converter, JwtAccessTokenConverter):
             token_key_endpoint = TokenKeyEndpoint(access_token_converter)
             return token_key_endpoint

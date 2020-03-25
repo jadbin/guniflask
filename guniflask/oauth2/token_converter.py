@@ -15,7 +15,7 @@ from guniflask.oauth2.request import OAuth2Request
 from guniflask.oauth2.errors import InvalidTokenError
 
 __all__ = ['AccessTokenConverter', 'TokenEnhancer', 'UserAuthenticationConverter',
-           'JwtAccessTokenConverter']
+           'DefaultAccessTokenConverter', 'JwtAccessTokenConverter']
 
 
 class AccessTokenConverter(metaclass=ABCMeta):
