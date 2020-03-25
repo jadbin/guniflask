@@ -18,7 +18,7 @@ __all__ = ['AccessTokenConverter', 'TokenEnhancer', 'UserAuthenticationConverter
            'JwtAccessTokenConverter']
 
 
-class AccessTokenConverter:
+class AccessTokenConverter(metaclass=ABCMeta):
     """
     Converter interface for token service implementations that store authentication data inside the token.
     """
@@ -31,6 +31,20 @@ class AccessTokenConverter:
     SCOPE = OAuth2AccessToken.SCOPE
     AUTHORITIES = 'authorities'
 
+    @abstractmethod
+    def convert_access_token(self, token: OAuth2AccessToken, authentication: OAuth2Authentication) -> dict:
+        pass
+
+    @abstractmethod
+    def extract_access_token(self, token_value: str, data: dict) -> OAuth2AccessToken:
+        pass
+
+    @abstractmethod
+    def extract_authentication(self, data: dict) -> OAuth2Authentication:
+        pass
+
+
+class DefaultAccessTokenConverter(AccessTokenConverter):
     def __init__(self):
         self.user_token_converter = UserAuthenticationConverter()
 
@@ -165,8 +179,7 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
     ACCESS_TOKEN_ID = AccessTokenConverter.ATI
 
     def __init__(self):
-        self.token_converter = AccessTokenConverter()
-        AccessTokenConverter.__init__(self)
+        self.token_converter = DefaultAccessTokenConverter()
         self.signing_algorithm = 'HS256'
         self.signing_key = JwtHelper.generate_jwt_secret()
         self.verifying_key = self.signing_key
