@@ -13,7 +13,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 from guniflask.model.wrapper import wrap_model
 from guniflask.security.jwt_provider import JwtManager
-from guniflask.web.cors import CorsManager
 
 log = logging.getLogger(__name__)
 
@@ -43,12 +42,6 @@ class AppConfig:
             if k.isupper():
                 self.app.config[k] = v
         self._set_app_default_settings(self.app)
-
-        # CORS
-        cors_config = s.get_by_prefix('guniflask.cors', {'resources': r'/*'})
-        if cors_config:
-            cors_manager = CorsManager.from_config(cors_config)
-            cors_manager.init_app(self.app)
 
         # database configuration
         do_wrap = s.get_by_prefix('guniflask.wrap_sqlalchemy_model', True)

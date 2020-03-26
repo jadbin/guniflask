@@ -56,8 +56,8 @@ debug
 在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``manage debug`` 命令会自动设置。
 
 
-Settings to Configure the Built-in Functions
----------------------------------------------
+Settings to Configure the Built-in Features
+-------------------------------------------
 
 我们在名为 ``guniflask`` 的dict对象下配置guniflask提供的内置功能。
 可用的配置项包括：
@@ -65,8 +65,7 @@ Settings to Configure the Built-in Functions
 cors
 ^^^^
 
-跨域相关配置，默认开启跨域。
-如需关闭跨域功能可以设置为 ``cors=False`` 。
+跨域相关配置。
 
 jwt
 ^^^
