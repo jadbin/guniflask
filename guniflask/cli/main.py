@@ -184,9 +184,17 @@ class InitCommand(Command):
         print(flush=True)
         self.print_copying_files()
         self.force = False
+        self.ignore_files = self.resolve_ignore_files(settings)
+
         self.copytree(join(_template_folder, 'project'), project_dir, settings)
         print(flush=True)
         self.print_success()
+
+    def resolve_ignore_files(self, settings):
+        ignore_files = set()
+        if settings['authentication_type'] != 'jwt':
+            ignore_files.add('{}/config/jwt_config.py'.format(settings['project_name']))
+        return ignore_files
 
     def copytree(self, src, dst, settings):
         names = os.listdir(src)
@@ -211,6 +219,8 @@ class InitCommand(Command):
                         content = self.render_string(content, **settings)
                     except TemplateError:
                         continue
+                if dst_rel_path in self.ignore_files:
+                    continue
                 if exists(dst_path):
                     raw = self.read_file(dst_path)
                     if content == raw:

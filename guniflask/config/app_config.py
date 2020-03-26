@@ -43,18 +43,11 @@ class AppConfig:
                 self.app.config[k] = v
         self._set_app_default_settings(self.app)
 
-        # database configuration
         do_wrap = s.get_by_prefix('guniflask.wrap_sqlalchemy_model', True)
         if do_wrap:
             for v in vars(app_module).values():
                 if isinstance(v, SQLAlchemy):
                     wrap_model(v.Model)
-
-        # authentication
-        jwt_config = s.get_by_prefix('guniflask.jwt')
-        if jwt_config is not None:
-            jwt_manager = JwtManager.from_config(jwt_config)
-            jwt_manager.init_app(self.app)
 
     @property
     def settings(self):

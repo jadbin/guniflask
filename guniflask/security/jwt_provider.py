@@ -9,7 +9,6 @@ from werkzeug.local import LocalProxy
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.errors import InvalidTokenError
-from guniflask.config.utils import map_dict_config
 from guniflask.oauth2.token_extractor import BearerTokenExtractor
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
@@ -30,31 +29,25 @@ class JwtManager(AuthenticationManager):
     USERNAME = UserAuthenticationConverter.USERNAME
     USER_DETAILS = 'user_details'
 
-    class JwtManagerConfig:
-        secret = ''
-        public_key = None
-        private_key = None
-        algorithm = 'HS256'
-        access_token_expires_in = 24 * 60 * 60
-        refresh_token_expires_in = 365 * 24 * 60 * 60
+    def __init__(self, secret='', public_key=None, private_key=None, algorithm='HS256',
+                 access_token_expires_in=24 * 60 * 60, refresh_token_expires_in=365 * 24 * 60 * 60):
+        self.secret = secret
+        self.public_key = public_key
+        self.private_key = private_key
+        self.algorithm = algorithm
+        self.access_token_expires_in = access_token_expires_in
+        self.refresh_token_expires_in = refresh_token_expires_in
 
-    def __init__(self):
         self.token_extractor = BearerTokenExtractor()
         self.token_converter = JwtAccessTokenConverter()
-        self.config = self.JwtManagerConfig()
 
-    @classmethod
-    def from_config(cls, config: dict):
-        obj = cls()
-        map_dict_config(config, obj.config)
-        return obj
-
-    def init_app(self, app):
+    def configure(self):
+        app = current_app._get_current_object()
         app.before_request(self.do_authentication_filter)
         app.extensions['jwt_manager'] = self
 
     def create_access_token(self, authorities=None, username=None, **user_details) -> str:
-        expires_in = self.config.access_token_expires_in
+        expires_in = self.access_token_expires_in
         payload = {
             self.JTI: uuid.uuid4().hex
         }
@@ -65,8 +58,8 @@ class JwtManager(AuthenticationManager):
         payload[self.USERNAME] = username
         payload[self.USER_DETAILS] = user_details
 
-        return JwtHelper.encode_jwt(payload, self.config.secret or self.config.private_key,
-                                    self.config.algorithm)
+        return JwtHelper.encode_jwt(payload, self.secret or self.private_key,
+                                    self.algorithm)
 
     def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
         payload = self._decode(access_token_value)
@@ -87,8 +80,8 @@ class JwtManager(AuthenticationManager):
 
     def _decode(self, access_token_value):
         try:
-            payload = JwtHelper.decode_jwt(access_token_value, self.config.secret or self.config.public_key,
-                                           self.config.algorithm)
+            payload = JwtHelper.decode_jwt(access_token_value, self.secret or self.public_key,
+                                           self.algorithm)
         except Exception as e:
             raise InvalidTokenError(e)
         return payload
