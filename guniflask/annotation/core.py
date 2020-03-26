@@ -19,8 +19,6 @@ class Annotation:
 
 
 class AnnotationMetadata:
-    key = '__annotation_metadata'
-
     def __init__(self, source):
         if not hasattr(source, '__name__'):
             raise ValueError('Cannot annotate to the object without "__name__" attribute')

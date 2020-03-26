@@ -6,13 +6,15 @@ from guniflask.annotation.core import Annotation, AnnotationMetadata
 
 __all__ = ['AnnotationUtils']
 
+ANNOTATION_METADATA = '__annotation_metadata'
+
 
 class AnnotationUtils:
 
     @staticmethod
     def get_annotation_metadata(source) -> AnnotationMetadata:
-        if hasattr(source, AnnotationMetadata.key):
-            metadata = getattr(source, AnnotationMetadata.key)
+        if hasattr(source, ANNOTATION_METADATA):
+            metadata = getattr(source, ANNOTATION_METADATA)
             # annotations on class cannot be inherited
             if not isinstance(metadata.source, type) or metadata.source == source:
                 return metadata
@@ -35,5 +37,5 @@ class AnnotationUtils:
         annotation_metadata = AnnotationUtils.get_annotation_metadata(source)
         if annotation_metadata is None:
             annotation_metadata = AnnotationMetadata(source)
-            setattr(source, AnnotationMetadata.key, annotation_metadata)
+            setattr(source, ANNOTATION_METADATA, annotation_metadata)
         annotation_metadata.add_annotation(annotation)
