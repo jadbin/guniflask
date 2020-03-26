@@ -53,7 +53,7 @@ class JwtManager(AuthenticationManager):
         app.before_request(self.do_authentication_filter)
         app.extensions['jwt_manager'] = self
 
-    def create_access_token(self, authorities=None, username=None, user_details=None) -> str:
+    def create_access_token(self, authorities=None, username=None, **user_details) -> str:
         expires_in = self.config.access_token_expires_in
         payload = {
             self.JTI: uuid.uuid4().hex
@@ -78,7 +78,9 @@ class JwtManager(AuthenticationManager):
         authorities = payload[self.AUTHORITIES]
         username = payload[self.USERNAME]
         user_details = payload[self.USER_DETAILS]
-        user = User(username=username, authorities=authorities, details=user_details)
+        user = User(username=username, authorities=authorities)
+        for k, v in user_details.items():
+            setattr(user, k, v)
         user_auth = UserAuthentication(user, authorities=authorities)
         user_auth.authenticate(True)
         return user_auth

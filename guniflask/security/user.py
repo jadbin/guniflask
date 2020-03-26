@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import current_app, _request_ctx_stack
+from flask import _request_ctx_stack
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication_token import UserAuthentication
@@ -30,11 +30,10 @@ current_user = LocalProxy(_load_user)
 
 
 class User(UserDetails):
-    user_role_prefix = 'role_'
+    default_role_prefix = 'role_'
 
-    def __init__(self, username=None, authorities=None, details=None):
+    def __init__(self, username=None, authorities=None):
         super().__init__(username=username, authorities=authorities)
-        self.details = details
 
     def has_authority(self, authority):
         return self.has_any_authority(authority)
@@ -46,8 +45,7 @@ class User(UserDetails):
         return self.has_any_role(role)
 
     def has_any_role(self, *roles):
-        prefix = current_app.config.get('USER_ROLE_PREFIX', self.user_role_prefix)
-        return self._has_any_authority_name(prefix, *roles)
+        return self._has_any_authority_name(self.default_role_prefix, *roles)
 
     def _has_any_authority_name(self, prefix, *roles):
         for role in roles:

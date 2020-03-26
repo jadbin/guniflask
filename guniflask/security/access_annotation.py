@@ -6,7 +6,7 @@ from werkzeug.exceptions import Unauthorized
 
 from guniflask.security.user import current_user
 
-__all__ = ['login_required', 'roles_required', 'authorities_required']
+__all__ = ['login_required', 'has_any_role', 'has_role', 'has_any_authority', 'has_authority']
 
 
 def login_required(func):
@@ -19,7 +19,7 @@ def login_required(func):
     return update_wrapper(wrapper, func)
 
 
-def roles_required(*roles):
+def has_any_role(*roles):
     def decorator(func):
         def wrapper(*args, **kwargs):
             if not current_user.has_any_role(*roles):
@@ -31,7 +31,11 @@ def roles_required(*roles):
     return decorator
 
 
-def authorities_required(*authorities):
+def has_role(role):
+    return has_any_role(role)
+
+
+def has_any_authority(*authorities):
     def decorator(func):
         def wrapper(*args, **kwargs):
             if not current_user.has_any_authority(*authorities):
@@ -41,3 +45,7 @@ def authorities_required(*authorities):
         return update_wrapper(wrapper, func)
 
     return decorator
+
+
+def has_authority(authority):
+    return has_any_authority(authority)
