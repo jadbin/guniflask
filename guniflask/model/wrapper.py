@@ -4,7 +4,9 @@ import datetime as dt
 
 import sqlalchemy
 
-__all__ = ['model_to_dict', 'result_to_dict', 'dict_to_model', 'update_model_by_dict', 'string_to_datetime',
+from guniflask.utils.factory import string_to_datetime
+
+__all__ = ['model_to_dict', 'result_to_dict', 'dict_to_model', 'update_model_by_dict',
            'wrap_model']
 
 
@@ -84,15 +86,6 @@ def update_model_by_dict(model, dict_obj, ignore=None, only=None, only_not_none=
             if only_not_none and v is None:
                 continue
             setattr(model, c.key, v)
-
-
-def string_to_datetime(s):
-    if isinstance(s, int):
-        return dt.datetime.fromtimestamp(s, tz=dt.timezone.utc).astimezone()
-    elif isinstance(s, str):
-        if 'GMT' in s:
-            return dt.datetime.strptime(s, '%a, %d %b %Y %H:%M:%S GMT').replace(tzinfo=dt.timezone.utc).astimezone()
-    return s
 
 
 def _get_field_set(field):
