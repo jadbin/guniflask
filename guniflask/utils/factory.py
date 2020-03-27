@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from importlib import import_module
-from typing import get_type_hints, List, Collection, Any, Mapping
+from typing import get_type_hints, List, Collection, Any, Mapping, MutableMapping
 import datetime as dt
 
 
@@ -36,18 +36,23 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
         type_hints = {} if dtype is None else get_type_hints(dtype)
         if target is None:
             target = dtype()
-        for key in source:
-            value = source[key]
-            prop = getattr(target, key, None)
-            prop_type = type_hints.get(key)
 
-            prop_value = instantiate_from_json(value, dtype=prop_type, target=prop)
-            if prop_value is not None:
-                setattr(target, key, prop_value)
+        if isinstance(target, MutableMapping):
+            for k, v in source.items():
+                target[k] = v
+        else:
+            for key in source:
+                value = source[key]
+                prop = getattr(target, key, None)
+                prop_type = type_hints.get(key)
 
-        for key in type_hints:
-            if not hasattr(target, key):
-                setattr(target, key, None)
+                prop_value = instantiate_from_json(value, dtype=prop_type, target=prop)
+                if prop_value is not None:
+                    setattr(target, key, prop_value)
+
+            for key in type_hints:
+                if not hasattr(target, key):
+                    setattr(target, key, None)
         return target
     elif isinstance(source, List):
         if dtype is None:
@@ -62,7 +67,7 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
 
         element_type = None
         if hasattr(dtype, '__args__'):
-            args = dtype.__args__
+            args = getattr(dtype, '__args__')
             if args is not None and len(args) == 1:
                 element_type = args[0]
 

@@ -6,10 +6,12 @@ Changelog
 0.7.0 (2020-03-??)
 ------------------
 
+- 扩展Flask响应请求的函数的参数，支持定义URL中的查询参数、HTTP body中的json对象
 - 对于guniflask的内置扩展功能提供更为统一的配置方式，包括jwt和cors模块
 - 减少了initdb和table2model命令的参数，model所在路径的修改、多数据库相关配置等统一在table2model_dest中设置
 - 为避免歧义，@roles_required修改为@has_any_role，@authorities_required修改为@has_any_authority，同时提供@has_role和@has_authority
 - JwtManager创建access token时用户自定义字段会作为User的属性
+- init命令将生成foo/config的目录，用于存放应用的配置
 
 0.6.1 (2020-03-15)
 ------------------
