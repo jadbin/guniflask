@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from guniflask.oauth2_config.authorization_server_endpoints import AuthorizationServerEndpointsConfigurer
-from guniflask.oauth2_config.client_details_service import ClientDetailsServiceConfigurer
+from guniflask.oauth2_config.authorization_server_endpoints_configurer import AuthorizationServerEndpointsConfigurer
+from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
 
 __all__ = ['AuthorizationServerConfigurer']
 

@@ -29,6 +29,9 @@ class TokenEndpoint(AbstractEndpoint):
     @post_route('/oauth/token')
     def post_access_token(self):
         auth = SecurityContext.get_authentication()
+        if auth is None or not auth.is_authenticated:
+            raise OAuth2AccessDeniedError('Authentication required')
+
         client_id = self._get_client_id(auth)
         authenticated_client = self.client_details_service.load_client_details_by_client_id(client_id)
 

@@ -10,20 +10,14 @@ __all__ = ['enable_authorization_server',
            'enable_resource_server']
 
 
-def enable_authorization_server():
-    def wrap_func(func):
-        values = [AuthorizationServerEndpointsConfiguration,
-                  ClientDetailsServiceConfiguration]
-        AnnotationUtils.add_annotation(func, Include(values))
-        return func
-
-    return wrap_func
+def enable_authorization_server(func):
+    values = [AuthorizationServerEndpointsConfiguration,
+              ClientDetailsServiceConfiguration]
+    AnnotationUtils.add_annotation(func, Include(values))
+    return func
 
 
-def enable_resource_server():
-    def wrap_func(func):
-        values = [ResourceServerConfiguration]
-        AnnotationUtils.add_annotation(func, Include(values))
-        return func
-
-    return wrap_func
+def enable_resource_server(func):
+    values = [ResourceServerConfiguration]
+    AnnotationUtils.add_annotation(func, Include(values))
+    return func
