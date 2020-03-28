@@ -9,13 +9,11 @@ from werkzeug.local import LocalProxy
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.errors import InvalidTokenError
-from guniflask.oauth2.token_extractor import BearerTokenExtractor
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
     UserAuthenticationConverter
 from guniflask.security.user import User
 from guniflask.security.jwt import JwtHelper
-from guniflask.security.context import SecurityContext
 
 __all__ = ['jwt_manager', 'JwtManager']
 
@@ -38,12 +36,9 @@ class JwtManager(AuthenticationManager):
         self.access_token_expires_in = access_token_expires_in
         self.refresh_token_expires_in = refresh_token_expires_in
 
-        self.token_extractor = BearerTokenExtractor()
         self.token_converter = JwtAccessTokenConverter()
 
-    def configure(self):
         app = current_app._get_current_object()
-        app.before_request(self.do_authentication_filter)
         app.extensions['jwt_manager'] = self
 
     def create_access_token(self, authorities=None, username=None, **user_details) -> str:
@@ -85,9 +80,3 @@ class JwtManager(AuthenticationManager):
         except Exception as e:
             raise InvalidTokenError(e)
         return payload
-
-    def do_authentication_filter(self):
-        auth = self.token_extractor.extract()
-        if auth is not None:
-            user_auth = self.authenticate(auth)
-            SecurityContext.set_authentication(user_auth)
