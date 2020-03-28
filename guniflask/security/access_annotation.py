@@ -22,7 +22,8 @@ def login_required(func):
 def has_any_role(*roles):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            if not current_user.has_any_role(*roles):
+            user = current_user._get_current_object()
+            if user is None or not user.has_any_role(*roles):
                 raise Unauthorized
             return func(*args, **kwargs)
 
@@ -38,7 +39,8 @@ def has_role(role):
 def has_any_authority(*authorities):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            if not current_user.has_any_authority(*authorities):
+            user = current_user._get_current_object()
+            if user is None or not user.has_any_authority(*authorities):
                 raise Unauthorized
             return func(*args, **kwargs)
 
