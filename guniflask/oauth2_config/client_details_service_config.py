@@ -2,7 +2,7 @@
 
 from guniflask.context.annotation import configuration, bean
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2_config.authorization_server import AuthorizationServerConfigurer
+from guniflask.oauth2_config.authorization_server_config import AuthorizationServerConfigurer
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
 
 __all__ = ['ClientDetailsServiceConfiguration']
