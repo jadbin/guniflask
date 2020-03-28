@@ -29,7 +29,7 @@ class TokenEndpoint(AbstractEndpoint):
     @post_route('/oauth/token')
     def post_access_token(self):
         auth = SecurityContext.get_authentication()
-        if auth is None or not auth.is_authenticated:
+        if auth is None:
             raise OAuth2AccessDeniedError('Authentication required')
 
         client_id = self._get_client_id(auth)

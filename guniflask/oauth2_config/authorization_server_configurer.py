@@ -2,6 +2,8 @@
 
 from typing import Collection
 
+from flask import current_app
+
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices, DefaultTokenServices
 from guniflask.oauth2.token_store import TokenStore, JwtTokenStore
@@ -14,8 +16,9 @@ from guniflask.oauth2.token_granter import TokenGranter, CompositeTokenGranter
 from guniflask.oauth2.password_grant import PasswordTokenGranter
 from guniflask.oauth2.client_grant import ClientCredentialsTokenGranter
 from guniflask.oauth2.refresh_grant import RefreshTokenGranter
+from guniflask.security.basic_authentication_filter import BasicAuthenticationFilter
 
-__all__ = ['AuthorizationServerEndpointsConfigurer']
+__all__ = ['AuthorizationServerEndpointsConfigurer', 'AuthorizationServerSecurityConfigurer']
 
 
 class AuthorizationServerEndpointsConfigurer:
@@ -97,3 +100,16 @@ class AuthorizationServerEndpointsConfigurer:
                                                        self._client_details_service,
                                                        request_factory))
         return token_granters
+
+
+class AuthorizationServerSecurityConfigurer:
+    def __init__(self, authentication_manager: AuthenticationManager):
+        self._authentication_manager = authentication_manager
+        self.token_endpoint_authentication_filters = []
+
+    def get_token_endpoint_authentication_filters(self):
+        return self.token_endpoint_authentication_filters
+
+    def configure(self):
+        basic_auth_filter = BasicAuthenticationFilter(self._authentication_manager)
+        current_app.before_request(basic_auth_filter.before_request)

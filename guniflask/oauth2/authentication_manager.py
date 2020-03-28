@@ -22,9 +22,6 @@ class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):
     def after_properties_set(self):
         assert self.token_services is not None, 'Token services are required'
 
-    def init_app(self, app):
-        app.before_request(self.do_authentication_filter)
-
     def authenticate(self, authentication):
         if authentication is None:
             raise InvalidTokenError('Token not found')
@@ -42,11 +39,6 @@ class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):
         auth.details = authentication.details
         auth.authenticate(True)
         return auth
-
-    def do_authentication_filter(self):
-        authentication = self.token_extractor.extract()
-        auth_result = self.authenticate(authentication)
-        SecurityContext.set_authentication(auth_result)
 
     def _check_client_details(self, auth: OAuth2Authentication):
         if self.client_details_service is not None:
