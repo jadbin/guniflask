@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import List, get_type_hints
+from typing import List, get_type_hints, Mapping
 import inspect
 from functools import partial
 from abc import ABCMeta, abstractmethod
@@ -161,6 +161,8 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
         def resolve_arg(arg):
             bean = None
             required_type = hints.get(arg)
+            arg_type, required_type = self._resolve_arg_type(required_type)
+
             if required_type is None:
                 try:
                     bean = self.get_bean(arg)
@@ -168,13 +170,18 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
                     pass
             else:
                 candidates = self.get_beans_of_type(required_type)
-                if len(candidates) == 1:
-                    bean = list(candidates.values())[0]
-                elif len(candidates) > 1:
-                    if arg in candidates:
-                        bean = candidates[arg]
-                    else:
-                        raise NoUniqueBeanDefinitionError(required_type)
+                if arg_type == ARG_TYPE.DICT:
+                    bean = candidates
+                elif arg_type == ARG_TYPE.LIST:
+                    bean = list(candidates.values())
+                else:
+                    if len(candidates) == 1:
+                        bean = list(candidates.values())[0]
+                    elif len(candidates) > 1:
+                        if arg in candidates:
+                            bean = candidates[arg]
+                        else:
+                            raise NoUniqueBeanDefinitionError(required_type)
             return bean
 
         for i, a in enumerate(args):
@@ -210,6 +217,21 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
             if not inspect.isclass(bean_type):
                 raise BeanTypeNotAllowedError(bean_name, bean_type)
             return bean_type
+
+    def _resolve_arg_type(self, arg_type: type):
+        if issubclass(arg_type, Mapping):
+            if hasattr(arg_type, '__args__'):
+                args = getattr(arg_type, '__args__')
+                if args and len(args) == 2:
+                    arg_type = args[1]
+            return ARG_TYPE.DICT, arg_type
+        if issubclass(arg_type, List):
+            if hasattr(arg_type, '__args__'):
+                args = getattr(arg_type, '__args__')
+                if args and len(args) == 1:
+                    arg_type = args[0]
+            return ARG_TYPE.LIST, arg_type
+        return ARG_TYPE.SINGLE, arg_type
 
     def _resolve_before_instantiation(self, bean_name: str, bean_definition: BeanDefinition):
         bean = None
@@ -261,6 +283,12 @@ class BeanFactory(SingletonBeanRegistry, BeanDefinitionRegistry):
     def _register_disposable_bean_if_necessary(self, bean_name: str, bean, bean_definition: BeanDefinition):
         if bean_definition.is_singleton() and isinstance(bean, DisposableBean):
             self.register_disposable_bean(bean_name, bean)
+
+
+class ARG_TYPE:
+    SINGLE = object()
+    DICT = object()
+    LIST = object()
 
 
 class BeanNameAware(metaclass=ABCMeta):
