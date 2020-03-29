@@ -9,6 +9,7 @@ from .context import *
 from .errors import *
 from .jwt import *
 from .jwt_provider import *
+from .password_encoder import *
 from .preauth_token import *
 from .user import *
 from .user_details import *
@@ -24,6 +25,7 @@ __all__ = (access_annotation.__all__ +
            errors.__all__ +
            jwt.__all__ +
            jwt_provider.__all__ +
+           password_encoder.__all__ +
            preauth_token.__all__ +
            user.__all__ +
            user_details.__all__ +
