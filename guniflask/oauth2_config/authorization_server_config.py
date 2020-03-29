@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.context.annotation import configuration, bean
+from guniflask.context.annotation import configuration, bean, include
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 from guniflask.oauth2.token_endpoint import TokenKeyEndpoint, TokenEndpoint
@@ -9,6 +9,7 @@ from guniflask.oauth2_config.authorization_server_configurer import Authorizatio
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.beans.factory_hook import SmartInitializingSingleton
+from guniflask.oauth2_config.client_details_service_config import ClientDetailsServiceConfiguration
 
 __all__ = ['AuthorizationServerConfigurer',
            'AuthorizationServerEndpointsConfiguration',
@@ -51,13 +52,16 @@ class AuthorizationServerEndpointsConfiguration:
 
 
 @configuration
+@include(ClientDetailsServiceConfiguration)
 class AuthorizationServerSecurityConfiguration(SmartInitializingSingleton):
     def __init__(self, authentication_manager: AuthenticationManager,
+                 client_details: ClientDetailsServiceConfigurer,
                  configurer: AuthorizationServerConfigurer = None):
         self.authentication_manager = authentication_manager
         self.security_configurer = AuthorizationServerSecurityConfigurer(authentication_manager)
         if configurer:
             configurer.configure_security(self.security_configurer)
+            configurer.configure_client_details_service(client_details)
 
     def after_singletons_instantiated(self):
         self.configure()
