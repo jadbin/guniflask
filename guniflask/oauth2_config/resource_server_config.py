@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
+from typing import List
 
 from guniflask.context.annotation import configuration
 from guniflask.oauth2.token_service import ResourceServerTokenServices
@@ -26,12 +27,12 @@ class ResourceServerConfigurerAdapter(ResourceServerConfigurer):
 
 @configuration
 class ResourceServerConfiguration(SmartInitializingSingleton):
-    def __init__(self, configurer: ResourceServerConfigurer = None,
+    def __init__(self, configurers: List[ResourceServerConfigurer] = None,
                  token_store: TokenStore = None,
                  token_services: ResourceServerTokenServices = None,
                  endpoints: AuthorizationServerEndpointsConfiguration = None,
                  client_details_service: ClientDetailsService = None):
-        self.configurer = configurer
+        self.configurers = configurers
         self.token_store = token_store
         self.token_services = token_services
         self.endpoints = endpoints
@@ -51,7 +52,8 @@ class ResourceServerConfiguration(SmartInitializingSingleton):
                 resources.token_store = self.endpoints.endpoints_configurer.token_store
         resources.client_details_service = self.client_details_service
 
-        if self.configurer:
-            self.configurer.configure(resources)
+        if self.configurers:
+            for c in self.configurers:
+                c.configure(resources)
         # do configure
         resources.configure()

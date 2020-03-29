@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
+from typing import List
 
 from guniflask.context.annotation import configuration, bean, include
 from guniflask.oauth2.client_details_service import ClientDetailsService
@@ -47,11 +48,12 @@ class AuthorizationServerConfigurerAdapter(AuthorizationServerConfigurer):
 @configuration
 class AuthorizationServerEndpointsConfiguration:
     def __init__(self, client_details_service: ClientDetailsService,
-                 configurer: AuthorizationServerConfigurer = None):
+                 configurers: List[AuthorizationServerConfigurer] = None):
         self.client_details_service = client_details_service
         self.endpoints_configurer = AuthorizationServerEndpointsConfigurer(client_details_service)
-        if configurer:
-            configurer.configure_endpoints(self.endpoints_configurer)
+        if configurers:
+            for c in configurers:
+                c.configure_endpoints(self.endpoints_configurer)
 
     @bean
     def token_endpoint(self) -> TokenEndpoint:
@@ -73,12 +75,13 @@ class AuthorizationServerEndpointsConfiguration:
 class AuthorizationServerSecurityConfiguration(SmartInitializingSingleton):
     def __init__(self, authentication_manager: AuthenticationManager,
                  client_details: ClientDetailsServiceConfigurer,
-                 configurer: AuthorizationServerConfigurer = None):
+                 configurers: List[AuthorizationServerConfigurer] = None):
         self.authentication_manager = authentication_manager
         self.security_configurer = AuthorizationServerSecurityConfigurer(authentication_manager)
-        if configurer:
-            configurer.configure_security(self.security_configurer)
-            configurer.configure_client_details_service(client_details)
+        if configurers:
+            for c in configurers:
+                c.configure_security(self.security_configurer)
+                c.configure_client_details_service(client_details)
 
     def after_singletons_instantiated(self):
         self.configure()
