@@ -9,7 +9,7 @@ from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
 from guniflask.annotation.annotation_utils import AnnotationUtils
-from guniflask.beans.post_processor import BeanPostProcessor
+from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.factory import instantiate_from_json
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
@@ -19,7 +19,7 @@ from guniflask.web import param_annotation
 __all__ = ['BlueprintPostProcessor']
 
 
-class BlueprintPostProcessor(BeanPostProcessor):
+class BlueprintPostProcessor(BeanPostProcessorAdapter):
     def __init__(self, app: Flask):
         self.app = app
 
