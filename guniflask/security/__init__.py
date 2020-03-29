@@ -14,6 +14,7 @@ from .jwt_provider import *
 from .password_encoder import *
 from .preauth_provider import *
 from .preauth_token import *
+from .provider_manager import *
 from .user import *
 from .user_details import *
 from .user_details_service import *
@@ -33,6 +34,7 @@ __all__ = (access_annotation.__all__ +
            password_encoder.__all__ +
            preauth_provider.__all__ +
            preauth_token.__all__ +
+           provider_manager.__all__ +
            user.__all__ +
            user_details.__all__ +
            user_details_service.__all__ +
