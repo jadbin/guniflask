@@ -6,9 +6,12 @@ __all__ = ['PreAuthenticatedToken']
 
 
 class PreAuthenticatedToken(AuthenticationToken):
-    def __init__(self, principal, authorities=None):
+    def __init__(self, principal, credentials=None, authorities=None):
         super().__init__(authorities=authorities)
         self._principal = principal
+        self._credentials = credentials
+        if authorities is not None:
+            self.authenticate(True)
 
     @property
     def principal(self):
@@ -16,4 +19,4 @@ class PreAuthenticatedToken(AuthenticationToken):
 
     @property
     def credentials(self):
-        return None
+        return self._credentials
