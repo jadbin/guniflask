@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from abc import ABCMeta, abstractmethod
+
 from guniflask.context.annotation import configuration, bean, include
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.token_converter import JwtAccessTokenConverter
@@ -12,11 +14,26 @@ from guniflask.beans.factory_hook import SmartInitializingSingleton
 from guniflask.oauth2_config.client_details_service_config import ClientDetailsServiceConfiguration
 
 __all__ = ['AuthorizationServerConfigurer',
+           'AuthorizationServerConfigurerAdapter',
            'AuthorizationServerEndpointsConfiguration',
            'AuthorizationServerSecurityConfiguration']
 
 
-class AuthorizationServerConfigurer:
+class AuthorizationServerConfigurer(metaclass=ABCMeta):
+    @abstractmethod
+    def configure_endpoints(self, endpoints: AuthorizationServerEndpointsConfigurer):
+        pass
+
+    @abstractmethod
+    def configure_client_details_service(self, clients: ClientDetailsServiceConfigurer):
+        pass
+
+    @abstractmethod
+    def configure_security(self, security: AuthorizationServerSecurityConfigurer):
+        pass
+
+
+class AuthorizationServerConfigurerAdapter(AuthorizationServerConfigurer):
     def configure_endpoints(self, endpoints: AuthorizationServerEndpointsConfigurer):
         pass
 

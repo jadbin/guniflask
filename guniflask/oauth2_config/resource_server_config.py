@@ -1,5 +1,7 @@
 # coding=utf-8
 
+from abc import ABCMeta, abstractmethod
+
 from guniflask.context.annotation import configuration
 from guniflask.oauth2.token_service import ResourceServerTokenServices
 from guniflask.oauth2.token_store import TokenStore
@@ -8,10 +10,16 @@ from guniflask.beans.factory_hook import SmartInitializingSingleton
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2_config.resource_server_configurer import ResourceServerSecurityConfigurer
 
-__all__ = ['ResourceServerConfigurer', 'ResourceServerConfiguration']
+__all__ = ['ResourceServerConfigurer', 'ResourceServerConfigurerAdapter', 'ResourceServerConfiguration']
 
 
-class ResourceServerConfigurer:
+class ResourceServerConfigurer(metaclass=ABCMeta):
+    @abstractmethod
+    def configure(self, resources: ResourceServerSecurityConfigurer):
+        pass
+
+
+class ResourceServerConfigurerAdapter(ResourceServerConfigurer):
     def configure(self, resources: ResourceServerSecurityConfigurer):
         pass
 
