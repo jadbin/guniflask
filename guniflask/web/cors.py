@@ -3,10 +3,10 @@
 from flask import current_app
 from flask_cors import CORS
 
-__all__ = ['CorsConfiguration']
+__all__ = ['CorsFilter']
 
 
-class CorsConfiguration:
+class CorsFilter:
     DEFAULT_CONFIG = dict(origins='*',
                           methods=['GET', 'HEAD', 'POST', 'OPTIONS', 'PUT', 'PATCH', 'DELETE'],
                           allow_headers='*',
