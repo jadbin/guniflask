@@ -1,5 +1,6 @@
 # coding=utf-8
 
+from .annotation import *
 from .authentication_config import *
 from .authentication_manager_builder import *
 from .configured_security_builder import *
@@ -14,7 +15,8 @@ from .web_security_config import *
 from .web_security_configurer import *
 from .web_security_configurer_adapter import *
 
-__all__ = (authentication_config.__all__ +
+__all__ = (annotation.__all__ +
+           authentication_config.__all__ +
            authentication_manager_builder.__all__ +
            configured_security_builder.__all__ +
            cors_configurer.__all__ +
