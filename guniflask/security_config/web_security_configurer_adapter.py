@@ -2,20 +2,21 @@
 
 from typing import Union
 
-from guniflask.security import Authentication
+from guniflask.security.authentication import Authentication
 from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security_config.web_security import WebSecurity
 from guniflask.security_config.http_security import HttpSecurity
 from guniflask.security_config.authentication_config import AuthenticationConfiguration
+from guniflask.beans.annotation import autowired
 
 __all__ = ['WebSecurityConfigurerAdapter']
 
 
 class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
-    def __init__(self, authentication_configuration: AuthenticationConfiguration):
-        self._authentication_configuration = authentication_configuration
+    def __init__(self):
+        self._authentication_configuration: AuthenticationConfiguration = None
         self._authentication_builder = AuthenticationManagerBuilder()
         self._local_authentication_builder = AuthenticationManagerBuilder()
         self._enable_local_authentication = False
@@ -33,6 +34,10 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
     def authentication_manager_bean(self):
         return AuthenticationManagerDelegator(self._authentication_builder)
 
+    @autowired
+    def set_authentication_config(self, authentication_configuration: AuthenticationConfiguration):
+        self._authentication_configuration = authentication_configuration
+
     def _configure_authentication(self, auth: AuthenticationManagerBuilder):
         pass
 
@@ -40,7 +45,7 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
         if self._http:
             return self._http
         authentication_manager = self._get_authentication_manager()
-        self._authentication_builder.parent_authentication_manager = authentication_manager
+        self._authentication_builder.with_parent_authentication_manager(authentication_manager)
 
         self._http = HttpSecurity(self._authentication_builder)
         self._set_shared_objects_for_http(self._http)

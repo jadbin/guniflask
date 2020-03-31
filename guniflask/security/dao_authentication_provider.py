@@ -11,7 +11,7 @@ __all__ = ['DaoAuthenticationProvider']
 
 
 class DaoAuthenticationProvider(UserDetailsAuthenticationProvider):
-    def __init__(self, user_details_service: UserDetailsService, password_encoder: PasswordEncoder):
+    def __init__(self, user_details_service: UserDetailsService = None, password_encoder: PasswordEncoder = None):
         super().__init__()
         self.user_details_service = user_details_service
         self.password_encoder = password_encoder
