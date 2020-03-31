@@ -6,7 +6,7 @@ from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.factory_post_processor import BeanDefinitionRegistryPostProcessor
 from guniflask.beans.name_generator import BeanNameGenerator
 from guniflask.context.bean_name_generator import AnnotationBeanNameGenerator
-from guniflask.beans.registry import SingletonBeanRegistry
+from guniflask.beans.singleton_registry import SingletonBeanRegistry
 from guniflask.annotation.annotation_utils import AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.context.annotation import Bean, Component, Configuration, Include

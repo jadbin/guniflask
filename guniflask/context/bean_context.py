@@ -3,7 +3,8 @@
 from typing import List
 import logging
 
-from guniflask.beans.factory import BeanFactory
+from guniflask.beans.configurable_factory import ConfigurableBeanFactory
+from guniflask.beans.default_factory import DefaultBeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor, BeanDefinitionRegistryPostProcessor
@@ -19,7 +20,7 @@ __all__ = ['BeanContext', 'AnnotationConfigBeanContext']
 log = logging.getLogger(__name__)
 
 
-class BeanContext(BeanFactory):
+class BeanContext(DefaultBeanFactory):
     def __init__(self):
         super().__init__()
         self._bean_factory_post_processors = []
@@ -57,10 +58,10 @@ class BeanContext(BeanFactory):
     def publish_event(self, event: ApplicationEvent):
         self._app_event_publisher.publish_event(event)
 
-    def _post_process_bean_factory(self, bean_factory: BeanFactory):
+    def _post_process_bean_factory(self, bean_factory: ConfigurableBeanFactory):
         pass
 
-    def _invoke_bean_factory_post_processors(self, bean_factory: BeanFactory):
+    def _invoke_bean_factory_post_processors(self, bean_factory: ConfigurableBeanFactory):
         def invoke_bean_factory_post_processors(post_processors, factory):
             for post_processor in post_processors:
                 post_processor.post_process_bean_factory(factory)
@@ -88,7 +89,7 @@ class BeanContext(BeanFactory):
             invoke_bean_factory_post_processors(post_processor_beans, bean_factory)
             invoke_bean_factory_post_processors(self.bean_factory_post_processors, bean_factory)
 
-    def _register_bean_post_processors(self, bean_factory: BeanFactory):
+    def _register_bean_post_processors(self, bean_factory: ConfigurableBeanFactory):
         def register_bean_post_processors(factory, post_processors):
             for post_processor in post_processors:
                 factory.add_bean_post_processor(post_processor)
@@ -96,18 +97,18 @@ class BeanContext(BeanFactory):
         post_processor_beans = list(bean_factory.get_beans_of_type(BeanPostProcessor).values())
         register_bean_post_processors(bean_factory, post_processor_beans)
 
-    def _init_application_event_publisher(self, bean_factory: BeanFactory):
+    def _init_application_event_publisher(self, bean_factory: ConfigurableBeanFactory):
         self._app_event_publisher = ApplicationEventPublisher(bean_factory)
         bean_factory.register_singleton(APPLICATION_EVENT_PUBLISHER, self._app_event_publisher)
 
-    def _register_application_listeners(self, bean_factory: BeanFactory):
+    def _register_application_listeners(self, bean_factory: ConfigurableBeanFactory):
         for listener in self._app_listeners:
             self._app_event_publisher.add_application_listener(listener)
         bean_names = bean_factory.get_bean_names_for_type(ApplicationEventListener)
         for bean_name in bean_names:
             self._app_event_publisher.add_application_listener_bean(bean_name)
 
-    def _finish_bean_factory_initialization(self, bean_factory: BeanFactory):
+    def _finish_bean_factory_initialization(self, bean_factory: ConfigurableBeanFactory):
         bean_factory.pre_instantiate_singletons()
 
     def _finish_refresh(self):
