@@ -2,7 +2,8 @@
 
 __all__ = ['AuthenticationError',
            'BadCredentialsError',
-           'ProviderNotFoundError']
+           'ProviderNotFoundError',
+           'UsernameNotFoundError']
 
 
 class AuthenticationError(Exception):
@@ -20,4 +21,10 @@ class BadCredentialsError(AuthenticationError):
 class ProviderNotFoundError(AuthenticationError):
     """
     Provider not found exception
+    """
+
+
+class UsernameNotFoundError(AuthenticationError):
+    """
+    Username not found exception
     """

@@ -1,19 +1,23 @@
 # coding=utf-8
 
+from abc import ABCMeta, abstractmethod
+
 __all__ = ['UserDetails']
 
 
-class UserDetails:
-    def __init__(self, username=None, authorities=None):
-        self._username = username
-        self._authorities = set()
-        if authorities:
-            self._authorities.update(authorities)
+class UserDetails(metaclass=ABCMeta):
 
     @property
+    @abstractmethod
     def username(self):
-        return self._username
+        pass
 
     @property
+    @abstractmethod
+    def password(self):
+        pass
+
+    @property
+    @abstractmethod
     def authorities(self):
-        return self._authorities
+        pass

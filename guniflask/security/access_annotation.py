@@ -4,7 +4,7 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import Unauthorized
 
-from guniflask.security.user import current_user
+from guniflask.security.user_context import current_user
 
 __all__ = ['login_required', 'has_any_role', 'has_role', 'has_any_authority', 'has_authority']
 

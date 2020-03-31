@@ -1,39 +1,31 @@
 # coding=utf-8
 
-from flask import _request_ctx_stack
-from werkzeug.local import LocalProxy
-
-from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.context import SecurityContext
-from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['current_user', 'User']
-
-
-def _load_user():
-    ctx = _request_ctx_stack.top
-    if ctx is not None:
-        if not hasattr(ctx, 'user'):
-            user = None
-            auth = SecurityContext.get_authentication()
-            if auth is not None:
-                if isinstance(auth, OAuth2Authentication):
-                    auth = auth.user_authentication
-                if isinstance(auth, UserAuthentication):
-                    user = auth.principal
-            ctx.user = user
-        return ctx.user
-
-
-current_user = LocalProxy(_load_user)
+__all__ = ['User']
 
 
 class User(UserDetails):
     default_role_prefix = 'role_'
 
-    def __init__(self, username=None, authorities=None):
-        super().__init__(username=username, authorities=authorities)
+    def __init__(self, username=None, password=None, authorities=None):
+        self._username = username
+        self._password = password
+        self._authorities = set()
+        if authorities:
+            self._authorities.update(authorities)
+
+    @property
+    def username(self):
+        return self._username
+
+    @property
+    def password(self):
+        return self._password
+
+    @property
+    def authorities(self):
+        return self._authorities
 
     def has_authority(self, authority):
         return self.has_any_authority(authority)
