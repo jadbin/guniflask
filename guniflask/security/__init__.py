@@ -20,6 +20,7 @@ from .user import *
 from .user_context import *
 from .user_details import *
 from .user_details_authentication_provider import *
+from .user_details_by_name_service import *
 from .user_details_service import *
 from .web_authentication_details import *
 
@@ -43,5 +44,6 @@ __all__ = (access_annotation.__all__ +
            user_context.__all__ +
            user_details.__all__ +
            user_details_authentication_provider.__all__ +
+           user_details_by_name_service.__all__ +
            user_details_service.__all__ +
            web_authentication_details.__all__)
