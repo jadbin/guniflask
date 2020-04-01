@@ -2,9 +2,11 @@
 
 from typing import List
 
-from guniflask.web.request_filter import RequestFilter
+from guniflask.web.request_filter import RequestFilter, RequestFilterMetadata
 from guniflask.beans.constructor_resolver import ConstructorResolver
 from guniflask.beans.factory import BeanFactory
+
+__all__ = ['FilterChainResolver']
 
 
 class FilterChainResolver:
@@ -14,11 +16,11 @@ class FilterChainResolver:
     def register_request_filters(self, app, values):
         request_filters = self._resolve_request_filters(values)
         for f in request_filters:
-            d = set(type(f).__dict__.keys())
-            if 'before_request' in d:
-                app.before_request(f.before_request)
-            if 'after_request' in d:
-                app.after_request(f.after_request)
+            m = RequestFilterMetadata(f)
+            if m.before_request:
+                app.before_request(m.before_request)
+            if m.after_request:
+                app.after_request(m.after_request)
 
     def _resolve_request_filters(self, values) -> List[RequestFilter]:
         result = []
