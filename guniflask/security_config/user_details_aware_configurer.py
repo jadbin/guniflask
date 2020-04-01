@@ -3,7 +3,7 @@
 from abc import ABCMeta, abstractmethod
 
 from guniflask.security_config.security_configurer import SecurityConfigurerAdapter
-from guniflask.security import UserDetailsService
+from guniflask.security.user_details_service import UserDetailsService
 
 __all__ = ['UserDetailsAwareConfigurer']
 

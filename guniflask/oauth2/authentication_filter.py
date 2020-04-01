@@ -20,7 +20,7 @@ class OAuth2AuthenticationFilter(RequestFilter):
     def before_request(self):
         authentication = self.token_extractor.extract()
         if authentication:
-            g[OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE] = authentication.principal
+            g.setdefault(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE, authentication.principal)
             if isinstance(authentication, AuthenticationToken):
                 authentication.details = OAuth2AuthenticationDetails()
             auth_result = self.authentication_manager.authenticate(authentication)

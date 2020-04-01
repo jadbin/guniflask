@@ -16,7 +16,7 @@ def enable_authentication(func):
 
 
 def enable_web_security(func):
-    func = enable_authentication(func)
-    values = [WebSecurityConfiguration]
+    values = [WebSecurityConfiguration,
+              AuthenticationConfiguration]
     AnnotationUtils.add_annotation(func, Include(values))
     return func
