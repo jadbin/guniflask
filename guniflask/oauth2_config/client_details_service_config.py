@@ -10,12 +10,12 @@ __all__ = ['ClientDetailsServiceConfiguration']
 @configuration
 class ClientDetailsServiceConfiguration:
     def __init__(self):
-        self.configurer = ClientDetailsServiceConfigurer()
+        self._configurer = ClientDetailsServiceConfigurer()
 
     @bean
     def client_details_configurer(self) -> ClientDetailsServiceConfigurer:
-        return self.configurer
+        return self._configurer
 
     @bean
     def client_details_service(self) -> ClientDetailsService:
-        return self.configurer.get_client_details_service()
+        return self._configurer.client_details_service

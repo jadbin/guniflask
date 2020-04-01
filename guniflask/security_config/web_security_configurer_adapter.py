@@ -23,8 +23,7 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
         self._http: HttpSecurity = None
 
     def init(self, web_security: WebSecurity):
-        http = self._get_http()
-        http.set_shared_object(WebSecurity, web_security)
+        http = self._get_http(web_security)
         web_security.add_security_builder(http)
 
     def configure(self, web_security: WebSecurity):
@@ -40,13 +39,14 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
     def _configure_authentication(self, auth: AuthenticationManagerBuilder):
         pass
 
-    def _get_http(self) -> HttpSecurity:
+    def _get_http(self, web_security: WebSecurity) -> HttpSecurity:
         if self._http:
             return self._http
         authentication_manager = self._get_authentication_manager()
         self._authentication_builder.with_parent_authentication_manager(authentication_manager)
 
         self._http = HttpSecurity(self._authentication_builder)
+        self._http.set_shared_object(WebSecurity, web_security)
         self._set_shared_objects_for_http(self._http)
         self._configure_http(self._http)
         return self._http

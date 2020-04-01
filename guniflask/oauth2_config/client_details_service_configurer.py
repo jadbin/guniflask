@@ -7,7 +7,13 @@ __all__ = ['ClientDetailsServiceConfigurer']
 
 class ClientDetailsServiceConfigurer:
     def __init__(self):
-        self.client_details_service: ClientDetailsService = None
+        self._client_details_service: ClientDetailsService = None
 
-    def get_client_details_service(self):
-        return self.client_details_service
+    @property
+    def client_details_service(self) -> ClientDetailsService:
+        return self._client_details_service
+
+    def with_client_details_service(self, client_details_service: ClientDetailsService
+                                    ) -> 'ClientDetailsServiceConfigurer':
+        self._client_details_service = client_details_service
+        return self
