@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.security_config.web_security_builder import WebSecurityBuilder
+from guniflask.security_config.http_security_builder import HttpSecurityBuilder
 from guniflask.security_config.security_configurer import SecurityConfigurerAdapter
 from guniflask.web.cors import CorsFilter
 
@@ -23,5 +23,5 @@ class CorsConfigurer(SecurityConfigurerAdapter):
                     else:
                         self.cors_filter.add_resource(k)
 
-    def configure(self, web_security: WebSecurityBuilder):
+    def configure(self, http: HttpSecurityBuilder):
         self.cors_filter.configure()

@@ -1,7 +1,5 @@
 # coding=utf-8
 
-from typing import Union
-
 from guniflask.security.authentication import Authentication
 from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
@@ -26,10 +24,11 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
 
     def init(self, web_security: WebSecurity):
         http = self._get_http()
-        web_security.add_http_security_builder(http)
+        http.set_shared_object(WebSecurity, web_security)
+        web_security.add_security_builder(http)
 
     def configure(self, web_security: WebSecurity):
-        web_security.http_basic()
+        pass
 
     def authentication_manager_bean(self):
         return AuthenticationManagerDelegator(self._authentication_builder)
@@ -53,7 +52,7 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
         return self._http
 
     def _configure_http(self, http: HttpSecurity):
-        pass
+        http.http_basic()
 
     def _get_authentication_manager(self) -> AuthenticationManager:
         if not self._authentication_manager_initialized:
@@ -75,7 +74,7 @@ class AuthenticationManagerDelegator(AuthenticationManager):
         self._delegate_builder = delegate_builder
         self._delegate: AuthenticationManager = None
 
-    def authenticate(self, authentication: Authentication) -> Union[Authentication, None]:
+    def authenticate(self, authentication: Authentication) -> Authentication:
         if self._delegate is None:
             self._delegate = self._delegate_builder.object
         return self._delegate.authenticate(authentication)
