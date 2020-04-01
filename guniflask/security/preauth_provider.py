@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import Type, Union
+from typing import Type
 import inspect
 
 from guniflask.security.authentication import Authentication
@@ -15,7 +15,7 @@ class PreAuthenticatedProvider(AuthenticationProvider):
     def __init__(self, user_details_service: AuthenticationUserDetailsService):
         self.pre_authenticated_user_details_service = user_details_service
 
-    def authenticate(self, authentication: Authentication) -> Union[Authentication, None]:
+    def authenticate(self, authentication: Authentication):
         if not self.supports(type(authentication)):
             return
         if authentication.principal is None:

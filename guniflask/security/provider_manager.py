@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import Union, List
+from typing import List
 
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_manager import AuthenticationManager
@@ -19,7 +19,7 @@ class ProviderManager(AuthenticationManager, InitializingBean):
             for p in providers:
                 self._providers.append(p)
 
-    def authenticate(self, authentication: Authentication) -> Union[Authentication, None]:
+    def authenticate(self, authentication: Authentication):
         to_test = type(authentication)
         last_error = None
         result = None
