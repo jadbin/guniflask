@@ -192,8 +192,7 @@ class InitCommand(Command):
 
     def resolve_ignore_files(self, settings):
         ignore_files = set()
-        if settings['authentication_type'] != 'jwt':
-            ignore_files.add('{}/config/jwt_config.py'.format(settings['project_name']))
+        # configure files required to ignore
         return ignore_files
 
     def copytree(self, src, dst, settings):
