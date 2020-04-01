@@ -7,10 +7,9 @@ from guniflask.beans.factory_post_processor import BeanDefinitionRegistryPostPro
 from guniflask.beans.name_generator import BeanNameGenerator
 from guniflask.context.bean_name_generator import AnnotationBeanNameGenerator
 from guniflask.beans.singleton_registry import SingletonBeanRegistry
-from guniflask.annotation.annotation_utils import AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.context.annotation import Bean, Component, Configuration, Include
-from guniflask.annotation.core import AnnotationMetadata
+from guniflask.annotation.core import AnnotationMetadata, AnnotationUtils
 from guniflask.context.config_constants import *
 from guniflask.context.condition_evaluator import ConditionEvaluator
 

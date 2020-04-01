@@ -1,7 +1,6 @@
 # coding=utf-8
 
-from guniflask.annotation.core import Annotation
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import Annotation, AnnotationUtils
 
 __all__ = ['Autowired', 'autowired']
 

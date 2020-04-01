@@ -3,7 +3,7 @@
 import logging
 from functools import partial, update_wrapper
 
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.beans.factory_hook import SmartInitializingSingleton

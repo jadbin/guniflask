@@ -6,7 +6,7 @@ from collections import defaultdict
 from guniflask.beans.factory import BeanFactory
 from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.beans.factory import BeanFactoryAware
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.annotation import Autowired
 from guniflask.beans.constructor_resolver import ConstructorResolver
 

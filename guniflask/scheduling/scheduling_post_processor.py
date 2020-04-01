@@ -2,7 +2,7 @@
 
 import datetime as dt
 
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.beans.factory_hook import SmartInitializingSingleton
 from guniflask.beans.post_processor import BeanPostProcessorAdapter

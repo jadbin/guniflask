@@ -2,9 +2,8 @@
 
 import inspect
 
-from guniflask.annotation.core import Annotation
+from guniflask.annotation.core import Annotation, AnnotationUtils
 from guniflask.context.annotation import Component
-from guniflask.annotation.annotation_utils import AnnotationUtils
 
 __all__ = ['Blueprint', 'blueprint', 'Route', 'route',
            'get_route', 'post_route', 'put_route', 'patch_route', 'delete_route']

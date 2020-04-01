@@ -8,7 +8,7 @@ from flask import Flask, Blueprint as FlaskBlueprint, request
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.factory import instantiate_from_json

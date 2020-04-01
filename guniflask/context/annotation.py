@@ -3,8 +3,7 @@
 import inspect
 from typing import Type, Collection
 
-from guniflask.annotation.core import Annotation
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import Annotation, AnnotationUtils
 from guniflask.context.condition import Condition
 
 __all__ = ['Bean', 'bean',

@@ -3,10 +3,9 @@
 from abc import ABCMeta, abstractmethod
 import inspect
 
-from guniflask.annotation.core import AnnotationMetadata
+from guniflask.annotation.core import AnnotationMetadata, AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
-from guniflask.annotation.annotation_utils import AnnotationUtils
 from guniflask.context.annotation import Component
 from guniflask.context.annotation_config_utils import AnnotationConfigUtils
 from guniflask.utils.env import walk_modules

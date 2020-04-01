@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import AnnotationUtils
 from guniflask.context.annotation import Include
 from guniflask.oauth2_config.authorization_server_config import AuthorizationServerEndpointsConfiguration, \
     AuthorizationServerSecurityConfiguration

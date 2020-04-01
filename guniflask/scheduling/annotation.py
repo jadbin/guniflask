@@ -2,8 +2,7 @@
 
 import inspect
 
-from guniflask.annotation.core import Annotation
-from guniflask.annotation.annotation_utils import AnnotationUtils
+from guniflask.annotation.core import Annotation, AnnotationUtils
 
 __all__ = ['AsyncRun', 'async_run', 'Scheduled', 'scheduled']
 
