@@ -6,18 +6,15 @@ from guniflask.beans.factory_hook import InitializingBean
 from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError, ClientRegistrationError
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.security.context import SecurityContext
-from guniflask.oauth2.token_extractor import BearerTokenExtractor
 
 __all__ = ['OAuth2AuthenticationManager']
 
 
 class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):
-    def __init__(self, token_services: ResourceServerTokenServices):
-        self.token_services = token_services
+    def __init__(self, ):
+        self.token_services: ResourceServerTokenServices = None
         self.resource_id: str = None
         self.client_details_service: ClientDetailsService = None
-        self.token_extractor = BearerTokenExtractor()
 
     def after_properties_set(self):
         assert self.token_services is not None, 'Token services are required'

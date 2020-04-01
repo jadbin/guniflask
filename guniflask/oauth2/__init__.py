@@ -2,9 +2,12 @@
 
 from .abstract_endpoint import *
 from .authentication import *
+from .authentication_details import *
+from .authentication_filter import *
 from .authentication_manager import *
 from .client_details import *
 from .client_details_service import *
+from .client_details_user_details_service import *
 from .client_grant import *
 from .errors import *
 from .oauth2_utils import *
@@ -22,9 +25,12 @@ from .token_store import *
 
 __all__ = (abstract_endpoint.__all__ +
            authentication.__all__ +
+           authentication_details.__all__ +
+           authentication_filter.__all__ +
            authentication_manager.__all__ +
            client_details.__all__ +
            client_details_service.__all__ +
+           client_details_user_details_service.__all__ +
            client_grant.__all__ +
            errors.__all__ +
            oauth2_utils.__all__ +

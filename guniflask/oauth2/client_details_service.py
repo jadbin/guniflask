@@ -19,7 +19,7 @@ class ClientDetailsService(metaclass=ABCMeta):
 
 
 class InMemoryClientDetailsService(ClientDetailsService):
-    def __init__(self, client_details_store: dict):
+    def __init__(self, client_details_store: dict = None):
         self.client_details_store = {}
         if client_details_store:
             self.client_details_store.update(client_details_store)

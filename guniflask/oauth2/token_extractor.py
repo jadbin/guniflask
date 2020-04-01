@@ -2,11 +2,12 @@
 
 from abc import ABCMeta, abstractmethod
 
-from flask import request
+from flask import request, g
 
 from guniflask.security.authentication import Authentication
 from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.authentication_details import OAuth2AuthenticationDetails
 
 __all__ = ['TokenExtractor', 'BearerTokenExtractor']
 
@@ -29,8 +30,11 @@ class BearerTokenExtractor(TokenExtractor):
     def _extract_token_from_header():
         auth = request.headers.get('Authorization')
         if auth is not None and auth.lower().startswith(OAuth2AccessToken.BEARER_TYPE.lower()):
+            g[OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE] = OAuth2AccessToken.BEARER_TYPE
             return auth.split(' ', 1)[1]
 
     @staticmethod
     def _extract_token_from_query():
-        return request.args.get(OAuth2AccessToken.ACCESS_TOKEN)
+        token = request.args.get(OAuth2AccessToken.ACCESS_TOKEN)
+        if token is not None:
+            g[OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE] = OAuth2AccessToken.BEARER_TYPE
