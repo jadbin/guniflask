@@ -17,7 +17,7 @@ class WebApplicationContext(AnnotationConfigBeanContext):
 
     def _post_process_bean_factory(self, bean_factory):
         super()._post_process_bean_factory(bean_factory)
-        bean_factory.add_bean_post_processor(BlueprintPostProcessor(self.app))
+        bean_factory.add_bean_post_processor(BlueprintPostProcessor(self.app, bean_factory))
         self._reader.register(WebSecurityConfiguration)
         self._reader.register(WebAsyncConfiguration)
         self._reader.register(WebSchedulingConfiguration)

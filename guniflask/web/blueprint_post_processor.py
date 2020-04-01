@@ -15,13 +15,17 @@ from guniflask.utils.factory import instantiate_from_json
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation
+from guniflask.beans.factory import BeanFactory
+from guniflask.web.filter_chain_resolver import FilterChainResolver
+from guniflask.web.filter_annotation import FilterChain
 
 __all__ = ['BlueprintPostProcessor']
 
 
 class BlueprintPostProcessor(BeanPostProcessorAdapter):
-    def __init__(self, app: Flask):
+    def __init__(self, app: Flask, bean_factory: BeanFactory):
         self.app = app
+        self._filter_chain_resolver = FilterChainResolver(bean_factory)
 
     def post_process_after_initialization(self, bean, bean_name: str):
         bean_type = bean.__class__
@@ -39,6 +43,11 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter):
                                    endpoint=method.__name__,
                                    view_func=self.wrap_view_func(a['rule'], method),
                                    **rule_options)
+
+            filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
+            if filter_chain_annotation is not None:
+                self._filter_chain_resolver.register_request_filters(b, filter_chain_annotation['values'])
+            
             self.app.register_blueprint(b)
         return bean
 

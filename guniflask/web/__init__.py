@@ -4,6 +4,7 @@ from .bind_annotation import *
 from .blueprint_post_processor import *
 from .context import *
 from .cors import *
+from .filter_annotation import *
 from .global_singleton_annotation import *
 from .param_annotation import *
 from .request_filter import *
@@ -13,6 +14,7 @@ __all__ = (bind_annotation.__all__ +
            blueprint_post_processor.__all__ +
            context.__all__ +
            cors.__all__ +
+           filter_annotation.__all__ +
            global_singleton_annotation.__all__ +
            param_annotation.__all__ +
            request_filter.__all__ +
