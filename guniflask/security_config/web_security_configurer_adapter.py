@@ -29,7 +29,7 @@ class WebSecurityConfigurerAdapter(WebSecurityConfigurer):
     def configure(self, web_security: WebSecurity):
         pass
 
-    def authentication_manager_bean(self):
+    def authentication_manager_bean(self) -> AuthenticationManager:
         return AuthenticationManagerDelegator(self._authentication_builder)
 
     @autowired

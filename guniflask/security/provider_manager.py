@@ -14,7 +14,7 @@ __all__ = ['ProviderManager']
 class ProviderManager(AuthenticationManager, InitializingBean):
     def __init__(self, parent: AuthenticationManager = None, providers: List[AuthenticationProvider] = None):
         self._parent = parent
-        self._providers: List[AuthenticationProvider] = None
+        self._providers: List[AuthenticationProvider] = []
         if providers:
             for p in providers:
                 self._providers.append(p)

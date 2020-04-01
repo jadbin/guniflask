@@ -8,6 +8,7 @@ from guniflask.web.request_filter import RequestFilter
 from guniflask.security_config.web_security import WebSecurity
 from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
 from guniflask.security_config.cors_configurer import CorsConfigurer
+from guniflask.security.authentication_manager import AuthenticationManager
 
 __all__ = ['HttpSecurity']
 
@@ -20,6 +21,9 @@ class HttpSecurity(HttpSecurityBuilder):
 
     def _perform_build(self):
         pass
+
+    def _before_configure(self):
+        self.set_shared_object(AuthenticationManager, self._get_authentication_registry().build())
 
     def with_user_details_service(self, user_details_service: UserDetailsService) -> 'HttpSecurity':
         self._get_authentication_registry().with_user_details_service(user_details_service)
