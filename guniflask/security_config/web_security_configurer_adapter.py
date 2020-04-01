@@ -77,4 +77,5 @@ class AuthenticationManagerDelegator(AuthenticationManager):
     def authenticate(self, authentication: Authentication) -> Authentication:
         if self._delegate is None:
             self._delegate = self._delegate_builder.object
+            self._delegate_builder = None
         return self._delegate.authenticate(authentication)
