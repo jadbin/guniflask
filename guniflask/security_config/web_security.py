@@ -19,14 +19,14 @@ class WebSecurity(ConfiguredSecurityBuilder):
         self._security_builders: List[SecurityBuilder] = []
 
     def _perform_build(self):
+        for builder in self._security_builders:
+            builder.build()
         for t, f in self._request_filters.items():
             d = set(t.__dict__.keys())
             if 'before_request' in d:
                 current_app.before_request(f.before_request)
             if 'after_request' in d:
                 current_app.after_request(f.after_request)
-        for builder in self._security_builders:
-            builder.build()
 
     def add_security_builder(self, security_builder: SecurityBuilder):
         self._security_builders.append(security_builder)
