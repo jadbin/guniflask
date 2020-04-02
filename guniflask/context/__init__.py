@@ -9,6 +9,8 @@ from .condition import *
 from .condition_evaluator import *
 from .config_constants import *
 from .config_post_processor import *
+from .context_aware_processor import *
+from .default_bean_context import *
 from .event import *
 from .event_listener import *
 from .event_publisher import *
@@ -22,6 +24,8 @@ __all__ = (annotation.__all__ +
            condition_evaluator.__all__ +
            config_constants.__all__ +
            config_post_processor.__all__ +
+           context_aware_processor.__all__ +
+           default_bean_context.__all__ +
            event.__all__ +
            event_listener.__all__ +
            event_publisher.__all__)
