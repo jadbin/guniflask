@@ -7,16 +7,16 @@ from guniflask.oauth2.token_service import ResourceServerTokenServices
 from guniflask.oauth2.token_store import TokenStore
 from guniflask.oauth2_config.authorization_server_config import AuthorizationServerEndpointsConfiguration
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2_config.resource_server_builder import ResourceServerSecurityConfigurer
-from guniflask.oauth2_config.resource_server_configurer import ResourceServerConfigurer
+from guniflask.oauth2_config.resource_server_configurer import ResourceServerConfigurer, \
+    ResourceServerSecurityConfigurer
 from guniflask.security_config.http_security import HttpSecurity
-from guniflask.security_config.web_security_configurer_adapter import WebSecurityConfigurerAdapter
+from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 
 __all__ = ['ResourceServerConfiguration']
 
 
 @configuration
-class ResourceServerConfiguration(WebSecurityConfigurerAdapter):
+class ResourceServerConfiguration(WebSecurityConfigurer):
     def __init__(self, configurers: List[ResourceServerConfigurer] = None,
                  token_store: TokenStore = None,
                  token_services: ResourceServerTokenServices = None,
@@ -29,7 +29,7 @@ class ResourceServerConfiguration(WebSecurityConfigurerAdapter):
         self._endpoints = endpoints
         self._client_details_service = client_details_service
 
-    def _configure_http(self, http: HttpSecurity):
+    def configure_http(self, http: HttpSecurity):
         resources = ResourceServerSecurityConfigurer()
         if self._token_services:
             resources.with_token_services(self._token_services)

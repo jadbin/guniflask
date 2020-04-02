@@ -12,11 +12,11 @@ from .http_security_builder import *
 from .provider_manager_builder import *
 from .security_builder import *
 from .security_configurer import *
+from .security_filter_chain import *
 from .user_details_aware_configurer import *
 from .web_security import *
 from .web_security_config import *
 from .web_security_configurer import *
-from .web_security_configurer_adapter import *
 
 __all__ = (annotation.__all__ +
            authentication_config.__all__ +
@@ -30,8 +30,8 @@ __all__ = (annotation.__all__ +
            provider_manager_builder.__all__ +
            security_builder.__all__ +
            security_configurer.__all__ +
+           security_filter_chain.__all__ +
            user_details_aware_configurer.__all__ +
            web_security.__all__ +
            web_security_config.__all__ +
-           web_security_configurer.__all__ +
-           web_security_configurer_adapter.__all__)
+           web_security_configurer.__all__)

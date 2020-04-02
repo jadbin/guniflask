@@ -9,10 +9,9 @@ from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 from guniflask.oauth2.token_endpoint import TokenKeyEndpoint, TokenEndpoint
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
 from guniflask.oauth2_config.client_details_service_config import ClientDetailsServiceConfiguration
-from guniflask.oauth2_config.authorization_server_configurer import AuthorizationServerConfigurer
-from guniflask.oauth2_config.authorization_server_builder import AuthorizationServerEndpointsConfigurer, \
-    AuthorizationServerSecurityConfigurer
-from guniflask.security_config.web_security_configurer_adapter import WebSecurityConfigurerAdapter
+from guniflask.oauth2_config.authorization_server_configurer import AuthorizationServerConfigurer, \
+    AuthorizationServerEndpointsConfigurer, AuthorizationServerSecurityConfigurer
+from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 from guniflask.security_config.http_security import HttpSecurity
 
@@ -26,15 +25,13 @@ class AuthorizationServerEndpointsConfiguration:
                  configurers: List[AuthorizationServerConfigurer] = None):
         self._client_details_service = client_details_service
         self._endpoints = AuthorizationServerEndpointsConfigurer()
-        self._endpoints.set_client_details_service(client_details_service)
+        self._endpoints.with_client_details_service(client_details_service)
         if configurers:
             for c in configurers:
                 c.configure_endpoints(self._endpoints)
 
     @property
     def endpoints_configurer(self):
-        if not self._endpoints.token_services_override:
-            self._endpoints.with_token_services(self._endpoints.get_default_authorization_token_services())
         return self._endpoints
 
     @bean
@@ -54,8 +51,8 @@ class AuthorizationServerEndpointsConfiguration:
 
 @configuration
 @include(ClientDetailsServiceConfiguration, AuthorizationServerEndpointsConfiguration)
-class AuthorizationServerSecurityConfiguration(WebSecurityConfigurerAdapter):
-    def __init__(self, client_details_service: ClientDetailsServiceConfigurer,
+class AuthorizationServerSecurityConfiguration(WebSecurityConfigurer):
+    def __init__(self, client_details_service: ClientDetailsService,
                  endpoints: AuthorizationServerEndpointsConfiguration,
                  configurers: List[AuthorizationServerConfigurer] = None):
         super().__init__()
@@ -69,14 +66,16 @@ class AuthorizationServerSecurityConfiguration(WebSecurityConfigurerAdapter):
             for c in self._configurers:
                 c.configure_client_details_service(client_details)
 
-    def _configure_http(self, http: HttpSecurity):
+    def configure_http(self, http: HttpSecurity):
         configurer = AuthorizationServerSecurityConfigurer()
         self._configure_security(configurer)
         http.apply(configurer)
 
+        http.http_basic()
+
         http.set_shared_object(ClientDetailsService, self._client_details_service)
 
-    def _configure_authentication(self, auth: AuthenticationManagerBuilder):
+    def configure_authentication(self, authentication_builder: AuthenticationManagerBuilder):
         self._enable_local_authentication = True
 
     def _configure_security(self, configurer: AuthorizationServerSecurityConfigurer):
