@@ -1,7 +1,9 @@
 # coding=utf-8
 
 import re
-from typing import Union
+from typing import Union, Dict
+
+from flask import request
 
 __all__ = ['OAuth2Utils']
 
@@ -31,3 +33,10 @@ class OAuth2Utils:
         if not value:
             return None
         return ' '.join(value)
+
+    @staticmethod
+    def get_request_parameters() -> Dict[str, str]:
+        result = {}
+        for k in request.args:
+            result[k] = request.args.get(k)
+        return result

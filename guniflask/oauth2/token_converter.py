@@ -209,9 +209,12 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
             encoded_refresh_token = access_token.copy()
             encoded_refresh_token.value = refresh_token.value
             encoded_refresh_token.expiration = refresh_token.expiration
-            claims = JwtHelper.decode_jwt(refresh_token.value, self.verifying_key, self.signing_algorithm)
-            if self.TOKEN_ID in claims:
-                encoded_refresh_token.value = str(claims[self.TOKEN_ID])
+            try:
+                claims = JwtHelper.decode_jwt(refresh_token.value, self.verifying_key, self.signing_algorithm)
+                if self.TOKEN_ID in claims:
+                    encoded_refresh_token.value = str(claims[self.TOKEN_ID])
+            except Exception:
+                pass
             refresh_token_info = dict(access_token.additional_info)
             refresh_token_info[self.TOKEN_ID] = encoded_refresh_token.value
             refresh_token_info[self.ACCESS_TOKEN_ID] = token_id

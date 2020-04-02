@@ -35,7 +35,7 @@ class TokenEndpoint(AbstractEndpoint):
         client_id = self._get_client_id(auth)
         authenticated_client = self.client_details_service.load_client_details_by_client_id(client_id)
 
-        parameters = dict(request.args)
+        parameters = OAuth2Utils.get_request_parameters()
         token_request = self.oauth2_request_factory.create_token_request(parameters, authenticated_client)
         if client_id:
             if client_id != token_request.client_id:

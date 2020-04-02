@@ -161,7 +161,7 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
         if expires_in <= 0:
             expiration = None
         else:
-            expiration = dt.datetime.utcnow() + dt.timedelta(seconds=expires_in)
+            expiration = dt.datetime.now() + dt.timedelta(seconds=expires_in)
         return OAuth2RefreshToken(value, expiration=expiration)
 
     def _is_support_refresh_token(self, client_auth: OAuth2Request) -> bool:
@@ -185,7 +185,7 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
         if expires_in <= 0:
             expiration = None
         else:
-            expiration = dt.datetime.utcnow() + dt.timedelta(seconds=expires_in)
+            expiration = dt.datetime.now() + dt.timedelta(seconds=expires_in)
         token.expiration = expiration
         token.refresh_token = refresh_token
         token.scope = authentication.oauth2_request.scope

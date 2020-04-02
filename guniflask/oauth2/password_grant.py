@@ -10,6 +10,7 @@ from guniflask.oauth2.client_details import ClientDetails
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.oauth2.errors import InvalidGrantError
+from guniflask.security.errors import BadCredentialsError
 
 __all__ = ['PasswordTokenGranter']
 
@@ -34,7 +35,7 @@ class PasswordTokenGranter(AbstractTokenGranter):
         user_auth.details = parameters
         try:
             user_auth = self.authentication_manager.authenticate(user_auth)
-        except Exception as e:
+        except BadCredentialsError as e:
             raise InvalidGrantError(e)
         if user_auth is None or not user_auth.is_authenticated:
             raise InvalidGrantError('Could not authenticate user: {}'.format(username))
