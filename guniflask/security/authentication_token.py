@@ -1,12 +1,14 @@
 # coding=utf-8
 
+from abc import ABCMeta
+
 from guniflask.security.authentication import Authentication
 from guniflask.security.user_details import UserDetails
 
 __all__ = ['AuthenticationToken', 'UserAuthentication']
 
 
-class AuthenticationToken(Authentication):
+class AuthenticationToken(Authentication, metaclass=ABCMeta):
     @property
     def name(self):
         if isinstance(self.principal, UserDetails):
@@ -21,6 +23,8 @@ class UserAuthentication(AuthenticationToken):
         super().__init__(authorities=authorities)
         self._principal = principal
         self._credentials = credentials
+        if authorities is not None:
+            self.authenticate(True)
 
     @property
     def principal(self):

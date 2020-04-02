@@ -46,7 +46,7 @@ class JwtManager(AuthenticationManager):
         payload = {
             self.JTI: uuid.uuid4().hex
         }
-        exp = dt.datetime.utcnow() + dt.timedelta(seconds=expires_in)
+        exp = dt.datetime.now() + dt.timedelta(seconds=expires_in)
         payload[self.EXP] = exp
 
         payload[self.AUTHORITIES] = authorities
