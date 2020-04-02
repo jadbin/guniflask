@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.beans.configurable_factory import ConfigurableBeanFactory
+from guniflask.beans.factory import ConfigurableBeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 
 __all__ = ['BeanFactoryPostProcessor', 'BeanDefinitionRegistryPostProcessor']

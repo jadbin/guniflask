@@ -3,7 +3,7 @@
 from typing import List
 import logging
 
-from guniflask.beans.configurable_factory import ConfigurableBeanFactory
+from guniflask.beans.factory import ConfigurableBeanFactory
 from guniflask.beans.default_factory import DefaultBeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.post_processor import BeanPostProcessor

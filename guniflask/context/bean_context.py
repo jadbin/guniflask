@@ -12,7 +12,7 @@ __all__ = ['BeanContext', 'BeanContextAware']
 log = logging.getLogger(__name__)
 
 
-class BeanContext(metaclass=ABCMeta):
+class BeanContext(BeanFactory, metaclass=ABCMeta):
 
     @abstractmethod
     def add_application_listener(self, listener: ApplicationEventListener):
@@ -28,11 +28,6 @@ class BeanContext(metaclass=ABCMeta):
 
     @abstractmethod
     def close(self):
-        pass
-
-    @property
-    @abstractmethod
-    def bean_factory(self) -> BeanFactory:
         pass
 
 
