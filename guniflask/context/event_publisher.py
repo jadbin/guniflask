@@ -1,11 +1,11 @@
 # coding=utf-8
 
-import inspect
 from typing import Type
 
 from guniflask.beans.factory import BeanFactory
 from guniflask.context.event import ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
+from guniflask.utils.factory import inspect_args
 
 __all__ = ['ApplicationEventPublisher']
 
@@ -38,15 +38,10 @@ class ApplicationEventPublisher:
                 yield listener
 
     def _resolve_accepted_event_type(self, method) -> Type[ApplicationEvent]:
-        args_spec = inspect.getfullargspec(method)
-        args = args_spec.args
+        args, hints = inspect_args(method)
         event_type_arg = None
-        if len(args) > 0:
-            if args[0] in ('self', 'cls'):
-                if len(args) > 1:
-                    event_type_arg = args[1]
-            else:
-                event_type_arg = args[0]
+        for k in args:
+            event_type_arg = k
+            break
         if event_type_arg is not None:
-            hints = args_spec.annotations
             return hints.get(event_type_arg)

@@ -60,12 +60,12 @@ class DefaultAccessTokenConverter(AccessTokenConverter):
 
         if token.scope:
             result[self.SCOPE] = token.scope
-        if self.JTI in token.additional_info:
-            result[self.JTI] = token.additional_info[self.JTI]
+        if self.JTI in token.additional_information:
+            result[self.JTI] = token.additional_information[self.JTI]
         if token.expiration:
             result[self.EXP] = int(token.expiration.timestamp())
 
-        result.update(token.additional_info)
+        result.update(token.additional_information)
 
         result[self.CLIENT_ID] = client_token.client_id
         if client_token.resource_ids:
@@ -84,11 +84,11 @@ class DefaultAccessTokenConverter(AccessTokenConverter):
         if self.AUD in info:
             info.pop(self.AUD)
         if self.EXP in data:
-            token.expiration = dt.datetime.utcfromtimestamp(data[self.EXP]).astimezone()
+            token.expiration = dt.datetime.fromtimestamp(data[self.EXP])
         if self.JTI in data:
             info[self.JTI] = data[self.JTI]
         token.scope = self._extract_scope(data)
-        token.additional_info = info
+        token.additional_information = info
         return token
 
     def extract_authentication(self, data: dict) -> OAuth2Authentication:
@@ -165,7 +165,7 @@ class UserAuthenticationConverter:
                 user = self.user_details_service.load_user_by_username(str(principal))
                 authorities = user.authorities
                 principal = user
-            return UserAuthentication(principal, authorities)
+            return UserAuthentication(principal, authorities=authorities)
 
     def _get_authorities(self, data: dict):
         if self.AUTHORITIES not in data:
@@ -195,13 +195,13 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
 
     def enhance(self, access_token: OAuth2AccessToken, authentication: OAuth2Authentication) -> OAuth2AccessToken:
         result = access_token.copy()
-        info = dict(access_token.additional_info)
+        info = dict(access_token.additional_information)
         token_id = result.value
         if self.TOKEN_ID not in info:
             info[self.TOKEN_ID] = token_id
         else:
             token_id = str(info[self.TOKEN_ID])
-        result.additional_info = info
+        result.additional_information = info
         result.value = self.encode(result, authentication)
 
         refresh_token = result.refresh_token
@@ -215,10 +215,10 @@ class JwtAccessTokenConverter(AccessTokenConverter, TokenEnhancer):
                     encoded_refresh_token.value = str(claims[self.TOKEN_ID])
             except Exception:
                 pass
-            refresh_token_info = dict(access_token.additional_info)
+            refresh_token_info = dict(access_token.additional_information)
             refresh_token_info[self.TOKEN_ID] = encoded_refresh_token.value
             refresh_token_info[self.ACCESS_TOKEN_ID] = token_id
-            encoded_refresh_token.additional_info = refresh_token_info
+            encoded_refresh_token.additional_information = refresh_token_info
             token = OAuth2RefreshToken(self.encode(encoded_refresh_token, authentication),
                                        expiration=refresh_token.expiration)
             result.refresh_token = token

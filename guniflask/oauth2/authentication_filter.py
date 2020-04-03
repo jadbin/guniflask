@@ -25,9 +25,3 @@ class OAuth2AuthenticationFilter(RequestFilter):
                 authentication.details = OAuth2AuthenticationDetails()
             auth_result = self.authentication_manager.authenticate(authentication)
             SecurityContext.set_authentication(auth_result)
-
-    def is_authenticated(self):
-        authentication = SecurityContext.get_authentication()
-        if authentication is None:
-            return False
-        return True

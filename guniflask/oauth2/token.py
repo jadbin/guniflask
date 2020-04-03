@@ -1,6 +1,7 @@
 # coding=utf-8
 
-from datetime import datetime
+import time
+import datetime as dt
 
 __all__ = ['OAuth2AccessToken', 'OAuth2RefreshToken']
 
@@ -10,7 +11,7 @@ class OAuth2RefreshToken:
     OAuth2 refresh token
     """
 
-    def __init__(self, value: str, expiration: datetime = None):
+    def __init__(self, value: str, expiration: dt.datetime = None):
         self.value = value
         self.expiration = expiration
 
@@ -18,11 +19,11 @@ class OAuth2RefreshToken:
     def expires_in(self):
         if self.expiration is None:
             return 0
-        return int(self.expiration.timestamp() - datetime.now().timestamp())
+        return int(self.expiration.timestamp() - time.time())
 
     @property
     def is_expired(self):
-        return self.expiration is not None and self.expires_in > 0
+        return self.expiration is not None and self.expires_in <= 0
 
 
 class OAuth2AccessToken:
@@ -37,8 +38,8 @@ class OAuth2AccessToken:
     EXPIRES_IN = 'expires_in'
     SCOPE = 'scope'
 
-    def __init__(self, value, refresh_token: OAuth2RefreshToken = None, expiration: datetime = None, scope=None,
-                 additional_info=None):
+    def __init__(self, value, refresh_token: OAuth2RefreshToken = None, expiration: dt.datetime = None, scope=None,
+                 additional_information=None):
         self.value = value
         self.token_type = self.BEARER_TYPE.lower()
         self.refresh_token = refresh_token
@@ -46,9 +47,9 @@ class OAuth2AccessToken:
         self.scope = set()
         if scope is not None:
             self.scope.update(scope)
-        self.additional_info = dict()
-        if additional_info is not None:
-            self.additional_info.update(additional_info)
+        self.additional_information = dict()
+        if additional_information is not None:
+            self.additional_information.update(additional_information)
 
     def __str__(self):
         return str(self.to_dict())
@@ -57,11 +58,11 @@ class OAuth2AccessToken:
     def expires_in(self):
         if self.expiration is None:
             return 0
-        return int(self.expiration.timestamp() - datetime.now().timestamp())
+        return int(self.expiration.timestamp() - time.time())
 
     @property
     def is_expired(self):
-        return self.expiration is not None and self.expires_in > 0
+        return self.expiration is not None and self.expires_in <= 0
 
     def to_dict(self):
         res = {self.ACCESS_TOKEN: self.value, self.TOKEN_TYPE: self.token_type}
@@ -71,8 +72,8 @@ class OAuth2AccessToken:
             res[self.EXPIRES_IN] = self.expires_in
         if self.scope is not None:
             res[self.SCOPE] = ' '.join(self.scope)
-        if self.additional_info is not None:
-            res.update(self.additional_info)
+        if self.additional_information is not None:
+            res.update(self.additional_information)
         return res
 
     def copy(self):
@@ -80,5 +81,5 @@ class OAuth2AccessToken:
                                refresh_token=self.refresh_token,
                                expiration=self.expiration,
                                scope=self.scope,
-                               additional_info=dict(self.additional_info))
+                               additional_information=dict(self.additional_information))
         return token

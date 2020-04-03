@@ -3,6 +3,8 @@
 from importlib import import_module
 from typing import get_type_hints, List, Collection, Any, Mapping, MutableMapping
 import datetime as dt
+import inspect
+from collections import OrderedDict
 
 
 def load_object(path):
@@ -86,3 +88,21 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
             except ValueError:
                 pass
         return source
+
+
+def inspect_args(func):
+    signature = inspect.signature(func)
+    paramters = signature.parameters
+    return_type = signature.return_annotation
+
+    hints = {}
+    if return_type is not inspect._empty:
+        hints['return'] = return_type
+
+    args = OrderedDict()
+    for p in paramters.values():
+        args[p.name] = p.default
+        if p.annotation is not inspect._empty:
+            hints[p.name] = p.annotation
+
+    return args, hints

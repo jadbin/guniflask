@@ -24,7 +24,7 @@ class BasicAuthenticationFilter(RequestFilter):
             return
         username, password = self._extract_from_header(header)
         if self._require_authentication(username):
-            auth_request = UserAuthentication(username, password)
+            auth_request = UserAuthentication(username, credentials=password)
             auth_request.details = WebAuthenticationDetails()
             auth_result = self.authentication_manager.authenticate(auth_request)
             SecurityContext.set_authentication(auth_result)

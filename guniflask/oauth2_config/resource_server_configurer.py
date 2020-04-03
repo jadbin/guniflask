@@ -76,8 +76,8 @@ class ResourceServerSecurityConfigurer(SecurityConfigurerAdapter):
     def _get_resource_token_services(self) -> ResourceServerTokenServices:
         if self._resource_token_services is None:
             token_services = DefaultTokenServices(self._get_token_store())
-            token_services.client_details_service = self._get_client_details_service()
             token_services.support_refresh_token = True
+            token_services.client_details_service = self._get_client_details_service()
             self.resource_token_services = token_services
         return self.resource_token_services
 

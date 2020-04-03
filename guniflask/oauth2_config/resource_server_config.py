@@ -20,14 +20,12 @@ class ResourceServerConfiguration(WebSecurityConfigurer):
     def __init__(self, configurers: List[ResourceServerConfigurer] = None,
                  token_store: TokenStore = None,
                  token_services: ResourceServerTokenServices = None,
-                 endpoints: AuthorizationServerEndpointsConfiguration = None,
-                 client_details_service: ClientDetailsService = None):
+                 endpoints: AuthorizationServerEndpointsConfiguration = None):
         super().__init__()
         self._configurers = configurers
         self._token_store = token_store
         self._token_services = token_services
         self._endpoints = endpoints
-        self._client_details_service = client_details_service
 
     def configure_http(self, http: HttpSecurity):
         resources = ResourceServerSecurityConfigurer()
@@ -42,6 +40,8 @@ class ResourceServerConfiguration(WebSecurityConfigurer):
         if self._configurers:
             for c in self._configurers:
                 c.configure_security(resources)
+
+        http.apply(resources)
 
         if self._configurers:
             for c in self._configurers:

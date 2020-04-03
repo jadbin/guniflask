@@ -7,6 +7,7 @@ from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.factory import BeanFactory
 from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, NoUniqueBeanDefinitionError, \
     BeansError
+from guniflask.utils.factory import inspect_args
 
 __all__ = ['ConstructorResolver']
 
@@ -16,39 +17,23 @@ class ConstructorResolver:
         self._bean_factory = bean_factory
 
     def instantiate(self, func):
-        arg_spec = inspect.getfullargspec(func)
-        NO_VALUE = object()
-        if len(arg_spec.args) > 0 and arg_spec.args[0] in ('self', 'cls'):
-            args = list(arg_spec.args)[1:]
-        else:
-            args = list(arg_spec.args)
-        if arg_spec.defaults is not None:
-            args_value = [NO_VALUE] * (len(args) - len(arg_spec.defaults)) + list(arg_spec.defaults)
-        else:
-            args_value = [NO_VALUE] * len(args)
-        if arg_spec.kwonlydefaults is not None:
-            kwargs_value = dict(arg_spec)
-        else:
-            kwargs_value = dict()
-        hints = dict(arg_spec.annotations)
+        args, hints = inspect_args(func)
 
-        for i, a in enumerate(args):
-            required_type = hints.get(a)
-            v = self._resolve_arg(a, required_type)
-            if v is not None:
-                args_value[i] = v
-        for a in list(kwargs_value.keys()):
-            required_type = hints.get(a)
-            v = self._resolve_arg(a, required_type)
-            if v is not None:
-                kwargs_value[a] = v
+        args_value = []
+        kwargs_value = {}
+        for name, default in args.items():
+            required_type = hints.get(name)
+            v = self._resolve_arg(name, required_type)
+            if default is inspect._empty:
+                if v is None:
+                    raise ValueError('The argument named "{}" cannot be resolved'.format(name))
+                args_value.append(v)
+            else:
+                if v is None:
+                    kwargs_value[name] = default
+                else:
+                    kwargs_value[name] = v
 
-        no_value_args = []
-        for i, v in enumerate(args_value):
-            if v == NO_VALUE:
-                no_value_args.append(args[i])
-        if len(no_value_args) > 0:
-            raise ValueError('The following arguments cannot be resolved: {}'.format(', '.join(no_value_args)))
         return func(*args_value, **kwargs_value)
 
     def _resolve_arg(self, arg, required_type):

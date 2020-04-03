@@ -21,6 +21,7 @@ from guniflask.web.filter_chain_resolver import FilterChainResolver
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent
 from guniflask.beans.factory import BeanFactoryAware
+from guniflask.utils.factory import inspect_args
 
 __all__ = ['BlueprintPostProcessor']
 
@@ -88,19 +89,10 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
             else:
                 path_variable_type[name] = str
 
-        spec = inspect.getfullargspec(method)
-        spec_args = spec.args or []
-        if len(spec.args) > 0 and spec_args[0] in ('self', 'cls'):
-            spec_args = spec_args[1:]
-        spec_defaults = list(spec.defaults) if spec.defaults else []
-        NO_VALUE = object()
-        while len(spec_defaults) < len(spec_args):
-            spec_defaults.insert(0, NO_VALUE)
-        spec_kwargs = spec.kwonlydefaults or {}
-        type_hints = spec.annotations
+        args, type_hints = inspect_args(method)
 
-        for arg, default in self._get_arg_with_default(spec_args, spec_defaults, spec_kwargs):
-            if default is NO_VALUE:
+        for arg, default in args.items():
+            if default is inspect._empty:
                 required = True
                 default = None
             else:
@@ -123,12 +115,6 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                 param_names[default.name] = arg
 
         return params, param_names
-
-    def _get_arg_with_default(self, args: list, defaults: list, kwargs: dict):
-        for i in range(0, len(args)):
-            yield args[i], defaults[i]
-        for i in kwargs:
-            yield i, kwargs[i]
 
     def _resolve_method_kwargs(self, kwargs: dict, params: dict, param_names: dict) -> dict:
         result = {}
