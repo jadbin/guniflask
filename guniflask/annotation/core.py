@@ -11,6 +11,9 @@ class Annotation:
         self.attributes = {}
         self.attributes.update(kwargs)
 
+    def __contains__(self, key):
+        return key in self.attributes
+
     def __setitem__(self, key, value):
         self.attributes[key] = value
 

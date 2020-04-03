@@ -9,19 +9,20 @@ from guniflask.context import ApplicationEvent
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
+from guniflask.web.request_filter import RequestFilter, RequestFilterChain
+from guniflask.beans.constructor_resolver import ConstructorResolver
+from guniflask.web.filter_annotation import FilterChain
 from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.web.bind_annotation import Blueprint, Route
-from guniflask.utils.factory import instantiate_from_json
+from guniflask.utils.factory import instantiate_from_json, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation
-from guniflask.beans.factory import BeanFactory
-from guniflask.web.filter_chain_resolver import FilterChainResolver
+from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent
-from guniflask.beans.factory import BeanFactoryAware
-from guniflask.utils.factory import inspect_args
+from guniflask.web.filter_annotation import MethodFilter
 
 __all__ = ['BlueprintPostProcessor']
 
@@ -30,6 +31,7 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
     def __init__(self):
         self.blueprints = []
         self._filter_chain_resolver: FilterChainResolver = None
+        self._method_filter_resolver = MethodFilterResolver()
 
     def set_bean_factory(self, bean_factory: BeanFactory):
         self._filter_chain_resolver = FilterChainResolver(bean_factory)
@@ -54,6 +56,7 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                                    endpoint=method.__name__,
                                    view_func=self.wrap_view_func(a['rule'], method),
                                    **rule_options)
+                self._method_filter_resolver.resolve(b, method)
             self.blueprints.append(b)
             self._filter_chain_resolver.add_blueprint(b, bean_type)
         return bean
@@ -174,3 +177,52 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                         raise BadRequest('Parameter not given: {}'.format(name))
                 result[k] = p.default
         return result
+
+
+class FilterChainResolver:
+    def __init__(self, bean_factory: BeanFactory):
+        self._constructor_resolver = ConstructorResolver(bean_factory)
+        self._blueprints = []
+
+    def add_blueprint(self, blueprint, bean_type):
+        self._blueprints.append((blueprint, bean_type))
+
+    def build(self):
+        for b, bean_type in self._blueprints:
+            filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
+            if filter_chain_annotation is not None:
+                request_filters = self._resolve_request_filters(filter_chain_annotation['values'])
+                if request_filters:
+                    chain = RequestFilterChain()
+                    for f in request_filters:
+                        chain.add_request_filter(f)
+                    b.before_request(chain.before_request)
+                    b.after_request(chain.after_request)
+
+    def _resolve_request_filters(self, values) -> List[RequestFilter]:
+        if not hasattr(values, '__iter__'):
+            values = [values]
+        result = []
+        for v in values:
+            if isinstance(v, RequestFilter):
+                result.append(v)
+            else:
+                f = self._constructor_resolver.instantiate(v)
+                assert isinstance(f, RequestFilter), 'Required a request filter, ' \
+                                                     'got: {}'.format(type(RequestFilter).__name__)
+        return result
+
+
+class MethodFilterResolver:
+
+    def resolve(self, blueprint, method):
+        a = AnnotationUtils.get_annotation(method, MethodFilter)
+        if a is None:
+            return
+        for v in a['values']:
+            name = v['name']
+            args = v['args']
+            if args is None:
+                getattr(blueprint, name)(method)
+            else:
+                getattr(blueprint, name)(*args)(method)
