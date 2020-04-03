@@ -4,7 +4,8 @@ from functools import update_wrapper
 import inspect
 from typing import List
 
-from flask import Flask, Blueprint as FlaskBlueprint, request
+from flask import Blueprint as FlaskBlueprint, request, current_app
+from guniflask.context import ApplicationEvent
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
@@ -17,15 +18,24 @@ from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable
 from guniflask.web import param_annotation
 from guniflask.beans.factory import BeanFactory
 from guniflask.web.filter_chain_resolver import FilterChainResolver
-from guniflask.web.filter_annotation import FilterChain
+from guniflask.context.event_listener import ApplicationEventListener
+from guniflask.context.event import ContextRefreshedEvent
+from guniflask.beans.factory import BeanFactoryAware
 
 __all__ = ['BlueprintPostProcessor']
 
 
-class BlueprintPostProcessor(BeanPostProcessorAdapter):
-    def __init__(self, app: Flask, bean_factory: BeanFactory):
-        self.app = app
+class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener, BeanFactoryAware):
+    def __init__(self):
+        self.blueprints = []
+        self._filter_chain_resolver: FilterChainResolver = None
+
+    def set_bean_factory(self, bean_factory: BeanFactory):
         self._filter_chain_resolver = FilterChainResolver(bean_factory)
+
+    def on_application_event(self, application_event: ApplicationEvent):
+        if isinstance(application_event, ContextRefreshedEvent):
+            self._register_blueprints()
 
     def post_process_after_initialization(self, bean, bean_name: str):
         bean_type = bean.__class__
@@ -43,12 +53,8 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter):
                                    endpoint=method.__name__,
                                    view_func=self.wrap_view_func(a['rule'], method),
                                    **rule_options)
-
-            filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
-            if filter_chain_annotation is not None:
-                self._filter_chain_resolver.register_request_filters(b, filter_chain_annotation['values'])
-            
-            self.app.register_blueprint(b)
+            self.blueprints.append(b)
+            self._filter_chain_resolver.add_blueprint(b, bean_type)
         return bean
 
     def wrap_view_func(self, rule: str, method):
@@ -59,6 +65,12 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter):
             return method(**method_kwargs)
 
         return update_wrapper(wrapper, method)
+
+    def _register_blueprints(self):
+        self._filter_chain_resolver.build()
+
+        for b in self.blueprints:
+            current_app.register_blueprint(b)
 
     def _resolve_method_parameters(self, rule: str, method):
         params = {}

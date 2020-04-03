@@ -6,6 +6,8 @@ from guniflask.context.default_bean_context import AnnotationConfigBeanContext
 from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
 from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
+from guniflask.web.config_constants import *
+from guniflask.beans.definition import BeanDefinition
 
 __all__ = ['WebApplicationContext']
 
@@ -15,9 +17,13 @@ class WebApplicationContext(AnnotationConfigBeanContext):
         super().__init__()
         self.app = app
 
-    def _post_process_bean_factory(self, bean_factory):
-        super()._post_process_bean_factory(bean_factory)
-        bean_factory.add_bean_post_processor(BlueprintPostProcessor(self.app, bean_factory))
+    def _post_process_bean_factory(self):
+        super()._post_process_bean_factory()
+
+        if not self.contains_bean_definition(BLUEPRINT_POST_PROCESSOR):
+            bean_definition = BeanDefinition(BlueprintPostProcessor)
+            self.register_bean_definition(BLUEPRINT_POST_PROCESSOR, bean_definition)
+
         self._reader.register(WebSecurityConfiguration)
         self._reader.register(WebAsyncConfiguration)
         self._reader.register(WebSchedulingConfiguration)

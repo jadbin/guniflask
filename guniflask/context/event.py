@@ -1,7 +1,8 @@
 # coding=utf-8
 
 __all__ = ['ApplicationEvent',
-           'ContextRefreshedEvent', 'ContextClosedEvent']
+           'ContextRefreshedEvent',
+           'ContextClosedEvent']
 
 
 class ApplicationEvent:

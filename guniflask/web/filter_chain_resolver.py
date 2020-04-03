@@ -2,9 +2,11 @@
 
 from typing import List
 
-from guniflask.web.request_filter import RequestFilter, RequestFilterMetadata
+from guniflask.web.request_filter import RequestFilter, RequestFilterChain
 from guniflask.beans.constructor_resolver import ConstructorResolver
 from guniflask.beans.factory import BeanFactory
+from guniflask.annotation.core import AnnotationUtils
+from guniflask.web.filter_annotation import FilterChain
 
 __all__ = ['FilterChainResolver']
 
@@ -12,17 +14,26 @@ __all__ = ['FilterChainResolver']
 class FilterChainResolver:
     def __init__(self, bean_factory: BeanFactory):
         self._constructor_resolver = ConstructorResolver(bean_factory)
+        self._blueprints = []
 
-    def register_request_filters(self, app, values):
-        request_filters = self._resolve_request_filters(values)
-        for f in request_filters:
-            m = RequestFilterMetadata(f)
-            if m.before_request:
-                app.before_request(m.before_request)
-            if m.after_request:
-                app.after_request(m.after_request)
+    def add_blueprint(self, blueprint, bean_type):
+        self._blueprints.append((blueprint, bean_type))
+
+    def build(self):
+        for b, bean_type in self._blueprints:
+            filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
+            if filter_chain_annotation is not None:
+                request_filters = self._resolve_request_filters(filter_chain_annotation['values'])
+                if request_filters:
+                    chain = RequestFilterChain()
+                    for f in request_filters:
+                        chain.add_request_filter(f)
+                    b.before_request(chain.before_request)
+                    b.after_request(chain.after_request)
 
     def _resolve_request_filters(self, values) -> List[RequestFilter]:
+        if not hasattr(values, '__iter__'):
+            values = [values]
         result = []
         for v in values:
             if isinstance(v, RequestFilter):
