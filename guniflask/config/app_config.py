@@ -63,7 +63,6 @@ class AppConfig:
         kwargs = self._get_default_settings_from_env()
         if conf_dir:
             c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
-            c['active_profiles'] = active_profiles
         c.update(kwargs)
         s = {}
         for name in c:
@@ -105,13 +104,13 @@ def load_profile_config(conf_dir, name, profiles=None, **kwargs):
     pc = load_config(join(conf_dir, name + '.py'), **kwargs)
     if profiles:
         profiles = profiles.split(',')
-        profiles.reverse()
-        for profile in profiles:
+        for profile in reversed(profiles):
             if profile:
                 pc_file = join(conf_dir, name + '_' + profile + '.py')
                 if isfile(pc_file):
                     c = load_config(pc_file, **kwargs)
                     pc.update(c)
+        pc['active_profiles'] = list(profiles)
     return pc
 
 
