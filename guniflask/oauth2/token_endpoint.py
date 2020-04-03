@@ -1,12 +1,13 @@
 # coding=utf-8
 
-from flask import jsonify, request
+from flask import jsonify
 
 from guniflask.web.bind_annotation import blueprint, get_route, post_route
 from guniflask.oauth2.abstract_endpoint import AbstractEndpoint
 from guniflask.oauth2.token_converter import JwtAccessTokenConverter
-from guniflask.oauth2.errors import OAuth2AccessDeniedError, InvalidClientError, InvalidRequestError, \
-    InvalidGrantError, UnsupportedGrantTypeError
+from guniflask.oauth2.errors import InvalidClientError, InvalidRequestError, InvalidGrantError, \
+    UnsupportedGrantTypeError, OAuth2AccessDeniedError
+from guniflask.security.errors import InsufficientAuthenticationError
 from guniflask.security.context import SecurityContext
 from guniflask.security.authentication import Authentication
 from guniflask.oauth2.authentication import OAuth2Authentication
@@ -30,7 +31,7 @@ class TokenEndpoint(AbstractEndpoint):
     def post_access_token(self):
         auth = SecurityContext.get_authentication()
         if auth is None:
-            raise OAuth2AccessDeniedError('Authentication required')
+            raise InsufficientAuthenticationError('Authentication required')
 
         client_id = self._get_client_id(auth)
         authenticated_client = self.client_details_service.load_client_details_by_client_id(client_id)

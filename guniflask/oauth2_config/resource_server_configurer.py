@@ -2,8 +2,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-from flask import current_app
-
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.token_service import ResourceServerTokenServices, DefaultTokenServices
 from guniflask.oauth2.token_store import TokenStore
@@ -60,7 +58,6 @@ class ResourceServerSecurityConfigurer(SecurityConfigurerAdapter):
         if self._token_extractor is not None:
             authentication_filter.token_extractor = self._token_extractor
         http.add_request_filter(authentication_filter)
-        http.add_blueprint(current_app)
 
     def _get_oauth2_authentication_manager(self) -> AuthenticationManager:
         if self._authentication_manager:

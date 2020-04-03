@@ -71,7 +71,10 @@ class AuthorizationServerSecurityConfiguration(WebSecurityConfigurer):
         self._configure_security(configurer)
         http.apply(configurer)
 
-        http.http_basic()
+        http \
+            .authorize_blueprint(TokenEndpoint) \
+            .authorize_blueprint(TokenKeyEndpoint) \
+            .http_basic()
 
         http.set_shared_object(ClientDetailsService, self._client_details_service)
 
