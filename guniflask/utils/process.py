@@ -24,3 +24,7 @@ def pid_exists(pid):
     except OSError:
         return False
     return True
+
+
+def get_master_pid():
+    return os.getppid()

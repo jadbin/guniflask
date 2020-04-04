@@ -12,6 +12,7 @@ Changelog
 - 为避免歧义，@roles_required修改为@has_any_role，@authorities_required修改为@has_any_authority，同时提供@has_role和@has_authority
 - JwtManager创建access token时用户自定义字段会作为User的属性
 - init命令将生成foo/config的目录，用于存放应用的配置
+- @global_singleton改为app级别的单例模式，当gunicorn启动多个worker时，只有一个worker下的单例会生效
 
 0.6.1 (2020-03-15)
 ------------------

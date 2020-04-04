@@ -8,6 +8,7 @@ import fcntl
 from guniflask.annotation.core import AnnotationMetadata
 from guniflask.context.annotation import conditional
 from guniflask.context.condition import Condition, ConditionContext
+from guniflask.utils.process import get_master_pid
 
 __all__ = ['global_singleton']
 
@@ -38,15 +39,12 @@ class GlobalSingletonCondition(Condition):
             module_name = obj.__module__
         else:
             module_name = None
-        if hasattr(obj, '__class__'):
-            class_name = obj.__class__.__name__
-        else:
-            class_name = None
         if hasattr(obj, '__name__'):
             obj_name = obj.__name__
         else:
             obj_name = None
-        return '{}.{}.{}'.format(module_name, class_name, obj_name)
+        master_pid = get_master_pid()
+        return '{}.{}_{}'.format(module_name, obj_name, master_pid)
 
 
 def global_singleton(func):
