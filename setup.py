@@ -30,11 +30,14 @@ class PyTest(TestCommand):
 
 
 tests_require = read_requirements('test.txt')
-app_require = read_requirements('app.txt')
-install_requires = ['Jinja2>=2.10']
-extras_require = {
-    'app': app_require
-}
+install_requires = [
+    'Flask>=1.1.1',
+    'Flask-SQLAlchemy>=2.4.1',
+    'Flask-Cors>=3.0.8',
+    'PyJWT>=1.7.1',
+    'APScheduler>=3.6.3',
+    'requests>=2.23.0',
+]
 
 
 def main():
@@ -45,7 +48,7 @@ def main():
         name="guniflask",
         version=read_version(),
         url="https://github.com/jadbin/guniflask",
-        description="flask + gunicorn, scaffolding tool for web services",
+        description="Improving the coding experience when using Flask",
         long_description=long_description,
         author="jadbin",
         author_email="jadbin.com@hotmail.com",
@@ -53,14 +56,9 @@ def main():
         zip_safe=False,
         packages=find_packages(exclude=("tests",)),
         include_package_data=True,
-        entry_points={
-            "console_scripts": ["guniflask = guniflask.cli.main:main",
-                                "guniflask-manage = guniflask.cli.manage:main"]
-        },
         python_requires='>=3.6',
         install_requires=install_requires,
         tests_require=tests_require,
-        extras_require=extras_require,
         cmdclass={"test": PyTest},
         classifiers=[
             "License :: OSI Approved :: Apache Software License",

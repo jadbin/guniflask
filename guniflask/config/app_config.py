@@ -11,8 +11,7 @@ from flask import current_app
 from werkzeug.local import LocalProxy
 from flask_sqlalchemy import SQLAlchemy
 
-from guniflask.model.wrapper import wrap_model
-from guniflask.security.jwt_provider import JwtManager
+from guniflask.orm.model_wrapper import wrap_model
 
 log = logging.getLogger(__name__)
 
