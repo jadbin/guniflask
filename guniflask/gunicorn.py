@@ -3,6 +3,7 @@
 import os
 from os.path import join, dirname, exists
 import multiprocessing
+from typing import List
 
 from gunicorn.config import KNOWN_SETTINGS
 from gunicorn.app.base import Application
@@ -31,6 +32,7 @@ class GunicornApplication(Application):
                 self.cfg.set(key.lower(), value)
 
     def load(self):
+        self._set_default_env()
         return create_app(get_project_name_from_env())
 
     def _make_options(self):
@@ -90,6 +92,26 @@ class GunicornApplication(Application):
                 d = dirname(p)
                 if d and not exists(d):
                     os.makedirs(d)
+
+    def _set_default_env(self):
+        bind = self.options.get('bind', '127.0.0.1:8000')
+        if not isinstance(bind, List):
+            bind = [bind]
+        host = None
+        port = 80
+        for b in bind:
+            s = b.split(':')
+            if s[0] in ('unix', 'fd'):
+                continue
+            host = s[0]
+            if len(s) > 1:
+                try:
+                    port = int(s[1])
+                except ValueError:
+                    continue
+            break
+        os.environ['GUNIFLASK_BIND_HOST'] = host
+        os.environ['GUNIFLASK_BIND_PORT'] = str(port)
 
 
 class HookWrapper:
