@@ -25,7 +25,7 @@ gunicorn详细的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/s
 项目默认的gunicorn配置项:
 
 - daemon: ``True``
-- workers: ``multiprocessing.cpu_count()``
+- workers: ``os.cpu_count()``
 - worker_class: ``'gevent'``
 - pidfile: 默认存放在根目录下的 .pid 文件夹中
 - accesslog: 默认存放在根目录下的 .log 文件夹中

@@ -48,7 +48,7 @@ def main():
         name="guniflask",
         version=read_version(),
         url="https://github.com/jadbin/guniflask",
-        description="Improving the coding experience when using Flask",
+        description="Better coding experience for Flask",
         long_description=long_description,
         author="jadbin",
         author_email="jadbin.com@hotmail.com",

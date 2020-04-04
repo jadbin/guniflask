@@ -28,15 +28,22 @@ guniflask需要Python 3.6或更高版本的环境支持。
 Getting Started
 ===============
 
-新建一个空文件夹 ``foo`` 并进入到 ``foo`` 中运行guniflask::
+安装guniflask项目生成工具::
+
+    $ pip install -U guniflask-cli
+
+新建一个空文件夹 ``foo`` 并进入到 ``foo`` 中::
 
     $ mkdir foo && cd foo
+
+运行如下命令::
+
     $ guniflask init
 
 当出现提示时按 ``Enter`` 键即可选择默认设置。
 提示项目创建成功后，安装项目所需依赖::
 
-    $ pip install -U guniflask[app]
+    $ pip install -r requirements/app.txt
 
 调试模式启动项目::
 
