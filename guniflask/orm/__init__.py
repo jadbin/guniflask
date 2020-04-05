@@ -1,5 +1,5 @@
 # coding=utf-8
 
-from .model_wrapper import *
+from .sql_alchemy_wrapper import *
 
-__all__ = model_wrapper.__all__
+__all__ = sql_alchemy_wrapper.__all__

@@ -7,7 +7,7 @@ import sqlalchemy
 from guniflask.utils.factory import string_to_datetime
 
 __all__ = ['model_to_dict', 'result_to_dict', 'dict_to_model', 'update_model_by_dict',
-           'wrap_model']
+           'wrap_sqlalchemy_model']
 
 
 def model_to_dict(model, ignore=None, only=None, only_not_none=False):
@@ -94,7 +94,7 @@ def _get_field_set(field):
     return set(field or [])
 
 
-def wrap_model(model_cls):
+def wrap_sqlalchemy_model(model_cls):
     if not hasattr(model_cls, 'to_dict'):
         model_cls.to_dict = lambda self, **kwargs: model_to_dict(self, **kwargs)
     if not hasattr(model_cls, 'from_dict'):

@@ -32,7 +32,7 @@ class PyTest(TestCommand):
 tests_require = read_requirements('test.txt')
 install_requires = [
     'Flask>=1.1.1',
-    'Flask-SQLAlchemy>=2.4.1',
+    'SQLAlchemy>=1.3.13',
     'Flask-Cors>=3.0.8',
     'PyJWT>=1.7.1',
     'APScheduler>=3.6.3',
@@ -52,7 +52,7 @@ def main():
         long_description=long_description,
         author="jadbin",
         author_email="jadbin.com@hotmail.com",
-        license="Apache 2",
+        license="MIT",
         zip_safe=False,
         packages=find_packages(exclude=("tests",)),
         include_package_data=True,
@@ -61,7 +61,7 @@ def main():
         tests_require=tests_require,
         cmdclass={"test": PyTest},
         classifiers=[
-            "License :: OSI Approved :: Apache Software License",
+            "License :: OSI Approved :: MIT License",
             "Intended Audience :: Developers",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",

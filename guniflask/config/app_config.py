@@ -9,9 +9,6 @@ from importlib import import_module
 
 from flask import current_app
 from werkzeug.local import LocalProxy
-from flask_sqlalchemy import SQLAlchemy
-
-from guniflask.orm.model_wrapper import wrap_model
 
 log = logging.getLogger(__name__)
 
@@ -41,12 +38,6 @@ class AppConfig:
             if k.isupper():
                 self.app.config[k] = v
         self._set_app_default_settings(self.app)
-
-        do_wrap = s.get_by_prefix('guniflask.wrap_sqlalchemy_model', True)
-        if do_wrap:
-            for v in vars(app_module).values():
-                if isinstance(v, SQLAlchemy):
-                    wrap_model(v.Model)
 
     @property
     def settings(self):
