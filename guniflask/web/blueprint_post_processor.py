@@ -149,17 +149,11 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                                 element_type = args[0]
                                 if inspect.isclass(element_type):
                                     for i in range(len(v)):
-                                        try:
-                                            v[i] = element_type(v[i])
-                                        except ValueError:
-                                            pass
+                                        v[i] = self._read_value(v[i], element_type)
                     else:
                         v = request.args[name]
                         if p.dtype is not None:
-                            try:
-                                v = p.dtype(v)
-                            except ValueError:
-                                pass
+                            v = self._read_value(v, p.dtype)
                     if v is not None:
                         result[k] = v
             elif isinstance(p, GParamInfo):
@@ -181,6 +175,23 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                         raise BadRequest('Parameter not given: {}'.format(name))
                 result[k] = p.default
         return result
+
+    def _read_value(self, v: str, dtype: type):
+        if v is None:
+            return
+        if dtype == bool:
+            try:
+                return bool(int(v))
+            except (ValueError, TypeError):
+                if v in ("True", "true"):
+                    return True
+                if v in ("False", "false"):
+                    return False
+        else:
+            try:
+                return dtype(v)
+            except (ValueError, TypeError):
+                pass
 
 
 class FilterChainResolver:
