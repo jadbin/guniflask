@@ -4,7 +4,7 @@ from functools import update_wrapper
 import inspect
 from typing import List
 
-from flask import Blueprint as FlaskBlueprint, request, current_app
+from flask import Blueprint as FlaskBlueprint, request, current_app, g
 from guniflask.context import ApplicationEvent
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
@@ -17,7 +17,7 @@ from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.factory import instantiate_from_json, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
-    RequestParamInfo, PathVariableInfo, RequestBodyInfo
+    RequestParamInfo, PathVariableInfo, RequestBodyInfo, GParamInfo
 from guniflask.web import param_annotation
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
@@ -162,6 +162,10 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                                 pass
                     if v is not None:
                         result[k] = v
+            elif isinstance(p, GParamInfo):
+                name = p.name or k
+                if name in g:
+                    result[k] = g.get(name)
             elif isinstance(p, RequestBodyInfo):
                 # FIXME: handle files, multi-parts, etc.
                 data = request.json

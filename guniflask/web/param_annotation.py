@@ -7,6 +7,7 @@ __all__ = [
     'RequestParam', 'RequestParamInfo',
     'PathVariable', 'PathVariableInfo',
     'RequestBody', 'RequestBodyInfo',
+    'GParam', 'GParamInfo'
 ]
 
 
@@ -80,4 +81,22 @@ def RequestBody(name: str = None,
 
 
 class RequestBodyInfo(FieldInfo):
+    pass
+
+
+def GParam(name: str = None,
+           default: Any = None,
+           dtype: type = None,
+           description: str = None,
+           required: bool = None,
+           **extract: Any) -> Any:
+    return RequestParamInfo(name=name,
+                            default=default,
+                            dtype=dtype,
+                            description=description,
+                            required=required,
+                            **extract)
+
+
+class GParamInfo(FieldInfo):
     pass
