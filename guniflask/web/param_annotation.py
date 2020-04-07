@@ -7,7 +7,7 @@ __all__ = [
     'RequestParam', 'RequestParamInfo',
     'PathVariable', 'PathVariableInfo',
     'RequestBody', 'RequestBodyInfo',
-    'GParam', 'GParamInfo'
+    'ContextParam', 'ContextParamInfo'
 ]
 
 
@@ -84,12 +84,12 @@ class RequestBodyInfo(FieldInfo):
     pass
 
 
-def GParam(name: str = None,
-           default: Any = None,
-           dtype: type = None,
-           description: str = None,
-           required: bool = None,
-           **extract: Any) -> Any:
+def ContextParam(name: str = None,
+                 default: Any = None,
+                 dtype: type = None,
+                 description: str = None,
+                 required: bool = None,
+                 **extract: Any) -> Any:
     return RequestParamInfo(name=name,
                             default=default,
                             dtype=dtype,
@@ -98,5 +98,5 @@ def GParam(name: str = None,
                             **extract)
 
 
-class GParamInfo(FieldInfo):
+class ContextParamInfo(FieldInfo):
     pass
