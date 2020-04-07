@@ -8,7 +8,7 @@ guniflask
 .. image:: https://coveralls.io/repos/github/jadbin/guniflask/badge.svg?branch=master
     :target: https://coveralls.io/github/jadbin/guniflask?branch=master
 
-.. image:: https://img.shields.io/badge/license-Apache 2-blue.svg
+.. image:: https://img.shields.io/github/license/jadbin/guniflask
     :target: https://github.com/jadbin/guniflask/blob/master/LICENSE
 
 Overview
