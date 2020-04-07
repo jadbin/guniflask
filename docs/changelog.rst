@@ -3,13 +3,13 @@
 Changelog
 =========
 
-0.7.0 (2020-03-??)
+0.7.0 (2020-04-08)
 ------------------
 
 - 将CLI相关功能分离到单独的项目guniflask-cli
 - 依赖注入支持list和dict形式
 - 添加@autowired，用于自动执行需要依赖注入的函数
-- 扩展Flask响应请求的函数的参数，支持定义URL中的查询参数、HTTP body中的json对象
+- 扩展Flask响应请求的函数的参数，支持声明URL中的查询参数、body中的json对象
 - 对于guniflask的内置扩展功能提供更为统一的配置方式
 - 减少了initdb和table2model命令的参数，model所在路径的修改、多数据库相关配置等统一在 ``table2model_dest`` 中设置
 - 为避免歧义，@roles_required修改为@has_any_role，@authorities_required修改为@has_any_authority，同时提供@has_role和@has_authority
