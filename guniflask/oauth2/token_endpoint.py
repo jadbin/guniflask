@@ -6,8 +6,8 @@ from guniflask.web.bind_annotation import blueprint, get_route, post_route
 from guniflask.oauth2.abstract_endpoint import AbstractEndpoint
 from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 from guniflask.oauth2.errors import InvalidClientError, InvalidRequestError, InvalidGrantError, \
-    UnsupportedGrantTypeError, OAuth2AccessDeniedError
-from guniflask.security.errors import InsufficientAuthenticationError
+    UnsupportedGrantTypeError, OAuth2AccessDeniedError, OAuth2Error
+from guniflask.security.errors import InsufficientAuthenticationError, AuthenticationError
 from guniflask.security.context import SecurityContext
 from guniflask.security.authentication import Authentication
 from guniflask.oauth2.authentication import OAuth2Authentication
@@ -16,6 +16,7 @@ from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_granter import TokenGranter
 from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.web.filter_annotation import error_handler
 
 __all__ = ['TokenEndpoint', 'TokenKeyEndpoint']
 
@@ -80,6 +81,14 @@ class TokenEndpoint(AbstractEndpoint):
         resp.headers['Pragma'] = 'no-cache'
         return resp
 
+    @error_handler(OAuth2Error)
+    def handle_oauth2_error(self, e):
+        return str(e), 400
+
+    @error_handler(AuthenticationError)
+    def handle_authentication_error(self, e):
+        return str(e), 400
+
 
 @blueprint
 class TokenKeyEndpoint:
@@ -92,3 +101,7 @@ class TokenKeyEndpoint:
         if (auth is None or not auth.is_authenticated) and not self.token_converter.is_public:
             raise OAuth2AccessDeniedError('Authentication required to see a shared key')
         return jsonify(self.token_converter.get_key())
+
+    @error_handler(OAuth2Error)
+    def handle_oauth2_error(self, e):
+        return str(e), 400
