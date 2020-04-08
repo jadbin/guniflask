@@ -16,9 +16,6 @@ guniflask需要Python 3.6或更高版本的环境支持。
 
     $ pip install -U guniflask
 
-安装或升级guniflask生成的项目的依赖::
-
-    $ pip install -U guniflask[app]
 
 Table of Contents
 =================
