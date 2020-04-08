@@ -14,9 +14,8 @@ from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
 from guniflask.security_config.cors_configurer import CorsConfigurer
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.context.bean_context import BeanContext
-from guniflask.web.filter_annotation import filter_chain
 from guniflask.annotation.core import AnnotationUtils
-from guniflask.web.filter_annotation import FilterChain
+from guniflask.web.bind_annotation import Blueprint
 
 __all__ = ['HttpSecurity']
 
@@ -41,11 +40,12 @@ class HttpSecurity(HttpSecurityBuilder):
                 b.after_request(self._security_filter_chain.after_request)
             else:
                 b_cls = type(b)
-                annotation = AnnotationUtils.get_annotation(b_cls, FilterChain)
+                annotation = AnnotationUtils.get_annotation(b_cls, Blueprint)
                 if annotation:
-                    annotation['values'].append(self._security_filter_chain)
-                else:
-                    filter_chain(self._security_filter_chain)(type(b))
+                    blueprint = annotation['blueprint']
+                    if blueprint:
+                        blueprint.before_request(self._security_filter_chain.before_request)
+                        blueprint.after_request(self._security_filter_chain.after_request)
 
     def _before_configure(self):
         self.set_shared_object(AuthenticationManager, self._get_authentication_registry().build())

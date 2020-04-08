@@ -47,6 +47,7 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
             options = annotation['options'] or {}
             b = FlaskBlueprint(bean_name, bean.__module__,
                                url_prefix=annotation['url_prefix'], **options)
+            annotation['blueprint'] = b
             for m in dir(bean):
                 method = getattr(bean, m)
                 a = AnnotationUtils.get_annotation(method, Route)
@@ -58,7 +59,7 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
                                    **rule_options)
                 self._method_filter_resolver.resolve(b, method)
             self.blueprints.append(b)
-            self._filter_chain_resolver.add_blueprint(b, bean_type)
+            self._filter_chain_resolver.add_blueprint(bean_type)
         return bean
 
     def wrap_view_func(self, rule: str, method):
@@ -199,11 +200,11 @@ class FilterChainResolver:
         self._constructor_resolver = ConstructorResolver(bean_factory)
         self._blueprints = []
 
-    def add_blueprint(self, blueprint, bean_type):
-        self._blueprints.append((blueprint, bean_type))
+    def add_blueprint(self, bean_type):
+        self._blueprints.append(bean_type)
 
     def build(self):
-        for b, bean_type in self._blueprints:
+        for bean_type in self._blueprints:
             filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
             if filter_chain_annotation is not None:
                 request_filters = self._resolve_request_filters(filter_chain_annotation['values'])
@@ -211,6 +212,9 @@ class FilterChainResolver:
                     chain = RequestFilterChain()
                     for f in request_filters:
                         chain.add_request_filter(f)
+
+                    blueprint_annotation = AnnotationUtils.get_annotation(bean_type, Blueprint)
+                    b = blueprint_annotation['blueprint']
                     b.before_request(chain.before_request)
                     b.after_request(chain.after_request)
 
