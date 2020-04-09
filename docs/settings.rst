@@ -81,10 +81,3 @@ table2model_dest
 
 配置table2model生成结果存储的模块路径，路径为相对于项目根目录的相对路径。
 默认存储在项目根模块下的 ``models`` 模块中。
-
-wrap_sqlalchemy_model
-^^^^^^^^^^^^^^^^^^^^^
-
-- Default: ``True``
-
-为SQLAlchemy的Model对象动态添加工具函数。
