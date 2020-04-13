@@ -26,6 +26,8 @@ def string_to_datetime(s):
 
 
 def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
+    if source is None:
+        return
     if isinstance(source, Mapping):
         if dtype is None:
             # inference type from target
