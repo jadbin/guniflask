@@ -74,20 +74,32 @@ class ConstructorResolver:
                 raise BeanTypeNotAllowedError(bean_name, bean_type)
             return bean_type
 
-    def _resolve_arg_type(self, arg_type: Union[type, None]):
     def _resolve_arg_type(self, arg_type: Optional[type]):
-        if arg_type is not None and inspect.isclass(arg_type):
-            if issubclass(arg_type, Mapping):
+        if arg_type is None:
+            return ArgType.SINGLE, arg_type
+
+        if hasattr(arg_type, '__origin__'):
+            # handle generic type
+            origin = getattr(arg_type, '__origin__')
+            if origin is None:
+                origin = arg_type
+            if issubclass(origin, Mapping):
                 if hasattr(arg_type, '__args__'):
                     args = getattr(arg_type, '__args__')
                     if args and len(args) == 2:
                         arg_type = args[1]
                 return ArgType.DICT, arg_type
-            if issubclass(arg_type, List):
+            if issubclass(origin, List):
                 if hasattr(arg_type, '__args__'):
                     args = getattr(arg_type, '__args__')
                     if args and len(args) == 1:
                         arg_type = args[0]
+                return ArgType.LIST, arg_type
+        else:
+            assert inspect.isclass(arg_type), 'Argument type must be a class, got: {}'.format(arg_type)
+            if issubclass(arg_type, Mapping):
+                return ArgType.DICT, arg_type
+            if issubclass(arg_type, List):
                 return ArgType.LIST, arg_type
         return ArgType.SINGLE, arg_type
 

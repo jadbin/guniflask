@@ -3,9 +3,10 @@
 Changelog
 =========
 
-0.7.1 (2020-04-??)
+0.7.1 (2020-04-15)
 ------------------
 
+- 修复Python3.7下自动创建bean时的参数类型解析问题
 - 自动生成的model的添加继承 ``guniflask.orm.BaseModelMixin`` ，注入数据转换的方法，同时实现在不影响原有功能的前提下pycharm中输入类方法时能够看到提示。
 - 移除 ``guniflask.wrap_sqlalchemy_model`` 配置项
 
