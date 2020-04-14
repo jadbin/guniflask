@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import List, get_type_hints, Mapping, Union
+from typing import List, get_type_hints, Mapping, Optional
 import inspect
 
 from guniflask.beans.definition import BeanDefinition
@@ -75,6 +75,7 @@ class ConstructorResolver:
             return bean_type
 
     def _resolve_arg_type(self, arg_type: Union[type, None]):
+    def _resolve_arg_type(self, arg_type: Optional[type]):
         if arg_type is not None and inspect.isclass(arg_type):
             if issubclass(arg_type, Mapping):
                 if hasattr(arg_type, '__args__'):

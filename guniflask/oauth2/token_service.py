@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import datetime as dt
-from typing import Union
+from typing import Optional
 import uuid
 from abc import ABCMeta, abstractmethod
 
@@ -153,7 +153,7 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
                 self.token_store.remove_refresh_token(access_token.refresh_token)
             self.token_store.remove_access_token(access_token)
 
-    def _create_refresh_token(self, authentication: OAuth2Authentication) -> Union[OAuth2RefreshToken, None]:
+    def _create_refresh_token(self, authentication: OAuth2Authentication) -> Optional[OAuth2RefreshToken]:
         if not self._is_support_refresh_token(authentication.oauth2_request):
             return None
         expires_in = self._get_refresh_token_expires_in(authentication.oauth2_request)

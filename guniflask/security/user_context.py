@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import Union
+from typing import Optional
 
 from flask import _request_ctx_stack
 from werkzeug.local import LocalProxy
@@ -14,7 +14,7 @@ from guniflask.security.user_details import UserDetails
 __all__ = ['current_user']
 
 
-def _load_user() -> Union[User, None]:
+def _load_user() -> Optional[User]:
     ctx = _request_ctx_stack.top
     if ctx is not None:
         if not hasattr(ctx, 'user'):

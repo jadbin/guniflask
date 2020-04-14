@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
-from typing import Union, Collection
+from typing import Optional, Collection
 
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
@@ -18,7 +18,7 @@ __all__ = ['TokenGranter', 'AbstractTokenGranter', 'CompositeTokenGranter']
 class TokenGranter(metaclass=ABCMeta):
 
     @abstractmethod
-    def grant(self, grant_type: str, token_request: TokenRequest) -> Union[OAuth2AccessToken, None]:
+    def grant(self, grant_type: str, token_request: TokenRequest) -> Optional[OAuth2AccessToken]:
         pass
 
 
@@ -56,7 +56,7 @@ class CompositeTokenGranter(TokenGranter):
     def __init__(self, token_granters: Collection[TokenGranter] = None):
         self.token_granters = [] if token_granters is None else list(token_granters)
 
-    def grant(self, grant_type: str, token_request: TokenRequest) -> Union[OAuth2AccessToken, None]:
+    def grant(self, grant_type: str, token_request: TokenRequest) -> Optional[OAuth2AccessToken]:
         for granter in self.token_granters:
             result = granter.grant(grant_type, token_request)
             if result is not None:

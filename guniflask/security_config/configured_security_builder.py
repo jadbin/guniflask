@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
-from typing import Type, List, Any, Union
+from typing import Type, List, Any, Optional
 from collections import defaultdict
 
 from guniflask.security_config.security_builder import AbstractSecurityBuilder
@@ -19,7 +19,7 @@ class ConfiguredSecurityBuilder(AbstractSecurityBuilder, metaclass=ABCMeta):
     def get_configurers(self, configurer_type: Type[SecurityConfigurer]) -> List[SecurityConfigurer]:
         return self._configurers[configurer_type]
 
-    def get_configurer(self, configurer_type: Type[SecurityConfigurer]) -> Union[SecurityConfigurer, None]:
+    def get_configurer(self, configurer_type: Type[SecurityConfigurer]) -> Optional[SecurityConfigurer]:
         configurers = self._configurers.get(configurer_type)
         if not configurers:
             return

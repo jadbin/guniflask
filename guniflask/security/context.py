@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import Union
+from typing import Optional
 
 from flask import _request_ctx_stack
 
@@ -13,7 +13,7 @@ class SecurityContext:
     AUTHENTICATION = '__authentication'
 
     @classmethod
-    def get_authentication(cls) -> Union[Authentication, None]:
+    def get_authentication(cls) -> Optional[Authentication]:
         ctx = _request_ctx_stack.top
         if ctx is not None:
             if not hasattr(ctx, cls.AUTHENTICATION):

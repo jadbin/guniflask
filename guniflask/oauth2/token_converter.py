@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import Union
+from typing import Optional
 from abc import ABCMeta, abstractmethod
 import datetime as dt
 import re
@@ -157,7 +157,7 @@ class UserAuthenticationConverter:
             result[self.AUTHORITIES] = user_authentication.authorities
         return result
 
-    def extract_authentication(self, data: dict) -> Union[Authentication, None]:
+    def extract_authentication(self, data: dict) -> Optional[Authentication]:
         if self.USERNAME in data:
             principal = data[self.USERNAME]
             authorities = self._get_authorities(data)

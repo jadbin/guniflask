@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import re
-from typing import Union, Dict
+from typing import Optional, Dict
 
 from flask import request
 
@@ -29,7 +29,7 @@ class OAuth2Utils:
         return result
 
     @staticmethod
-    def format_parameter_list(value: set) -> Union[str, None]:
+    def format_parameter_list(value: set) -> Optional[str]:
         if not value:
             return None
         return ' '.join(value)
