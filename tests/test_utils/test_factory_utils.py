@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from typing import List, Collection
+from typing import List, Set
 
 from guniflask.utils.factory import instantiate_from_json
 
@@ -11,7 +11,7 @@ class Person:
 
 
 class Teacher(Person):
-    classes: Collection
+    classes: Set
 
 
 class Student(Person):

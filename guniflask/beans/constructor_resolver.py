@@ -1,13 +1,10 @@
 # coding=utf-8
 
-from typing import List, get_type_hints, Mapping, Optional
 import inspect
 
-from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.factory import BeanFactory
-from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, NoUniqueBeanDefinitionError, \
-    BeansError
-from guniflask.utils.factory import inspect_args
+from guniflask.beans.errors import NoUniqueBeanDefinitionError, BeansError
+from guniflask.utils.factory import inspect_args, resolve_arg_type, ArgType
 
 __all__ = ['ConstructorResolver']
 
@@ -38,20 +35,22 @@ class ConstructorResolver:
 
     def _resolve_arg(self, arg, required_type):
         bean = None
-        arg_type, required_type = self._resolve_arg_type(required_type)
+        argc, etype = resolve_arg_type(required_type)
 
-        if required_type is None:
+        if etype is None:
             try:
                 bean = self._bean_factory.get_bean(arg)
             except BeansError:
                 pass
         else:
-            candidates = self._bean_factory.get_beans_of_type(required_type)
-            if arg_type == ArgType.DICT:
+            candidates = self._bean_factory.get_beans_of_type(etype)
+            if argc is ArgType.DICT:
                 bean = candidates
-            elif arg_type == ArgType.LIST:
+            elif argc is ArgType.LIST:
                 bean = list(candidates.values())
-            else:
+            elif argc is ArgType.SET:
+                bean = set(candidates.values())
+            elif argc is ArgType.SINGLE:
                 if len(candidates) == 1:
                     bean = list(candidates.values())[0]
                 elif len(candidates) > 1:
@@ -60,51 +59,3 @@ class ConstructorResolver:
                     else:
                         raise NoUniqueBeanDefinitionError(required_type)
         return bean
-
-    def _resolve_bean_type(self, bean_name: str, bean_definition: BeanDefinition) -> type:
-        source = bean_definition.source
-        if inspect.isclass(source):
-            return source
-        if inspect.isfunction(source) or inspect.ismethod(source):
-            hints = get_type_hints(source)
-            if 'return' not in hints:
-                raise BeanTypeNotDeclaredError(bean_name)
-            bean_type = hints['return']
-            if not inspect.isclass(bean_type):
-                raise BeanTypeNotAllowedError(bean_name, bean_type)
-            return bean_type
-
-    def _resolve_arg_type(self, arg_type: Optional[type]):
-        if arg_type is None:
-            return ArgType.SINGLE, arg_type
-
-        if hasattr(arg_type, '__origin__'):
-            # handle generic type
-            origin = getattr(arg_type, '__origin__')
-            if origin is None:
-                origin = arg_type
-            if issubclass(origin, Mapping):
-                if hasattr(arg_type, '__args__'):
-                    args = getattr(arg_type, '__args__')
-                    if args and len(args) == 2:
-                        arg_type = args[1]
-                return ArgType.DICT, arg_type
-            if issubclass(origin, List):
-                if hasattr(arg_type, '__args__'):
-                    args = getattr(arg_type, '__args__')
-                    if args and len(args) == 1:
-                        arg_type = args[0]
-                return ArgType.LIST, arg_type
-        else:
-            assert inspect.isclass(arg_type), 'Argument type must be a class, got: {}'.format(arg_type)
-            if issubclass(arg_type, Mapping):
-                return ArgType.DICT, arg_type
-            if issubclass(arg_type, List):
-                return ArgType.LIST, arg_type
-        return ArgType.SINGLE, arg_type
-
-
-class ArgType:
-    SINGLE = object()
-    DICT = object()
-    LIST = object()

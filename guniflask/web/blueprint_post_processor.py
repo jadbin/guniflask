@@ -23,6 +23,7 @@ from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent
 from guniflask.web.filter_annotation import MethodFilter
+from guniflask.utils.factory import resolve_arg_type, ArgType
 
 __all__ = ['BlueprintPostProcessor']
 
@@ -142,19 +143,19 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
 
             if isinstance(p, RequestParamInfo):
                 if name in request.args:
-                    if p.dtype and issubclass(p.dtype, List):
+                    argc, etype = resolve_arg_type(p.dtype)
+                    if argc is ArgType.LIST:
                         v = request.args.getlist(name)
-                        if hasattr(p.dtype, '__args__'):
-                            args = getattr(p.dtype, '__args__')
-                            if args is not None and len(args) == 1:
-                                element_type = args[0]
-                                if inspect.isclass(element_type):
-                                    for i in range(len(v)):
-                                        v[i] = self._read_value(v[i], element_type)
-                    else:
+                        if etype:
+                            for i in range(len(v)):
+                                v[i] = self._read_value(v[i], etype)
+                    elif argc is ArgType.SINGLE:
                         v = request.args[name]
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
+                    else:
+                        raise ValueError('Unsupported request param type: {}'.format(p.dtype))
+
                     if v is not None:
                         result[k] = v
             elif isinstance(p, ContextParamInfo):

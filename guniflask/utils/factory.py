@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from importlib import import_module
-from typing import get_type_hints, List, Collection, Any, Mapping, MutableMapping
+from typing import get_type_hints, List, Set, Any, Mapping, MutableMapping, Optional
 import datetime as dt
 import inspect
 from collections import OrderedDict
@@ -62,22 +62,19 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
         if dtype is None:
             return source
 
-        if issubclass(dtype, List):
+        argc, etype = resolve_arg_type(dtype)
+
+        if argc is ArgType.LIST:
             collection_type = list
-        elif issubclass(dtype, Collection):
+        elif argc is ArgType.SET:
             collection_type = set
         else:
+            assert inspect.isclass(dtype), 'Cannot convert a list to {}'.format(dtype)
             collection_type = dtype
-
-        element_type = None
-        if hasattr(dtype, '__args__'):
-            args = getattr(dtype, '__args__')
-            if args is not None and len(args) == 1:
-                element_type = args[0]
 
         result = []
         for v in source:
-            result.append(instantiate_from_json(v, dtype=element_type))
+            result.append(instantiate_from_json(v, dtype=etype))
         if collection_type is not None:
             result = collection_type(result)
         return result
@@ -87,8 +84,8 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
         elif dtype is not None:
             try:
                 source = dtype(source)
-            except ValueError:
-                pass
+            except Exception:
+                source = None
         return source
 
 
@@ -108,3 +105,66 @@ def inspect_args(func):
             hints[p.name] = p.annotation
 
     return args, hints
+
+
+def resolve_arg_type(arg_type: Optional[type]):
+    if arg_type is None:
+        return ArgType.SINGLE, arg_type
+
+    if hasattr(arg_type, '__origin__'):
+        # handle generic type
+        origin = getattr(arg_type, '__origin__')
+        if origin is None:
+            origin = arg_type
+
+        argc = None
+        etype = None
+        if issubclass(origin, List):
+            argc = ArgType.LIST
+            if hasattr(arg_type, '__args__'):
+                args = getattr(arg_type, '__args__')
+                if args and len(args) == 1:
+                    vt = args[0]
+                    if not inspect.isclass(vt):
+                        vt = None
+                    etype = vt
+        elif issubclass(origin, Mapping):
+            argc = ArgType.DICT
+            if hasattr(arg_type, '__args__'):
+                args = getattr(arg_type, '__args__')
+                if args and len(args) == 2:
+                    kt = args[0]
+                    vt = args[1]
+                    if not inspect.isclass(kt):
+                        kt = None
+                    if not inspect.isclass(vt):
+                        vt = None
+                    etype = (kt, vt)
+        elif issubclass(origin, Set):
+            argc = ArgType.SET
+            if hasattr(arg_type, '__args__'):
+                args = getattr(arg_type, '__args__')
+                if args and len(args) == 1:
+                    vt = args[0]
+                    if not inspect.isclass(vt):
+                        vt = None
+                    etype = vt
+        if argc is None:
+            raise ValueError('Unsupported generic argument type: {}'.format(arg_type))
+        return argc, etype
+    else:
+        assert inspect.isclass(arg_type), 'Non-generic argument type must be a class, but got: {}'.format(arg_type)
+        if issubclass(arg_type, List):
+            return ArgType.LIST, None
+        if issubclass(arg_type, Mapping):
+            return ArgType.DICT, None
+        if issubclass(arg_type, Set):
+            return ArgType.SET, None
+        return ArgType.SINGLE, arg_type
+
+
+class ArgType:
+    SINGLE = object()
+    DICT = object()
+    LIST = object()
+    SET = object()
