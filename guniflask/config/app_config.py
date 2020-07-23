@@ -12,16 +12,10 @@ from werkzeug.local import LocalProxy
 
 log = logging.getLogger(__name__)
 
-__all__ = ['settings', 'app_default_settings',
-           'AppConfig', 'load_config', 'load_profile_config',
-           'Settings']
+__all__ = ['settings', 'Settings',
+           'AppConfig', 'load_config', 'load_profile_config']
 
 settings = LocalProxy(lambda: current_app.extensions['settings'])
-
-app_default_settings = {
-    # Flask-SQLAlchemy
-    'SQLALCHEMY_TRACK_MODIFICATIONS': False
-}
 
 
 class AppConfig:
@@ -31,13 +25,11 @@ class AppConfig:
         self.app = app
 
     def init_app(self):
-        app_module = import_module(self.app.name + '.app')
         s = self.app_settings(self.app)
 
         for k, v in s.items():
             if k.isupper():
                 self.app.config[k] = v
-        self._set_app_default_settings(self.app)
 
     @property
     def settings(self):
@@ -68,10 +60,6 @@ class AppConfig:
         else:
             kwargs['debug'] = False
         return kwargs
-
-    def _set_app_default_settings(self, app):
-        for k, v in app_default_settings.items():
-            app.config.setdefault(k, v)
 
 
 def load_config(fname, **kwargs):
