@@ -3,6 +3,13 @@
 Changelog
 =========
 
+0.8.0 (2020-07-??)
+------------------
+
+- guniflask-cli和guniflask的版本同步
+- 对 ``SQLALCHEMY_TRACK_MODIFICATIONS`` 的默认配置改由guniflask-cli直接生成到项目代码中
+- 默认添加gunicorn配置项 ``proc_name`` 为项目名称，便于查看进程信息
+
 0.7.2 (2020-04-15)
 ------------------
 

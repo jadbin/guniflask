@@ -8,16 +8,13 @@ Database & ORM
 Database Access
 ---------------
 
-项目基于Flask-SQLAlchemy实现数据的访问。
-我们可以通过如下方式获取 ``SQLAlchemy`` 对象 ``db`` :
+项目默认基于Flask-SQLAlchemy实现对数据库的访问，生成项目文件 foo/app.py 中包含了 ``SQLAlchemy`` 对象的初始化方式，在项目其他位置可以通过如下方式获取该对象:
 
 .. code-block:: python
 
     from foo import db
 
-我们可以在 conf/foo.py 中对数据库进行配置，详细的配置项可参考Flask-SQLAlchemy文档: http://flask-sqlalchemy.pocoo.org/config/ 。
-
-只要配置了 ``SQLALCHEMY_DATABASE_URI`` ，项目会在启动前自动调用 ``db.init_app(app)`` 。
+由于默认 conf/foo.py 中大写配置会自动注入到Flask的config中，因此我们可以在 conf/foo.py 中对数据库进行详细配置，具体的配置项可参考Flask-SQLAlchemy文档: http://flask-sqlalchemy.pocoo.org/config/ 。
 
 Declaring Models
 ----------------
