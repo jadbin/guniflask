@@ -10,18 +10,18 @@ from guniflask.context.annotation import conditional
 from guniflask.context.condition import Condition, ConditionContext
 from guniflask.utils.process import get_master_pid
 
-__all__ = ['global_singleton']
+__all__ = ['single_worker']
 
 
-class GlobalSingletonCondition(Condition):
-    global_singleton_conditions = {}
+class SingleWorkerCondition(Condition):
+    singleton_ids = {}
 
     def matches(self, context: ConditionContext, metadata: AnnotationMetadata) -> bool:
         singleton_id = self.generate_singleton_id(metadata)
-        if singleton_id in self.global_singleton_conditions:
+        if singleton_id in self.singleton_ids:
             return True
 
-        temp_dir = join(tempfile.gettempdir(), 'guniflask', 'global_singleton_lock')
+        temp_dir = join(tempfile.gettempdir(), 'guniflask', 'single_worker_lock')
         if not exists(temp_dir):
             os.makedirs(temp_dir, exist_ok=True)
 
@@ -30,7 +30,7 @@ class GlobalSingletonCondition(Condition):
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except IOError:
             return False
-        self.global_singleton_conditions[singleton_id] = fd
+        self.singleton_ids[singleton_id] = fd
         return True
 
     def generate_singleton_id(self, metadata: AnnotationMetadata) -> str:
@@ -47,5 +47,5 @@ class GlobalSingletonCondition(Condition):
         return '{}.{}_{}'.format(module_name, obj_name, master_pid)
 
 
-def global_singleton(func):
-    return conditional(GlobalSingletonCondition)(func)
+def single_worker(func):
+    return conditional(SingleWorkerCondition)(func)
