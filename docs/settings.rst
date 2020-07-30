@@ -26,12 +26,17 @@ Getting Settings
 Built-in Settings
 -----------------
 
+内置的配置项会在加载配置文件前自动填充。
+
 home
 ^^^^
 
-项目根目录。
+项目的根目录。
 
-在配置文件中设置无效。
+project_name
+^^^^^^^^^^^^
+
+项目的名称。
 
 .. _active_profiles:
 
@@ -53,7 +58,17 @@ debug
 
 是否为debug模式。
 
-在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``debug`` 命令会自动设置。
+可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``debug`` 命令会自动设置。
+
+address
+^^^^^^^
+
+项目运行时绑定的IP地址。
+
+port
+^^^^
+
+项目运行时绑定的端口。
 
 
 Settings to Configure the Built-in Features
