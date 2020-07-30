@@ -9,8 +9,7 @@ from werkzeug.local import LocalProxy
 
 log = logging.getLogger(__name__)
 
-__all__ = ['settings', 'Settings',
-           'AppConfig']
+__all__ = ['settings', 'Settings', 'AppConfig']
 
 settings = LocalProxy(lambda: current_app.extensions['settings'])
 
@@ -26,18 +25,13 @@ class AppConfig:
         self.app = app
 
     def init_app(self):
-        s = self.app_settings(self.app)
-
-        for k, v in s.items():
+        for k, v in self.settings.items():
             if k.isupper():
                 self.app.config[k] = v
 
     @property
     def settings(self):
-        return self.app_settings(current_app)
-
-    def app_settings(self, app):
-        return app.extensions.get('settings')
+        return self.app.extensions.get('settings')
 
 
 class Settings(MutableMapping):

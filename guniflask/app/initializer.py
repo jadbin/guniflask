@@ -41,7 +41,7 @@ class AppInitializer:
         app_module = self._get_app_module()
         _make_settings = getattr(app_module, 'make_settings', None)
         if _make_settings:
-            s = self.config.app_settings(self.app)
+            s = self.config.settings
             _make_settings(self.app, s)
 
     def _init_app(self):
@@ -49,7 +49,7 @@ class AppInitializer:
         app_module = self._get_app_module()
         _init_app = getattr(app_module, 'init_app', None)
         if _init_app:
-            s = self.config.app_settings(self.app)
+            s = self.config.settings
             _init_app(self.app, s)
 
     def _create_bean_context(self) -> WebApplicationContext:
