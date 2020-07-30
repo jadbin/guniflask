@@ -14,9 +14,9 @@ __all__ = ['AppInitializer']
 
 
 class AppInitializer:
-    def __init__(self, app):
+    def __init__(self, app, app_settings=None):
         self.app = app
-        self.config = AppConfig(self.app)
+        self.config = AppConfig(self.app, app_settings=app_settings)
 
     def init(self):
         self._configure_logger()
