@@ -17,21 +17,16 @@ settings = LocalProxy(lambda: current_app.extensions['settings'])
 class AppConfig:
     def __init__(self, app, app_settings=None):
         if app_settings is None:
-            app_settings = Settings()
+            self.settings = Settings()
         if not isinstance(app_settings, Settings):
-            app_settings = Settings(app_settings)
-
-        app.extensions['settings'] = app_settings
+            self.settings = Settings(app_settings)
         self.app = app
 
     def init_app(self):
+        self.app.extensions['settings'] = self.settings
         for k, v in self.settings.items():
             if k.isupper():
                 self.app.config[k] = v
-
-    @property
-    def settings(self):
-        return self.app.extensions.get('settings')
 
 
 class Settings(MutableMapping):

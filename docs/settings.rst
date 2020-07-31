@@ -36,7 +36,7 @@ home
 project_name
 ^^^^^^^^^^^^
 
-项目的名称。
+项目的名称，可以通过环境变量 ``GUNIFLASK_PROJECT_NAME`` 进行设置。
 
 .. _active_profiles:
 
@@ -69,6 +69,11 @@ port
 ^^^^
 
 项目运行时绑定的端口。
+
+id_string
+^^^^^^^^^
+
+项目实例的唯一标识，默认为启动项目的用户名，可以通过环境变量 ``GUNIFLASK_ID_STRING`` 进行设置。
 
 
 Settings to Configure the Built-in Features
