@@ -10,6 +10,7 @@ Changelog
 - 对 ``SQLALCHEMY_TRACK_MODIFICATIONS`` 的默认配置改由guniflask-cli直接生成到项目代码中
 - 默认添加gunicorn配置项 ``proc_name`` 为项目名称，便于查看进程信息
 - 项目配置文件的读取改由guniflask-cli完成
+- 移除@global_singleton
 
 0.7.2 (2020-04-15)
 ------------------
@@ -22,7 +23,6 @@ Changelog
 - 修复Python3.7下自动创建bean时的参数类型解析问题
 - 自动生成的model的添加继承 ``guniflask.orm.BaseModelMixin`` ，注入数据转换的方法，同时实现在不影响原有功能的前提下pycharm中输入类方法时能够看到提示。
 - 移除 ``guniflask.wrap_sqlalchemy_model`` 配置项
-- @global_singleton更名为@single_worker
 
 0.7.0 (2020-04-08)
 ------------------
