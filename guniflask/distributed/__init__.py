@@ -1,5 +1,5 @@
 # coding=utf-8
 
-from .worker_lock import *
+from .local_lock import *
 
-__all__ = worker_lock.__all__
+__all__ = local_lock.__all__
