@@ -5,7 +5,9 @@ from urllib.parse import urlencode
 
 import requests
 
+from guniflask.service_discovery.service_instance import ServiceInstance
 from guniflask.service_discovery.errors import ServiceDiscoveryError
+from guniflask.service_discovery.discovery_client import DiscoveryClient
 
 __all__ = ['ConsulClient', 'ConsulClientError']
 
@@ -14,7 +16,7 @@ class ConsulClientError(ServiceDiscoveryError):
     pass
 
 
-class ConsulClient:
+class ConsulClient(DiscoveryClient):
     api_version = 'v1'
 
     def __init__(self, host: str = '127.0.0.1', port: int = 8500, scheme: str = 'http'):
@@ -80,3 +82,7 @@ class ConsulClient:
                 'HTTP': url,
                 'Interval': interval,
                 'DeregisterCriticalServiceAfter': deregister_after}
+
+    def get_service_instance(self, service_name: str) -> ServiceInstance:
+        # TODO
+        pass

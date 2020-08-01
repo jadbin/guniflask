@@ -1,0 +1,88 @@
+# coding=utf-8
+
+import logging
+
+from flask import current_app
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+
+from guniflask.config.app_config import settings, Settings
+from guniflask.utils.network import get_local_ip_address
+from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
+from guniflask.distributed.local_lock import MasterLevelLock
+from guniflask.context.annotation import configuration, bean
+from guniflask.service_discovery.heath_endpoint import HealthEndpoint
+from guniflask.service_discovery.discovery_client import DiscoveryClient
+
+__all__ = ['ServiceDiscoveryConfiguration']
+
+log = logging.getLogger(__name__)
+
+
+@configuration
+class ServiceDiscoveryConfiguration:
+    SERVICE_REGISTRY_NAMES = ['consul']
+
+    def __init__(self):
+        self.service_name = current_app.name
+        self._discovery_client: DiscoveryClient = None
+
+        self._register_scheduler = BackgroundScheduler()
+        self._register_scheduler.start(paused=False)
+        self._register_lock = MasterLevelLock('service_registration_lock')
+        self._auto_register()
+
+    @bean
+    def heath_endpoint(self) -> HealthEndpoint:
+        endpoint = HealthEndpoint()
+        return endpoint
+
+    @bean
+    def discovery_client(self) -> DiscoveryClient:
+        return self._discovery_client
+
+    def _auto_register(self):
+        if not self._register_lock.acquire():
+            return
+
+        app_settings = settings._get_current_object()
+        for name in self.SERVICE_REGISTRY_NAMES:
+            config = app_settings.get_by_prefix('guniflask.{}'.format(name))
+            if config is not None:
+                getattr(self, '_{}_register'.format(name))(config, app_settings)
+
+    def _consul_register(self, config: dict, app_settings: Settings):
+        client_config = {}
+        if 'host' in config:
+            client_config['host'] = config['host']
+        if 'port' in config:
+            client_config['port'] = config['port']
+        consul = ConsulClient(**client_config)
+        self._discovery_client = consul
+
+        job_id = 'consul_register'
+        if self._register_scheduler.get_job(job_id) is None:
+            self._do_consul_register(consul, app_settings)
+            trigger = IntervalTrigger(minutes=1)
+            self._register_scheduler.add_job(self._do_consul_register,
+                                             args=(consul, app_settings),
+                                             id=job_id,
+                                             trigger=trigger)
+
+    def _do_consul_register(self, consul: ConsulClient, app_settings: Settings):
+        local_ip = get_local_ip_address()
+        port = app_settings['port']
+        service_id = '{}-{}-{}'.format(self.service_name, local_ip, port)
+        heath_url = 'http://{}:{}/health'.format(local_ip, port)
+        try:
+            consul.register_service(self.service_name,
+                                    service_id=service_id,
+                                    address=local_ip,
+                                    port=port,
+                                    check=consul.http_check(service_id,
+                                                            heath_url,
+                                                            check_id=service_id,
+                                                            interval='10s',
+                                                            deregister_after='10m'))
+        except ConsulClientError as e:
+            log.error('Failed to register service to Consul at %s:%s: %s', consul.host, consul.port, e)
