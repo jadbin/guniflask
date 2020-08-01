@@ -3,6 +3,7 @@
 import logging
 import copy
 from collections import MutableMapping
+from typing import Union
 
 from flask import current_app
 from werkzeug.local import LocalProxy
@@ -150,4 +151,4 @@ def getlist(v):
     return list(v)
 
 
-settings: Settings = LocalProxy(lambda: current_app.extensions['settings'])
+settings: Union[LocalProxy, Settings] = LocalProxy(lambda: current_app.extensions['settings'])
