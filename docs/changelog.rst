@@ -3,14 +3,17 @@
 Changelog
 =========
 
-0.8.0 (2020-07-??)
+0.8.0 (2020-08-01)
 ------------------
 
 - guniflask-cli和guniflask的版本同步
 - 对 ``SQLALCHEMY_TRACK_MODIFICATIONS`` 的默认配置改由guniflask-cli直接生成到项目代码中
 - 默认添加gunicorn配置项 ``proc_name`` 为项目名称，便于查看进程信息
 - 项目配置文件的读取改由guniflask-cli完成
-- 移除@global_singleton
+- 移除@global_singleton，相关功能可以通过MasterLevelLock实现
+- guniflask-manage中的指令合并到guniflask中
+- init命令生成项目时移除了选择应用类型的步骤
+- 默认生成开启跨域的配置
 
 0.7.2 (2020-04-15)
 ------------------
