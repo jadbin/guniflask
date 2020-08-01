@@ -83,6 +83,21 @@ class ConsulClient(DiscoveryClient):
                 'Interval': interval,
                 'DeregisterCriticalServiceAfter': deregister_after}
 
-    def get_service_instance(self, service_name: str) -> ServiceInstance:
-        # TODO
-        pass
+    def get_service_instances(self, service_name: str) -> List[ServiceInstance]:
+        api_path = '/agent/health/service/name/{}'.format(service_name)
+        url = '{}{}'.format(self.base_url, api_path)
+        try:
+            resp = self.session.get(url)
+        except Exception as e:
+            raise ConsulClientError(e)
+        if not resp.ok:
+            raise ConsulClientError(resp.text)
+        data = resp.json()
+        services = []
+        for d in data:
+            if d['AggregatedStatus'] == 'passing':
+                s = d['Service']
+                services.append(ServiceInstance(service_id=s['ID'],
+                                                host=s['Address'],
+                                                port=s['Port']))
+        return services
