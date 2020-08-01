@@ -11,8 +11,6 @@ log = logging.getLogger(__name__)
 
 __all__ = ['settings', 'Settings', 'AppConfig']
 
-settings = LocalProxy(lambda: current_app.extensions['settings'])
-
 
 class AppConfig:
     def __init__(self, app, app_settings=None):
@@ -150,3 +148,6 @@ def getlist(v):
     elif not hasattr(v, "__iter__"):
         v = [v]
     return list(v)
+
+
+settings: Settings = LocalProxy(lambda: current_app.extensions['settings'])
