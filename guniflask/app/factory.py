@@ -2,7 +2,7 @@
 
 from flask import Flask
 
-from guniflask.config.app_initializer import AppInitializer
+from guniflask.app.initializer import AppInitializer
 
 __all__ = ['create_app']
 
