@@ -4,7 +4,7 @@ import datetime as dt
 
 import sqlalchemy
 
-from guniflask.utils.factory import string_to_datetime
+from guniflask.utils.instantiation import string_to_datetime
 
 __all__ = ['model_to_dict', 'result_to_dict', 'dict_to_model', 'update_model_by_dict']
 

@@ -14,7 +14,7 @@ from guniflask.web.filter_annotation import FilterChain
 from guniflask.annotation.core import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessorAdapter
 from guniflask.web.bind_annotation import Blueprint, Route
-from guniflask.utils.factory import instantiate_from_json, inspect_args
+from guniflask.utils.instantiation import instantiate_from_json, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo, ContextParamInfo
 from guniflask.web import param_annotation
@@ -22,7 +22,7 @@ from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.web.filter_annotation import MethodFilter
-from guniflask.utils.factory import resolve_arg_type, ArgType
+from guniflask.utils.instantiation import resolve_arg_type, ArgType
 
 __all__ = ['BlueprintPostProcessor']
 

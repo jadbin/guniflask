@@ -2,7 +2,7 @@
 
 from typing import List, Set
 
-from guniflask.utils.factory import instantiate_from_json
+from guniflask.utils.instantiation import instantiate_from_json
 
 
 class Person:
