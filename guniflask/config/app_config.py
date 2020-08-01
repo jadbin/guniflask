@@ -59,7 +59,9 @@ class Settings(MutableMapping):
                 obj = None
             if obj is None:
                 break
-        return obj or default
+        if obj is None:
+            return default
+        return obj
 
     def getbool(self, name, default=None):
         v = self.get(name, default)
