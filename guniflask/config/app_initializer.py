@@ -9,6 +9,7 @@ from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.config.app_config import AppConfig
 from guniflask.utils.traversal import walk_modules
 from guniflask.web.context import WebApplicationContext
+from guniflask.service_discovery.service_registry import ServiceRegistry
 
 __all__ = ['AppInitializer']
 
@@ -27,6 +28,7 @@ class AppInitializer:
         with self.app.app_context():
             self._register_blueprints()
             self._refresh_bean_context(bean_context)
+            self._auto_register_service()
 
     def _configure_logger(self):
         """
@@ -80,3 +82,7 @@ class AppInitializer:
 
     def _get_app_module(self):
         return import_module(self.app.name + '.app')
+
+    def _auto_register_service(self):
+        service_registry = ServiceRegistry(self.app.name)
+        service_registry.auto_register(self.config.settings)

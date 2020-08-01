@@ -13,8 +13,11 @@ __all__ = ['MasterLevelLock']
 class MasterLevelLock:
     locks = {}
 
-    def acquire(self, name: str) -> bool:
-        instance_id = self._generate_instance_id(name)
+    def __init__(self, name: str):
+        self.name = name
+
+    def acquire(self) -> bool:
+        instance_id = self._generate_instance_id()
         if instance_id in self.locks:
             return True
 
@@ -30,12 +33,12 @@ class MasterLevelLock:
         self.locks[instance_id] = fd
         return True
 
-    def _generate_instance_id(self, name: str) -> str:
+    def _generate_instance_id(self) -> str:
         master_pid = get_master_pid()
-        return '{}.{}.lock'.format(master_pid, name)
+        return '{}.{}.lock'.format(master_pid, self.name)
 
-    def release(self, name: str):
-        instance_id = self._generate_instance_id(name)
+    def release(self):
+        instance_id = self._generate_instance_id()
         if instance_id in self.locks:
             fd = self.locks.pop(instance_id)
             try:
