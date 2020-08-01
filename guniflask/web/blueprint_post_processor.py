@@ -5,7 +5,6 @@ import inspect
 from typing import List
 
 from flask import Blueprint as FlaskBlueprint, request, current_app, g
-from guniflask.context import ApplicationEvent
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
@@ -21,7 +20,7 @@ from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable
 from guniflask.web import param_annotation
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.context.event import ContextRefreshedEvent
+from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.web.filter_annotation import MethodFilter
 from guniflask.utils.factory import resolve_arg_type, ArgType
 
