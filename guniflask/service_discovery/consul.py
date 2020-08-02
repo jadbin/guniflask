@@ -1,13 +1,16 @@
 # coding=utf-8
 
-from typing import List
-from urllib.parse import urlencode
+from typing import List, Union
+from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import requests
+import dns.message
+import dns.query
 
 from guniflask.service_discovery.service_instance import ServiceInstance
 from guniflask.service_discovery.errors import ServiceDiscoveryError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
+from guniflask.service_discovery.load_balancer_client import LoadBalancerClient
 
 __all__ = ['ConsulClient', 'ConsulClientError']
 
@@ -16,12 +19,13 @@ class ConsulClientError(ServiceDiscoveryError):
     pass
 
 
-class ConsulClient(DiscoveryClient):
+class ConsulClient(DiscoveryClient, LoadBalancerClient):
     api_version = 'v1'
 
-    def __init__(self, host: str = '127.0.0.1', port: int = 8500, scheme: str = 'http'):
+    def __init__(self, host: str = '127.0.0.1', port: int = 8500, dns_port: int = 8600, scheme: str = 'http'):
         self.host = host
         self.port = port
+        self.dns_port = dns_port
         self.scheme = scheme
         self.session = requests.Session()
         self.base_url = '{}://{}:{}/{}'.format(scheme, host, port, self.api_version)
@@ -101,3 +105,25 @@ class ConsulClient(DiscoveryClient):
                                                 host=s['Address'],
                                                 port=s['Port']))
         return services
+
+    def choose(self, service_name: str) -> Union[ServiceInstance, None]:
+        request = dns.message.make_query('guniflask_test.service.consul', dns.rdatatype.SRV)
+        response = dns.query.udp(request, self.host, port=self.dns_port)
+        if len(response.answer) > 0:
+            answer = response.answer[0]
+            port = None
+            target = None
+            for k in answer:
+                port = k.port
+                target = k.target
+                break
+            if target is not None:
+                for additional in response.additional:
+                    if additional.name == target:
+                        for k in additional:
+                            return ServiceInstance(host=k.address, port=port)
+
+    def reconstruct_url(self, service_instance: ServiceInstance, original_url: str) -> str:
+        result = urlsplit(original_url)
+        result = result._replace(netloc='{}:{}'.format(service_instance.host, service_instance.port))
+        return urlunsplit(result)

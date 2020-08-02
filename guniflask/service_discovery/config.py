@@ -13,6 +13,7 @@ from guniflask.distributed.local_lock import MasterLevelLock
 from guniflask.context.annotation import configuration, bean
 from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.discovery_client import DiscoveryClient
+from guniflask.service_discovery.load_balancer_client import LoadBalancerClient
 
 __all__ = ['ServiceDiscoveryConfiguration']
 
@@ -26,6 +27,7 @@ class ServiceDiscoveryConfiguration:
     def __init__(self):
         self.service_name = current_app.name
         self._discovery_client: DiscoveryClient = None
+        self._load_balancer_client: LoadBalancerClient = None
 
         self._register_scheduler = BackgroundScheduler()
         self._register_scheduler.start(paused=False)
@@ -41,6 +43,10 @@ class ServiceDiscoveryConfiguration:
     def discovery_client(self) -> DiscoveryClient:
         return self._discovery_client
 
+    @bean
+    def load_balancer_client(self) -> LoadBalancerClient:
+        return self._load_balancer_client
+
     def _auto_register(self):
         if not self._register_lock.acquire():
             return
@@ -52,13 +58,9 @@ class ServiceDiscoveryConfiguration:
                 getattr(self, '_{}_register'.format(name))(config, app_settings)
 
     def _consul_register(self, config: dict, app_settings: Settings):
-        client_config = {}
-        if 'host' in config:
-            client_config['host'] = config['host']
-        if 'port' in config:
-            client_config['port'] = config['port']
-        consul = ConsulClient(**client_config)
+        consul = self._consul_client(config)
         self._discovery_client = consul
+        self._load_balancer_client = consul
 
         job_id = 'consul_register'
         if self._register_scheduler.get_job(job_id) is None:
@@ -68,6 +70,13 @@ class ServiceDiscoveryConfiguration:
                                              args=(consul, app_settings),
                                              id=job_id,
                                              trigger=trigger)
+
+    def _consul_client(self, config: dict) -> ConsulClient:
+        client_config = {}
+        for i in ['host', 'port', 'dns_port']:
+            if i in config:
+                client_config[i] = config[i]
+        return ConsulClient(**client_config)
 
     def _do_consul_register(self, consul: ConsulClient, app_settings: Settings):
         local_ip = get_local_ip_address()
