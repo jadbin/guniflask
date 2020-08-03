@@ -1,11 +1,9 @@
 # coding=utf-8
 
-import logging
 from importlib import import_module
 
 from flask import Blueprint
 
-from guniflask.utils.logging import redirect_app_logger, redirect_logger
 from guniflask.config.app_config import AppConfig
 from guniflask.utils.traversal import walk_modules
 from guniflask.web.context import WebApplicationContext
@@ -19,7 +17,6 @@ class AppInitializer:
         self.config = AppConfig(self.app, app_settings=app_settings)
 
     def init(self):
-        self._configure_logger()
         self._make_settings()
         bean_context = self._create_bean_context()
         self.app.bean_context = bean_context  # register bean context for app
@@ -27,15 +24,6 @@ class AppInitializer:
         with self.app.app_context():
             self._register_blueprints()
             self._refresh_bean_context(bean_context)
-
-    def _configure_logger(self):
-        """
-        Reuse gunicorn logger
-        """
-        gunicorn_logger = logging.getLogger('gunicorn.error')
-        redirect_logger('guniflask', gunicorn_logger)
-        redirect_app_logger(self.app, gunicorn_logger)
-        redirect_logger(self.app.name, gunicorn_logger)
 
     def _make_settings(self):
         app_module = self._get_app_module()
