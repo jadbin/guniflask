@@ -2,14 +2,13 @@
 
 import logging
 
-from flask import current_app
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from guniflask.config.app_config import settings, Settings
 from guniflask.utils.network import get_local_ip_address
 from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
-from guniflask.distributed.local_lock import MasterLevelLock
+from guniflask.distributed.local_lock import ServiceLock
 from guniflask.context.annotation import configuration, bean
 from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.discovery_client import DiscoveryClient
@@ -25,13 +24,13 @@ class ServiceDiscoveryConfiguration:
     SERVICE_REGISTRY_NAMES = ['consul']
 
     def __init__(self):
-        self.service_name = current_app.name
+        self.service_name = settings['project_name']
         self._discovery_client: DiscoveryClient = None
         self._load_balancer_client: LoadBalancerClient = None
 
         self._register_scheduler = BackgroundScheduler()
         self._register_scheduler.start(paused=False)
-        self._register_lock = MasterLevelLock('service_registration_lock')
+        self._register_lock = ServiceLock('service_registration_lock')
         self._auto_register()
 
     @bean

@@ -5,12 +5,12 @@ import tempfile
 from os.path import join, exists
 import fcntl
 
-from guniflask.utils.process import get_master_pid
+from guniflask.config.app_config import settings
 
-__all__ = ['MasterLevelLock']
+__all__ = ['ServiceLock']
 
 
-class MasterLevelLock:
+class ServiceLock:
     locks = {}
 
     def __init__(self, name: str):
@@ -34,8 +34,7 @@ class MasterLevelLock:
         return True
 
     def _generate_instance_id(self) -> str:
-        master_pid = get_master_pid()
-        return '{}.{}.lock'.format(master_pid, self.name)
+        return '{}.{}.lock'.format(settings['project_name'], settings['port'])
 
     def release(self):
         instance_id = self._generate_instance_id()
