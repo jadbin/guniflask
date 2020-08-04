@@ -8,6 +8,7 @@ Changelog
 
 - 添加了服务发现和负载均衡功能，支持通过服务名定位到服务实例
 - MasterLevelLock更名为ServiceLock，通过项目名称和端口号区别实例，解除对gunicorn的依赖
+- 配置guniflask.cors之后自动进行跨域配置
 
 0.8.0 (2020-08-01)
 ------------------

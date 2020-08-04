@@ -16,6 +16,7 @@ from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.context.bean_context import BeanContext
 from guniflask.annotation.core import AnnotationUtils
 from guniflask.web.bind_annotation import Blueprint
+from guniflask.config.app_config import settings
 
 __all__ = ['HttpSecurity']
 
@@ -48,6 +49,10 @@ class HttpSecurity(HttpSecurityBuilder):
                         blueprint.after_request(self._security_filter_chain.after_request)
 
     def _before_configure(self):
+        cors = settings.get_by_prefix('guniflask.cors')
+        if cors is not None:
+            self.cors(cors)
+
         self.set_shared_object(AuthenticationManager, self._get_authentication_registry().build())
 
     def with_user_details_service(self, user_details_service: UserDetailsService) -> 'HttpSecurity':
