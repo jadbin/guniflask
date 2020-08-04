@@ -78,6 +78,10 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
             current_app.register_blueprint(b)
 
     def _resolve_method_parameters(self, rule: str, method):
+        """
+        :param rule: path rule
+        :param method: view function
+        """
         params = {}
         param_names = {}
 
@@ -121,6 +125,11 @@ class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener,
         return params, param_names
 
     def _resolve_method_kwargs(self, kwargs: dict, params: dict, param_names: dict) -> dict:
+        """
+        :param kwargs: kwargs injected by Flask
+        :param params: view function parameters
+        :param param_names: names of the above parameters
+        """
         result = {}
         for k, v in kwargs.items():
             if k in param_names:
