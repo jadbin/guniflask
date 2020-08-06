@@ -45,10 +45,8 @@ active_profiles
 
 - Default: ``None``
 
-激活哪些profile。
-
-在配置文件中设置无效。可以通过环境变量 ``GUNIFLASK_ACTIVE_PROFILES`` 进行设置，或通过 ``debug/start`` 命令的 ``-p`` 选项进行设置。
-
+指定激活哪些profile。
+可以通过环境变量 ``GUNIFLASK_ACTIVE_PROFILES`` 进行设置，或通过 ``debug/start`` 命令的 ``-p`` 选项进行设置。
 有关使用profile区别运行环境并加载不同配置的详细信息请参考 :ref:`profile` 。
 
 debug
@@ -57,7 +55,6 @@ debug
 - Default: ``None``
 
 是否为debug模式。
-
 可以通过环境变量 ``GUNIFLASK_DEBUG`` 进行设置，在执行 ``debug`` 命令会自动设置。
 
 host
@@ -69,6 +66,13 @@ port
 ^^^^
 
 项目运行时绑定的端口。
+
+id_string
+^^^^^^^^
+
+- Default: 启动项目实例的用户的用户名
+
+项目运行实例的标识字符串，可以通过环境变量 ``GUNIFLASK_ID_STRING`` 进行设置。
 
 Settings to Configure the Built-in Features
 -------------------------------------------
@@ -84,9 +88,14 @@ cors
 jwt
 ^^^
 
-是否开启基于JWT的认证功能及相关配配置。
+基于JWT的认证。
 
 .. _table2model_dest:
+
+consul
+^^^^^^
+
+基于Consul的服务发现。
 
 table2model_dest
 ^^^^^^^^^^^^^^^^

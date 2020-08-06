@@ -21,7 +21,9 @@ class ServiceLock:
         if instance_id in self.locks:
             return True
 
-        temp_dir = join(tempfile.gettempdir(), 'guniflask', self.__class__.__name__)
+        temp_dir = join(tempfile.gettempdir(),
+                        'guniflask.{}.{}'.format(settings['project_name'], settings['id_string']),
+                        self.__class__.__name__)
         if not exists(temp_dir):
             os.makedirs(temp_dir, exist_ok=True)
 
