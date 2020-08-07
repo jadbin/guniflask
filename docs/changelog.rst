@@ -3,11 +3,11 @@
 Changelog
 =========
 
-0.8.3 (2020-08-??)
+0.8.3 (2020-08-07)
 ------------------
 
 - settings添加内置变量 ``id_string`` ，对应环境变量 ``GUNIFLASK_ID_STRING``
-
+- 对health endpoint添加了active profiles的校验，避免程序在错误的profile下启动后无法从Consul中删除服务
 
 0.8.2 (2020-08-04)
 ------------------
