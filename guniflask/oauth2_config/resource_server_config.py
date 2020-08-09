@@ -6,7 +6,6 @@ from guniflask.context.annotation import configuration
 from guniflask.oauth2.token_service import ResourceServerTokenServices
 from guniflask.oauth2.token_store import TokenStore
 from guniflask.oauth2_config.authorization_server_config import AuthorizationServerEndpointsConfiguration
-from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2_config.resource_server_configurer import ResourceServerConfigurer, \
     ResourceServerSecurityConfigurer
 from guniflask.security_config.http_security import HttpSecurity
