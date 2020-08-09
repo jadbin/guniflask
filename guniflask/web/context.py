@@ -8,7 +8,6 @@ from guniflask.security_config.web_security_config import WebSecurityConfigurati
 from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 from guniflask.web.config_constants import *
 from guniflask.beans.definition import BeanDefinition
-from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
 
 __all__ = ['WebApplicationContext']
 
@@ -28,4 +27,9 @@ class WebApplicationContext(AnnotationConfigBeanContext):
         self._reader.register(WebSecurityConfiguration)
         self._reader.register(WebAsyncConfiguration)
         self._reader.register(WebSchedulingConfiguration)
+        self._enable_service_discovery()
+
+    def _enable_service_discovery(self):
+        from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
+
         self._reader.register(ServiceDiscoveryConfiguration)
