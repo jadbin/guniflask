@@ -87,7 +87,7 @@ class ServiceDiscoveryConfiguration:
         port = app_settings['port']
         service_id = '{}-{}-{}'.format(self.service_name, local_ip, port)
         heath_url = 'http://{}:{}/health?active_profiles={}'.format(local_ip, port,
-                                                                    ','.join(settings['active_profiles'] or ['-']))
+                                                                    ','.join(app_settings['active_profiles']))
         try:
             consul.register_service(self.service_name,
                                     service_id=service_id,
