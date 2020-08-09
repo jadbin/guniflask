@@ -7,6 +7,7 @@ from flask import Blueprint
 from guniflask.config.app_config import AppConfig
 from guniflask.utils.traversal import walk_modules
 from guniflask.web.context import WebApplicationContext
+from guniflask.config.app_config import settings
 
 __all__ = ['AppInitializer']
 
@@ -42,7 +43,7 @@ class AppInitializer:
 
     def _create_bean_context(self) -> WebApplicationContext:
         bean_context = WebApplicationContext(self.app)
-        bean_context.scan(self.app.name)
+        bean_context.scan(settings['project_name'])
         return bean_context
 
     def _refresh_bean_context(self, bean_context: WebApplicationContext):
@@ -55,7 +56,7 @@ class AppInitializer:
         registered_blueprints = set()
 
         def iter_blueprints():
-            for module in walk_modules(self.app.name):
+            for module in walk_modules(settings['project_name']):
                 for obj in vars(module).values():
                     if isinstance(obj, Blueprint) and obj not in registered_blueprints:
                         yield obj
@@ -67,4 +68,4 @@ class AppInitializer:
         del registered_blueprints
 
     def _get_app_module(self):
-        return import_module(self.app.name + '.app')
+        return import_module(settings['project_name'] + '.app')
