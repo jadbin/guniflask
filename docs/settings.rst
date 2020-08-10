@@ -67,13 +67,6 @@ port
 
 项目运行时绑定的端口。
 
-id_string
-^^^^^^^^
-
-- Default: 启动项目实例的用户的用户名
-
-项目运行实例的标识字符串，可以通过环境变量 ``GUNIFLASK_ID_STRING`` 进行设置。
-
 Settings to Configure the Built-in Features
 -------------------------------------------
 
