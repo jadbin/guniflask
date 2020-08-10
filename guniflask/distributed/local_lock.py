@@ -4,6 +4,7 @@ import os
 import tempfile
 from os.path import join, exists
 import fcntl
+import getpass
 
 from guniflask.config.app_config import settings
 
@@ -22,7 +23,7 @@ class ServiceLock:
             return True
 
         temp_dir = join(tempfile.gettempdir(),
-                        'guniflask.{}.{}'.format(settings['project_name'], settings['id_string']),
+                        'guniflask.{}'.format(getpass.getuser()),
                         self.__class__.__name__)
         if not exists(temp_dir):
             os.makedirs(temp_dir, exist_ok=True)
