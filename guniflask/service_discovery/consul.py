@@ -6,6 +6,7 @@ from urllib.parse import urlencode, urlsplit, urlunsplit
 import requests
 import dns.message
 import dns.query
+import dns.rdatatype
 
 from guniflask.service_discovery.service_instance import ServiceInstance
 from guniflask.service_discovery.errors import ServiceDiscoveryError
@@ -107,7 +108,7 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         return services
 
     def choose(self, service_name: str) -> Union[ServiceInstance, None]:
-        request = dns.message.make_query('guniflask_test.service.consul', dns.rdatatype.SRV)
+        request = dns.message.make_query(f'{service_name}.service.consul', dns.rdatatype.SRV)
         response = dns.query.udp(request, self.host, port=self.dns_port)
         if len(response.answer) > 0:
             answer = response.answer[0]
