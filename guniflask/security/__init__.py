@@ -28,4 +28,5 @@ from .user_context import current_user
 from .user_details import UserDetails
 from .user_details_authentication_provider import UserDetailsAuthenticationProvider
 from .user_details_by_name_service import UserDetailsByNameService
+from .user_details_service import UserDetailsService
 from .web_authentication_details import WebAuthenticationDetails
