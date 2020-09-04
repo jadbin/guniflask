@@ -1,11 +1,11 @@
 # coding=utf-8
 
 import inspect
-from typing import Type, Collection
+from typing import Type, Collection, Union
 
-from guniflask.annotation.core import Annotation, AnnotationUtils
-from guniflask.context.condition import Condition
-
+from guniflask.annotation import Annotation, AnnotationUtils, AnnotationMetadata
+from guniflask.context.condition import Condition, ConditionContext
+from guniflask.config import settings
 
 
 class Bean(Annotation):
@@ -74,12 +74,24 @@ class Conditional(Annotation):
         super().__init__(condition=condition)
 
 
-def conditional(condition: Type[Condition]):
+def conditional(condition: Union[Type[Condition], Condition]):
     def wrap_func(func):
         AnnotationUtils.add_annotation(func, Conditional(condition))
         return func
 
     return wrap_func
+
+
+class SettingCondition(Condition):
+    def __init__(self, name: str):
+        self.name = name
+
+    def matches(self, context: ConditionContext, metadata: AnnotationMetadata) -> bool:
+        return settings.get_by_prefix(self.name) is not None
+
+
+def condition_on_setting(name: str):
+    return conditional(SettingCondition(name))
 
 
 class Repository(Component):
