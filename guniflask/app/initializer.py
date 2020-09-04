@@ -14,15 +14,17 @@ class AppInitializer:
         self.app = app
         self.config = AppConfig(self.app, app_settings=app_settings)
 
-    def init(self):
+    def init(self, with_context=True):
         self._make_settings()
-        bean_context = WebApplicationContext(self.app)
-        self.app.bean_context = bean_context  # register bean context for app
+        if with_context:
+            bean_context = WebApplicationContext(self.app)
+            self.app.bean_context = bean_context  # register bean context for app
         self._init_app()
         with self.app.app_context():
             self._register_blueprints()
-            bean_context.scan(self.config.settings['project_name'])
-            self._refresh_bean_context(bean_context)
+            if with_context:
+                self.app.bean_context.scan(self.config.settings['project_name'])
+                self._refresh_bean_context(self.app.bean_context)
 
     def _make_settings(self):
         app_module = self._get_app_module()
