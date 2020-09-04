@@ -12,8 +12,6 @@ from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.errors import InvalidClientError
 
-__all__ = ['TokenGranter', 'AbstractTokenGranter', 'CompositeTokenGranter']
-
 
 class TokenGranter(metaclass=ABCMeta):
 

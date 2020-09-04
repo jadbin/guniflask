@@ -12,8 +12,6 @@ from guniflask.security.authentication_token import UserAuthentication
 from guniflask.oauth2.errors import InvalidGrantError
 from guniflask.security.errors import BadCredentialsError
 
-__all__ = ['PasswordTokenGranter']
-
 
 class PasswordTokenGranter(AbstractTokenGranter):
     GRANT_TYPE = 'password'

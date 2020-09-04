@@ -1,12 +1,5 @@
 # coding=utf-8
 
-__all__ = ['BeansError',
-           'NoSuchBeanDefinitionError', 'NoUniqueBeanDefinitionError',
-           'BeanDefinitionStoreError',
-           'BeanCreationError', 'BeanCurrentlyInCreationError',
-           'BeanNotOfRequiredTypeError',
-           'BeanTypeNotDeclaredError', 'BeanTypeNotAllowedError']
-
 
 class BeansError(Exception):
     pass

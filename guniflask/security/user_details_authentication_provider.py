@@ -9,8 +9,6 @@ from guniflask.security.authentication_provider import AuthenticationProvider
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['UserDetailsAuthenticationProvider']
-
 
 class UserDetailsAuthenticationProvider(AuthenticationProvider, metaclass=ABCMeta):
 

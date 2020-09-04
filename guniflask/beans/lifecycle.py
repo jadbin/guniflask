@@ -2,8 +2,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-__all__ = ['InitializingBean', 'SmartInitializingSingleton', 'DisposableBean']
-
 
 class InitializingBean(metaclass=ABCMeta):
     @abstractmethod

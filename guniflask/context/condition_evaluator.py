@@ -1,11 +1,9 @@
 # coding=utf-8
 
-from guniflask.annotation.core import AnnotationMetadata
+from guniflask.annotation import AnnotationMetadata
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
-from guniflask.context.condition import ConditionContext
+from guniflask.context.condition import ConditionContext, Condition
 from guniflask.context.annotation import Conditional
-
-__all__ = ['ConditionEvaluator']
 
 
 class ConditionEvaluator:
@@ -16,7 +14,10 @@ class ConditionEvaluator:
         if metadata is None or not metadata.is_annotated(Conditional):
             return False
         condition_cls = self.get_condition_class(metadata)
-        condition = condition_cls()
+        if isinstance(condition_cls, Condition):
+            condition = condition_cls
+        else:
+            condition = condition_cls()
         if not condition.matches(self.context, metadata):
             return True
         return False

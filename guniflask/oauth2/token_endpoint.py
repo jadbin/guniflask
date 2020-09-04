@@ -18,8 +18,6 @@ from guniflask.oauth2.token_granter import TokenGranter
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.web.filter_annotation import error_handler
 
-__all__ = ['TokenEndpoint', 'TokenKeyEndpoint']
-
 
 @blueprint
 class TokenEndpoint(AbstractEndpoint):

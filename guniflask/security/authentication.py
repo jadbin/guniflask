@@ -2,8 +2,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-__all__ = ['Authentication']
-
 
 class Authentication(metaclass=ABCMeta):
     def __init__(self, authorities=None):

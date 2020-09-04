@@ -6,8 +6,6 @@ from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security.password_encoder import PasswordEncoder
 from guniflask.security.dao_authentication_provider import DaoAuthenticationProvider
 
-__all__ = ['DaoAuthenticationConfigurer']
-
 
 class DaoAuthenticationConfigurer(UserDetailsAwareConfigurer):
 

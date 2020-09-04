@@ -3,9 +3,7 @@
 from abc import ABCMeta, abstractmethod
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from guniflask.beans.factory_hook import DisposableBean, SmartInitializingSingleton
-
-__all__ = ['AsyncExecutor', 'DefaultAsyncExecutor']
+from guniflask.beans.lifecycle import DisposableBean, SmartInitializingSingleton
 
 
 class AsyncExecutor(metaclass=ABCMeta):

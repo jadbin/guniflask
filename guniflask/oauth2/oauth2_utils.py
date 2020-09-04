@@ -5,8 +5,6 @@ from typing import Optional, Dict
 
 from flask import request
 
-__all__ = ['OAuth2Utils']
-
 
 class OAuth2Utils:
     CLIENT_ID = 'client_id'

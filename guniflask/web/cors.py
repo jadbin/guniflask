@@ -5,8 +5,6 @@ from flask_cors.extension import make_after_request_function
 
 from guniflask.web.request_filter import RequestFilter
 
-__all__ = ['CorsFilter']
-
 
 class CorsFilter(RequestFilter):
 

@@ -1,7 +1,5 @@
 # coding=utf-8
 
-__all__ = ['ClientDetails']
-
 
 class ClientDetails:
     """

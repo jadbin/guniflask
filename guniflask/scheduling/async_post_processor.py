@@ -3,19 +3,17 @@
 import logging
 from functools import partial, update_wrapper
 
-from guniflask.annotation.core import AnnotationUtils
-from guniflask.beans.post_processor import BeanPostProcessorAdapter
+from guniflask.annotation import AnnotationUtils
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
-from guniflask.beans.factory_hook import SmartInitializingSingleton
+from guniflask.beans.lifecycle import SmartInitializingSingleton
 from guniflask.scheduling.async_executor import AsyncExecutor
 from guniflask.scheduling.annotation import AsyncRun
-
-__all__ = ['AsyncPostProcessor']
 
 log = logging.getLogger(__name__)
 
 
-class AsyncPostProcessor(BeanPostProcessorAdapter, BeanFactoryAware, SmartInitializingSingleton):
+class AsyncPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializingSingleton):
 
     def __init__(self):
         self.bean_factory = None

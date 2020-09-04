@@ -10,13 +10,10 @@ from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, BeanCreationError, \
     BeanNotOfRequiredTypeError, NoUniqueBeanDefinitionError
-from guniflask.beans.factory_hook import InitializingBean, SmartInitializingSingleton, DisposableBean
+from guniflask.beans.lifecycle import InitializingBean, SmartInitializingSingleton, DisposableBean
 from guniflask.beans.constructor_resolver import ConstructorResolver
 from guniflask.beans.factory import BeanFactoryAware, BeanNameAware, ConfigurableBeanFactory
 from guniflask.beans.errors import NoSuchBeanDefinitionError, BeanDefinitionStoreError
-
-__all__ = ['AbstractBeanFactory',
-           'DefaultBeanFactory']
 
 
 class AbstractBeanFactory(ConfigurableBeanFactory, metaclass=ABCMeta):

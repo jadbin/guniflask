@@ -11,8 +11,6 @@ from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.web_authentication_details import WebAuthenticationDetails
 from guniflask.security.errors import BadCredentialsError
 
-__all__ = ['BasicAuthenticationFilter']
-
 
 class BasicAuthenticationFilter(RequestFilter):
     def __init__(self, authentication_manger: AuthenticationManager):

@@ -8,8 +8,6 @@ from guniflask.config.app_config import AppConfig
 from guniflask.utils.traversal import walk_modules
 from guniflask.web.context import WebApplicationContext
 
-__all__ = ['AppInitializer']
-
 
 class AppInitializer:
     def __init__(self, app, app_settings=None):

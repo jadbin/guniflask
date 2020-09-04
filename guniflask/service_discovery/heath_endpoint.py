@@ -5,8 +5,6 @@ from flask import abort
 from guniflask.web.bind_annotation import blueprint, get_route
 from guniflask.config.app_config import settings
 
-__all__ = ['HealthEndpoint']
-
 
 @blueprint
 class HealthEndpoint:

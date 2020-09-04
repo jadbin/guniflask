@@ -8,8 +8,6 @@ from guniflask.oauth2.request import TokenRequest
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.client_details import ClientDetails
 
-__all__ = ['RefreshTokenGranter']
-
 
 class RefreshTokenGranter(AbstractTokenGranter):
     GRANT_TYPE = 'refresh_token'

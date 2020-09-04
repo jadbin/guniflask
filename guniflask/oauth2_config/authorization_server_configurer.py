@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from abc import ABCMeta, abstractmethod
 from typing import Collection
 
 from guniflask.oauth2.client_details_service import ClientDetailsService
@@ -21,13 +20,8 @@ from guniflask.oauth2.client_details_user_details_service import ClientDetailsUs
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 from guniflask.oauth2.client_details_service import InMemoryClientDetailsService
 from guniflask.security.user_details_service import UserDetailsService
-from guniflask.security_config.security_configurer import SecurityConfigurerAdapter
+from guniflask.security_config.security_configurer import SecurityConfigurer
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
-
-__all__ = ['AuthorizationServerConfigurer',
-           'AuthorizationServerConfigurerAdapter',
-           'AuthorizationServerEndpointsConfigurer',
-           'AuthorizationServerSecurityConfigurer']
 
 
 class AuthorizationServerEndpointsConfigurer:
@@ -191,7 +185,7 @@ class AuthorizationServerEndpointsConfigurer:
         return token_granters
 
 
-class AuthorizationServerSecurityConfigurer(SecurityConfigurerAdapter):
+class AuthorizationServerSecurityConfigurer(SecurityConfigurer):
     def __init__(self):
         super().__init__()
         self._password_encoder: PasswordEncoder = None
@@ -235,21 +229,7 @@ class NullablePasswordEncoder(PasswordEncoder):
         return self.password_encoder.matches(raw_password, encoded_password)
 
 
-class AuthorizationServerConfigurer(metaclass=ABCMeta):
-    @abstractmethod
-    def configure_endpoints(self, endpoints: AuthorizationServerEndpointsConfigurer):
-        pass
-
-    @abstractmethod
-    def configure_client_details_service(self, clients: ClientDetailsServiceConfigurer):
-        pass
-
-    @abstractmethod
-    def configure_security(self, security: AuthorizationServerSecurityConfigurer):
-        pass
-
-
-class AuthorizationServerConfigurerAdapter(AuthorizationServerConfigurer):
+class AuthorizationServerConfigurer:
     def configure_endpoints(self, endpoints: AuthorizationServerEndpointsConfigurer):
         pass
 

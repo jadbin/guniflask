@@ -4,9 +4,7 @@ from typing import List
 import logging
 
 from guniflask.beans.errors import BeanCurrentlyInCreationError
-from guniflask.beans.factory_hook import DisposableBean
-
-__all__ = ['SingletonBeanRegistry']
+from guniflask.beans.lifecycle import DisposableBean
 
 log = logging.getLogger(__name__)
 

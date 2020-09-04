@@ -3,10 +3,8 @@
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.name_generator import DefaultBeanNameGenerator, BeanNameGenerator
-from guniflask.annotation.core import AnnotationUtils
+from guniflask.annotation import AnnotationUtils
 from guniflask.context.annotation import Component
-
-__all__ = ['AnnotationBeanNameGenerator']
 
 
 class AnnotationBeanNameGenerator(BeanNameGenerator):

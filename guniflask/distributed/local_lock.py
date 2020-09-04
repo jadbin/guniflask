@@ -8,8 +8,6 @@ import getpass
 
 from guniflask.config.app_config import settings
 
-__all__ = ['ServiceLock']
-
 
 class ServiceLock:
     locks = {}

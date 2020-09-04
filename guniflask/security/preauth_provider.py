@@ -8,8 +8,6 @@ from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.security.authentication_provider import AuthenticationProvider
 from guniflask.security.authentication_user_details_service import AuthenticationUserDetailsService
 
-__all__ = ['PreAuthenticatedProvider']
-
 
 class PreAuthenticatedProvider(AuthenticationProvider):
     def __init__(self, user_details_service: AuthenticationUserDetailsService):

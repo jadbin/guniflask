@@ -5,8 +5,6 @@ from typing import Type, Optional
 
 from guniflask.security.authentication import Authentication
 
-__all__ = ['AuthenticationProvider']
-
 
 class AuthenticationProvider(metaclass=ABCMeta):
     @abstractmethod

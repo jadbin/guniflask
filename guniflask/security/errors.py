@@ -1,12 +1,5 @@
 # coding=utf-8
 
-__all__ = ['AuthenticationError',
-           'BadCredentialsError',
-           'ProviderNotFoundError',
-           'UsernameNotFoundError',
-           'InsufficientAuthenticationError']
-
-
 class AuthenticationError(Exception):
     """
     Authentication exception

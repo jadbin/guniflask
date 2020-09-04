@@ -1,12 +1,10 @@
 # coding=utf-8
 
-from guniflask.beans.post_processor import BeanPostProcessorAdapter
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.bean_context import BeanContext, BeanContextAware
 
-__all__ = ['BeanContextAwareProcessor']
 
-
-class BeanContextAwareProcessor(BeanPostProcessorAdapter):
+class BeanContextAwareProcessor(BeanPostProcessor):
     def __init__(self, bean_context: BeanContext):
         self._bean_context = bean_context
 

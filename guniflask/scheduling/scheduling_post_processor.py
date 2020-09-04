@@ -2,17 +2,15 @@
 
 import datetime as dt
 
-from guniflask.annotation.core import AnnotationUtils
+from guniflask.annotation import AnnotationUtils
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
-from guniflask.beans.factory_hook import SmartInitializingSingleton
-from guniflask.beans.post_processor import BeanPostProcessorAdapter
+from guniflask.beans.lifecycle import SmartInitializingSingleton
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.scheduling.annotation import Scheduled
 from guniflask.scheduling.task_scheduler import TaskScheduler
 
-__all__ = ['ScheduledPostProcessor']
 
-
-class ScheduledPostProcessor(BeanPostProcessorAdapter, BeanFactoryAware, SmartInitializingSingleton):
+class ScheduledPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializingSingleton):
 
     def __init__(self, task_scheduler: TaskScheduler = None):
         self.bean_factory = None

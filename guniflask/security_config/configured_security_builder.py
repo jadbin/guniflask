@@ -5,9 +5,7 @@ from typing import Type, List, Any, Optional
 from collections import defaultdict
 
 from guniflask.security_config.security_builder import AbstractSecurityBuilder
-from guniflask.security_config.security_configurer import SecurityConfigurer, SecurityConfigurerAdapter
-
-__all__ = ['ConfiguredSecurityBuilder']
+from guniflask.security_config.security_configurer import SecurityConfigurer
 
 
 class ConfiguredSecurityBuilder(AbstractSecurityBuilder, metaclass=ABCMeta):
@@ -29,8 +27,7 @@ class ConfiguredSecurityBuilder(AbstractSecurityBuilder, metaclass=ABCMeta):
         return configurers[0]
 
     def apply(self, configurer: SecurityConfigurer):
-        if isinstance(configurer, SecurityConfigurerAdapter):
-            configurer.builder = self
+        configurer.builder = self
         self._add(configurer)
         return configurer
 

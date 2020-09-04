@@ -2,8 +2,6 @@
 
 from flask import request, g
 
-__all__ = ['OAuth2AuthenticationDetails']
-
 
 class OAuth2AuthenticationDetails:
     ACCESS_TOKEN_VALUE = __qualname__ + '.access_token_value'

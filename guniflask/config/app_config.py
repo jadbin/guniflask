@@ -2,15 +2,13 @@
 
 import logging
 import copy
-from collections import MutableMapping
+from collections.abc import MutableMapping
 from typing import Union
 
 from flask import current_app
 from werkzeug.local import LocalProxy
 
 log = logging.getLogger(__name__)
-
-__all__ = ['settings', 'Settings', 'AppConfig']
 
 
 class AppConfig:

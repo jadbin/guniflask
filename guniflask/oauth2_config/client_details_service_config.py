@@ -5,8 +5,6 @@ from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
 
-__all__ = ['ClientDetailsServiceConfiguration']
-
 
 @configuration
 class ClientDetailsServiceConfiguration:

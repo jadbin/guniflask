@@ -9,8 +9,6 @@ from guniflask.security.context import SecurityContext
 from guniflask.oauth2.authentication_details import OAuth2AuthenticationDetails
 from guniflask.security.authentication_token import AuthenticationToken
 
-__all__ = ['OAuth2AuthenticationFilter']
-
 
 class OAuth2AuthenticationFilter(RequestFilter):
     def __init__(self):

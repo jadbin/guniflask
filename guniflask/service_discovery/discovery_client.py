@@ -5,8 +5,6 @@ from typing import List
 
 from guniflask.service_discovery.service_instance import ServiceInstance
 
-__all__ = ['DiscoveryClient']
-
 
 class DiscoveryClient(metaclass=ABCMeta):
 

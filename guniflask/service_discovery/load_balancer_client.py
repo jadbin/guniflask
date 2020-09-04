@@ -7,8 +7,6 @@ from requests import Session, Request
 
 from guniflask.service_discovery.service_instance import ServiceInstance
 
-__all__ = ['LoadBalancerClient', 'LoadBalancedRequest']
-
 
 class LoadBalancerClient(metaclass=ABCMeta):
 

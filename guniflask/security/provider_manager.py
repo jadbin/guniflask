@@ -5,10 +5,8 @@ from typing import List
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_provider import AuthenticationProvider
-from guniflask.beans.factory_hook import InitializingBean
+from guniflask.beans.lifecycle import InitializingBean
 from guniflask.security.errors import AuthenticationError, ProviderNotFoundError
-
-__all__ = ['ProviderManager']
 
 
 class ProviderManager(AuthenticationManager, InitializingBean):

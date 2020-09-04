@@ -5,8 +5,6 @@ from abc import ABCMeta, abstractmethod
 
 from guniflask.beans.definition import BeanDefinition
 
-__all__ = ['BeanDefinitionRegistry']
-
 
 class BeanDefinitionRegistry(metaclass=ABCMeta):
 

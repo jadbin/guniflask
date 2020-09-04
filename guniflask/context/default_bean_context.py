@@ -15,8 +15,6 @@ from guniflask.context.event_publisher import ApplicationEventPublisher
 from guniflask.context.context_aware_processor import BeanContextAwareProcessor
 from guniflask.context.bean_context import BeanContext
 
-__all__ = ['BeanContext', 'AnnotationConfigBeanContext']
-
 log = logging.getLogger(__name__)
 
 

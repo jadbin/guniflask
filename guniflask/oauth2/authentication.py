@@ -4,8 +4,6 @@ from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_token import AuthenticationToken
 from guniflask.oauth2.request import OAuth2Request
 
-__all__ = ['OAuth2Authentication']
-
 
 class OAuth2Authentication(AuthenticationToken):
     def __init__(self, oauth2_request: OAuth2Request, user_authentication: Authentication = None):

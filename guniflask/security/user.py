@@ -2,8 +2,6 @@
 
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['User']
-
 
 class User(UserDetails):
     default_role_prefix = 'role_'

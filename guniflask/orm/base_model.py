@@ -4,8 +4,6 @@ from typing import Union, List
 
 from guniflask.orm.model_utils import dict_to_model, model_to_dict, update_model_by_dict, result_to_dict
 
-__all__ = ['BaseModelMixin']
-
 
 class BaseModelMixin:
 

@@ -11,8 +11,6 @@ from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.user import User
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['current_user']
-
 
 def _load_user() -> Optional[User]:
     ctx = _request_ctx_stack.top

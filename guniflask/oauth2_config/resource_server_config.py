@@ -11,8 +11,6 @@ from guniflask.oauth2_config.resource_server_configurer import ResourceServerCon
 from guniflask.security_config.http_security import HttpSecurity
 from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 
-__all__ = ['ResourceServerConfiguration']
-
 
 @configuration
 class ResourceServerConfiguration(WebSecurityConfigurer):

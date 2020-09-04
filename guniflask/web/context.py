@@ -9,8 +9,6 @@ from guniflask.web.scheduling_config import WebAsyncConfiguration, WebScheduling
 from guniflask.web.config_constants import *
 from guniflask.beans.definition import BeanDefinition
 
-__all__ = ['WebApplicationContext']
-
 
 class WebApplicationContext(AnnotationConfigBeanContext):
     def __init__(self, app: Flask):

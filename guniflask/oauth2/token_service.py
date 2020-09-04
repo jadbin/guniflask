@@ -14,12 +14,7 @@ from guniflask.oauth2.request import TokenRequest, OAuth2Request
 from guniflask.oauth2.errors import InvalidTokenError, InvalidGrantError, InvalidScopeError, ClientRegistrationError
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
-from guniflask.beans.factory_hook import InitializingBean
-
-__all__ = ['AuthorizationServerTokenServices',
-           'ResourceServerTokenServices',
-           'ConsumerTokenServices',
-           'DefaultTokenServices']
+from guniflask.beans.lifecycle import InitializingBean
 
 
 class AuthorizationServerTokenServices(metaclass=ABCMeta):

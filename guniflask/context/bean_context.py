@@ -7,8 +7,6 @@ from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.beans.factory import BeanFactory
 
-__all__ = ['BeanContext', 'BeanContextAware']
-
 log = logging.getLogger(__name__)
 
 

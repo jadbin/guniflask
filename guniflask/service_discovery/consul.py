@@ -13,8 +13,6 @@ from guniflask.service_discovery.errors import ServiceDiscoveryError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient
 
-__all__ = ['ConsulClient', 'ConsulClientError']
-
 
 class ConsulClientError(ServiceDiscoveryError):
     pass

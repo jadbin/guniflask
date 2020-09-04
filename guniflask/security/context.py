@@ -6,8 +6,6 @@ from flask import _request_ctx_stack
 
 from guniflask.security.authentication import Authentication
 
-__all__ = ['SecurityContext']
-
 
 class SecurityContext:
     AUTHENTICATION = '__authentication'

@@ -5,8 +5,6 @@ from guniflask.security.user_details import UserDetails
 from guniflask.security.authentication_user_details_service import AuthenticationUserDetailsService
 from guniflask.security.user_details_service import UserDetailsService
 
-__all__ = ['UserDetailsByNameService']
-
 
 class UserDetailsByNameService(AuthenticationUserDetailsService):
     def __init__(self, user_details_service: UserDetailsService):

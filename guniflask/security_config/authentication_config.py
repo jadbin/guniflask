@@ -4,8 +4,6 @@ from guniflask.context.annotation import configuration, bean
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 
-__all__ = ['AuthenticationConfiguration']
-
 
 @configuration
 class AuthenticationConfiguration:

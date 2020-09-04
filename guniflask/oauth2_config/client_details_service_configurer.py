@@ -2,8 +2,6 @@
 
 from guniflask.oauth2.client_details_service import ClientDetailsService
 
-__all__ = ['ClientDetailsServiceConfigurer']
-
 
 class ClientDetailsServiceConfigurer:
     def __init__(self):

@@ -8,8 +8,6 @@ from guniflask.oauth2.errors import NoSuchClientError
 from guniflask.security.errors import UsernameNotFoundError
 from guniflask.security.user import User
 
-__all__ = ['ClientDetailsUserDetailsService']
-
 
 class ClientDetailsUserDetailsService(UserDetailsService):
 

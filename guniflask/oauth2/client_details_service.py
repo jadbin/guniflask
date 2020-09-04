@@ -5,8 +5,6 @@ from abc import ABCMeta, abstractmethod
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.errors import NoSuchClientError
 
-__all__ = ['ClientDetailsService', 'InMemoryClientDetailsService']
-
 
 class ClientDetailsService(metaclass=ABCMeta):
     """

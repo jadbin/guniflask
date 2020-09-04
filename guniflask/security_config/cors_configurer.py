@@ -1,13 +1,11 @@
 # coding=utf-8
 
 from guniflask.security_config.http_security_builder import HttpSecurityBuilder
-from guniflask.security_config.security_configurer import SecurityConfigurerAdapter
+from guniflask.security_config.security_configurer import SecurityConfigurer
 from guniflask.web.cors import CorsFilter
 
-__all__ = ['CorsConfigurer']
 
-
-class CorsConfigurer(SecurityConfigurerAdapter):
+class CorsConfigurer(SecurityConfigurer):
 
     def __init__(self, cors=None):
         super().__init__()

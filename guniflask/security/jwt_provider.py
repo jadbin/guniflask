@@ -15,8 +15,6 @@ from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessToke
 from guniflask.security.user import User
 from guniflask.security.jwt import JwtHelper
 
-__all__ = ['jwt_manager', 'JwtManager']
-
 jwt_manager = LocalProxy(lambda: current_app.extensions['jwt_manager'])
 
 

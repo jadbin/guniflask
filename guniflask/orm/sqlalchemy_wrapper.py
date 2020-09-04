@@ -2,8 +2,6 @@
 
 from guniflask.orm.model_utils import model_to_dict, dict_to_model, update_model_by_dict, result_to_dict
 
-__all__ = ['wrap_sqlalchemy_model']
-
 
 def wrap_sqlalchemy_model(model_cls):
     if not hasattr(model_cls, 'to_dict'):

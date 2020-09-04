@@ -6,8 +6,6 @@ from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.utils.string import string_lowercase_underscore
 
-__all__ = ['BeanNameGenerator', 'DefaultBeanNameGenerator']
-
 
 class BeanNameGenerator(metaclass=ABCMeta):
     @abstractmethod

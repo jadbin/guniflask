@@ -7,8 +7,6 @@ from guniflask.context.event import ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.utils.instantiation import inspect_args
 
-__all__ = ['ApplicationEventPublisher']
-
 
 class ApplicationEventPublisher:
     def __init__(self, bean_factory: BeanFactory):

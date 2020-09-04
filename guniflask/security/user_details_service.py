@@ -4,8 +4,6 @@ from abc import ABCMeta, abstractmethod
 
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['UserDetailsService']
-
 
 class UserDetailsService(metaclass=ABCMeta):
 

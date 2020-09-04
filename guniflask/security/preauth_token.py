@@ -2,8 +2,6 @@
 
 from guniflask.security.authentication_token import AuthenticationToken
 
-__all__ = ['PreAuthenticatedToken']
-
 
 class PreAuthenticatedToken(AuthenticationToken):
     def __init__(self, principal, credentials=None, authorities=None):

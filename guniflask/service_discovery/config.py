@@ -14,8 +14,6 @@ from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.discovery_client import DiscoveryClient
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, LoadBalancedRequest
 
-__all__ = ['ServiceDiscoveryConfiguration']
-
 log = logging.getLogger(__name__)
 
 

@@ -2,8 +2,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-__all__ = ['PasswordEncoder', 'PlainPasswordEncoder']
-
 
 class PasswordEncoder(metaclass=ABCMeta):
     @abstractmethod

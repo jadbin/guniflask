@@ -6,8 +6,6 @@ import base64
 import jwt
 from json import JSONEncoder as _JSONEncoder
 
-__all__ = ['JwtHelper']
-
 
 class JsonEncoder(_JSONEncoder):
     def default(self, o):

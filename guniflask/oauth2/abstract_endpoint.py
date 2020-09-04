@@ -1,11 +1,9 @@
 # coding=utf-8
 
-from guniflask.beans.factory_hook import InitializingBean
+from guniflask.beans.lifecycle import InitializingBean
 from guniflask.oauth2.token_granter import TokenGranter
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.request_factory import OAuth2RequestFactory, DefaultOAuth2RequestFactory
-
-__all__ = ['AbstractEndpoint']
 
 
 class AbstractEndpoint(InitializingBean):

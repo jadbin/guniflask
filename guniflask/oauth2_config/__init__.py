@@ -1,17 +1,9 @@
 # coding=utf-8
 
-from .annotation import *
-from .authorization_server_config import *
-from .authorization_server_configurer import *
-from .client_details_service_config import *
-from .client_details_service_configurer import *
-from .resource_server_config import *
-from .resource_server_configurer import *
-
-__all__ = (annotation.__all__ +
-           authorization_server_config.__all__ +
-           authorization_server_configurer.__all__ +
-           client_details_service_config.__all__ +
-           client_details_service_configurer.__all__ +
-           resource_server_config.__all__ +
-           resource_server_configurer.__all__)
+from .annotation import enable_authorization_server
+from .annotation import enable_resource_server
+from .client_details_service_configurer import ClientDetailsServiceConfigurer
+from .authorization_server_configurer import AuthorizationServerConfigurer
+from .authorization_server_configurer import AuthorizationServerEndpointsConfigurer
+from .resource_server_configurer import ResourceServerConfigurer
+from .resource_server_configurer import ResourceServerSecurityConfigurer

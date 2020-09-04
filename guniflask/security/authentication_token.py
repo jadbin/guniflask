@@ -5,8 +5,6 @@ from abc import ABCMeta
 from guniflask.security.authentication import Authentication
 from guniflask.security.user_details import UserDetails
 
-__all__ = ['AuthenticationToken', 'UserAuthentication']
-
 
 class AuthenticationToken(Authentication, metaclass=ABCMeta):
     @property

@@ -11,8 +11,8 @@ from werkzeug.routing import parse_rule
 from guniflask.web.request_filter import RequestFilter, RequestFilterChain
 from guniflask.beans.constructor_resolver import ConstructorResolver
 from guniflask.web.filter_annotation import FilterChain
-from guniflask.annotation.core import AnnotationUtils
-from guniflask.beans.post_processor import BeanPostProcessorAdapter
+from guniflask.annotation import AnnotationUtils
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.instantiation import instantiate_from_json, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
@@ -24,10 +24,8 @@ from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.web.filter_annotation import MethodFilter
 from guniflask.utils.instantiation import resolve_arg_type, ArgType
 
-__all__ = ['BlueprintPostProcessor']
 
-
-class BlueprintPostProcessor(BeanPostProcessorAdapter, ApplicationEventListener, BeanFactoryAware):
+class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFactoryAware):
     def __init__(self):
         self.blueprints = []
         self._filter_chain_resolver: FilterChainResolver = None

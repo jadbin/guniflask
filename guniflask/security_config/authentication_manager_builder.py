@@ -10,8 +10,6 @@ from guniflask.security.provider_manager import ProviderManager
 from guniflask.security_config.provider_manager_builder import ProviderManagerBuilder
 from guniflask.security_config.dao_authentication_configurer import DaoAuthenticationConfigurer
 
-__all__ = ['AuthenticationManagerBuilder']
-
 
 class AuthenticationManagerBuilder(ConfiguredSecurityBuilder, ProviderManagerBuilder):
     def __init__(self):

@@ -5,8 +5,6 @@ from typing import List
 from guniflask.security_config.security_builder import SecurityBuilder
 from guniflask.security_config.configured_security_builder import ConfiguredSecurityBuilder
 
-__all__ = ['WebSecurity']
-
 
 class WebSecurity(ConfiguredSecurityBuilder):
     def __init__(self):

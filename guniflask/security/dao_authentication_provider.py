@@ -7,8 +7,6 @@ from guniflask.security.password_encoder import PasswordEncoder, PlainPasswordEn
 from guniflask.security.user_details import UserDetails
 from guniflask.security.errors import BadCredentialsError
 
-__all__ = ['DaoAuthenticationProvider']
-
 
 class DaoAuthenticationProvider(UserDetailsAuthenticationProvider):
     def __init__(self, user_details_service: UserDetailsService = None, password_encoder: PasswordEncoder = None):

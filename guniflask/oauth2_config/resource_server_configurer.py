@@ -8,16 +8,12 @@ from guniflask.oauth2.token_store import TokenStore
 from guniflask.oauth2.token_extractor import TokenExtractor
 from guniflask.oauth2.authentication_manager import OAuth2AuthenticationManager
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.security_config.security_configurer import SecurityConfigurerAdapter
+from guniflask.security_config.security_configurer import SecurityConfigurer
 from guniflask.oauth2.authentication_filter import OAuth2AuthenticationFilter
 from guniflask.security_config.http_security import HttpSecurity
 
-__all__ = ['ResourceServerConfigurer',
-           'ResourceServerConfigurerAdapter',
-           'ResourceServerSecurityConfigurer']
 
-
-class ResourceServerSecurityConfigurer(SecurityConfigurerAdapter):
+class ResourceServerSecurityConfigurer(SecurityConfigurer):
     def __init__(self):
         super().__init__()
         self._authentication_manager: AuthenticationManager = None
@@ -90,17 +86,7 @@ class ResourceServerSecurityConfigurer(SecurityConfigurerAdapter):
         return self.token_store
 
 
-class ResourceServerConfigurer(metaclass=ABCMeta):
-    @abstractmethod
-    def configure_security(self, resources: ResourceServerSecurityConfigurer):
-        pass
-
-    @abstractmethod
-    def configure_http(self, http: HttpSecurity):
-        pass
-
-
-class ResourceServerConfigurerAdapter(ResourceServerConfigurer):
+class ResourceServerConfigurer:
     def configure_security(self, resources: ResourceServerSecurityConfigurer):
         pass
 

@@ -6,8 +6,6 @@ from guniflask.beans.factory import BeanFactory
 from guniflask.beans.errors import NoUniqueBeanDefinitionError, BeansError
 from guniflask.utils.instantiation import inspect_args, resolve_arg_type, ArgType
 
-__all__ = ['ConstructorResolver']
-
 
 class ConstructorResolver:
     def __init__(self, bean_factory: BeanFactory):

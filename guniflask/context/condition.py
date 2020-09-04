@@ -2,11 +2,9 @@
 
 from abc import ABCMeta, abstractmethod
 
-from guniflask.annotation.core import AnnotationMetadata
+from guniflask.annotation import AnnotationMetadata
 from guniflask.beans.factory import BeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
-
-__all__ = ['ConditionContext', 'Condition']
 
 
 class ConditionContext:

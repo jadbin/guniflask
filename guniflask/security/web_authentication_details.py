@@ -2,8 +2,6 @@
 
 from flask import request
 
-__all__ = ['WebAuthenticationDetails']
-
 
 class WebAuthenticationDetails:
     def __init__(self):

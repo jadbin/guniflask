@@ -1,7 +1,5 @@
 # coding=utf-8
 
-__all__ = ['BeanDefinition']
-
 
 class BeanDefinition:
     SCOPE_SINGLETON = 'singleton'

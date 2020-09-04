@@ -6,14 +6,6 @@ from typing import Type, Collection
 from guniflask.annotation.core import Annotation, AnnotationUtils
 from guniflask.context.condition import Condition
 
-__all__ = ['Bean', 'bean',
-           'Component', 'component',
-           'Configuration', 'configuration',
-           'Conditional', 'conditional',
-           'Repository', 'repository',
-           'Service', 'service',
-           'Controller', 'controller',
-           'Include', 'include']
 
 
 class Bean(Annotation):
@@ -31,6 +23,16 @@ def bean(name: str = None):
         name = None
         return wrap_func(f)
     return wrap_func
+
+
+class Autowired(Annotation):
+    def __init__(self):
+        super().__init__()
+
+
+def autowired(func):
+    AnnotationUtils.add_annotation(func, Autowired())
+    return func
 
 
 class Component(Annotation):
