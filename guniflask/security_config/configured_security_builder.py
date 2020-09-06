@@ -22,8 +22,8 @@ class ConfiguredSecurityBuilder(AbstractSecurityBuilder, metaclass=ABCMeta):
         if not configurers:
             return
         if len(configurers) != 1:
-            raise ValueError('Only one configurer excepted for type {}, '
-                             'but got {}'.format(configurer_type.__name__, len(configurers)))
+            raise ValueError(f'Only one configurer excepted for type {configurer_type.__name__}, '
+                             f'but got {len(configurers)}')
         return configurers[0]
 
     def apply(self, configurer: SecurityConfigurer):

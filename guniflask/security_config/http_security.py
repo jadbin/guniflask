@@ -85,12 +85,12 @@ class HttpSecurity(HttpSecurityBuilder):
         if inspect.isclass(blueprint):
             bean = context.get_bean_of_type(blueprint)
             if not bean:
-                raise ValueError('No such blueprint with type "{}"'.format(blueprint.__name__))
+                raise ValueError(f'No such blueprint with type "{blueprint.__name__}"')
         elif isinstance(blueprint, str):
             bean = context.get_bean(blueprint)
             if not bean:
-                raise ValueError('No such blueprint named "{}"'.format(blueprint))
+                raise ValueError(f'No such blueprint named "{blueprint}"')
         else:
-            raise ValueError('Cannot resolve the blueprint: {}'.format(blueprint))
+            raise ValueError(f'Cannot resolve the blueprint: {blueprint}')
         self._blueprints.append(bean)
         return self

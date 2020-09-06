@@ -129,4 +129,4 @@ class DefaultOAuth2RequestValidator(OAuth2RequestValidator):
         if client_scopes:
             for scope in request_scopes:
                 if scope not in client_scopes:
-                    raise InvalidScopeError('Invalid scope: {}'.format(scope))
+                    raise InvalidScopeError(f'Invalid scope: {scope}')

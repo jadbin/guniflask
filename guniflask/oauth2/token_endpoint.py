@@ -56,7 +56,7 @@ class TokenEndpoint(AbstractEndpoint):
 
         token = self.token_granter.grant(token_request.grant_type, token_request)
         if token is None:
-            raise UnsupportedGrantTypeError('Unsupported grant type: {}'.format(token_request.grant_type))
+            raise UnsupportedGrantTypeError(f'Unsupported grant type: {token_request.grant_type}')
         return self._get_response(token)
 
     def _get_client_id(self, auth: Authentication):

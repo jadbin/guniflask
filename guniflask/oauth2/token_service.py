@@ -91,10 +91,10 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
 
     def refresh_access_token(self, refresh_token_value: str, token_request: TokenRequest) -> OAuth2AccessToken:
         if not self.support_refresh_token:
-            raise InvalidGrantError('Invalid refresh token: {}'.format(refresh_token_value))
+            raise InvalidGrantError(f'Invalid refresh token: {refresh_token_value}')
         refresh_token = self.token_store.read_refresh_token(refresh_token_value)
         if refresh_token is None:
-            raise InvalidGrantError('Invalid refresh token: {}'.format(refresh_token_value))
+            raise InvalidGrantError(f'Invalid refresh token: {refresh_token_value}')
 
         authentication = self.token_store.read_authentication_for_refresh_token(refresh_token)
         if self.authentication_manager is not None and not authentication.is_client_only:
@@ -105,12 +105,12 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
             authentication.details = details
         client_id = authentication.oauth2_request.client_id
         if client_id is None or client_id != token_request.client_id:
-            raise InvalidGrantError('Wrong client for this refresh token: {}'.format(refresh_token_value))
+            raise InvalidGrantError(f'Wrong client for this refresh token: {refresh_token_value}')
 
         self.token_store.remove_access_token_using_refresh_token(refresh_token)
         if refresh_token.is_expired:
             self.token_store.remove_refresh_token(refresh_token)
-            raise InvalidTokenError('Refresh token expired: {}'.format(refresh_token_value))
+            raise InvalidTokenError(f'Refresh token expired: {refresh_token_value}')
         authentication = self._create_refreshed_authentication(authentication, token_request)
         access_token = self._do_create_access_token(authentication, refresh_token)
         self.token_store.store_access_token(access_token, authentication)
@@ -122,20 +122,20 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
     def load_authentication(self, access_token_value: str) -> OAuth2Authentication:
         access_token = self.token_store.read_access_token(access_token_value)
         if access_token is None:
-            raise InvalidTokenError('Invalid access token: {}'.format(access_token_value))
+            raise InvalidTokenError(f'Invalid access token: {access_token_value}')
         elif access_token.is_expired:
             self.token_store.remove_access_token(access_token)
-            raise InvalidTokenError('Access token expired: {}'.format(access_token_value))
+            raise InvalidTokenError(f'Access token expired: {access_token_value}')
 
         result = self.token_store.read_authentication(access_token)
         if result is None:
-            raise InvalidTokenError('Invalid access token: {}'.format(access_token_value))
+            raise InvalidTokenError(f'Invalid access token: {access_token_value}')
         if self.client_details_service is not None:
             client_id = result.oauth2_request.client_id
             try:
                 self.client_details_service.load_client_details_by_client_id(client_id)
             except ClientRegistrationError:
-                raise InvalidTokenError('Client not valid: {}'.format(client_id))
+                raise InvalidTokenError(f'Client not valid: {client_id}')
         return result
 
     def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
@@ -204,7 +204,7 @@ class DefaultTokenServices(AuthorizationServerTokenServices, ResourceServerToken
         if scope:
             original_scope = client_auth.scope
             if original_scope is None or not original_scope.issuperset(scope):
-                raise InvalidScopeError('Unable to narrow the scope of the client authentication to: {}'.format(scope))
+                raise InvalidScopeError(f'Unable to narrow the scope of the client authentication to: {scope}')
             else:
                 client_auth = client_auth.narrow_scope(scope)
         narrowed = OAuth2Authentication(client_auth, authentication.user_authentication)

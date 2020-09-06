@@ -47,7 +47,7 @@ class AbstractTokenGranter(TokenGranter):
     def _validate_grant_type(self, grant_type: str, client_details: ClientDetails):
         authorized_grant_types = client_details.grant_types
         if authorized_grant_types and grant_type not in authorized_grant_types:
-            raise InvalidClientError('Unauthorized grant type: {}'.format(grant_type))
+            raise InvalidClientError(f'Unauthorized grant type: {grant_type}')
 
 
 class CompositeTokenGranter(TokenGranter):

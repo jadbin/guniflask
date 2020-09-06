@@ -24,5 +24,5 @@ class InMemoryClientDetailsService(ClientDetailsService):
 
     def load_client_details_by_client_id(self, client_id: str) -> ClientDetails:
         if client_id not in self.client_details_store:
-            raise NoSuchClientError('No client found with id = {}'.format(client_id))
+            raise NoSuchClientError(f'No client found with id = {client_id}')
         return self.client_details_store[client_id]

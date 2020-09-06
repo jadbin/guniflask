@@ -21,7 +21,7 @@ class ConstructorResolver:
             v = self._resolve_arg(name, required_type)
             if default is inspect._empty:
                 if v is None:
-                    raise ValueError('The argument named "{}" cannot be resolved'.format(name))
+                    raise ValueError(f'The argument named "{name}" cannot be resolved')
                 args_value.append(v)
             else:
                 if v is None:

@@ -133,7 +133,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
             if k in param_names:
                 k = param_names[k]
             if k not in params:
-                raise InternalServerError('Unhandled parameter: {}={}'.format(k, v))
+                raise InternalServerError(f'Unhandled parameter: {k}={v}')
             if params[k].dtype is not None:
                 try:
                     v = params[k].dtype(v)
@@ -145,7 +145,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                 continue
             name = p.name or k
             if isinstance(p, PathVariableInfo):
-                raise InternalServerError('No such path variable: {}'.format(name))
+                raise InternalServerError(f'No such path variable: {name}')
 
             if isinstance(p, RequestParamInfo):
                 if name in request.args:
@@ -160,7 +160,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
                     else:
-                        raise ValueError('Unsupported request param type: {}'.format(p.dtype))
+                        raise ValueError(f'Unsupported request param type: {p.dtype}')
 
                     if v is not None:
                         result[k] = v
@@ -180,7 +180,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                     if isinstance(p, RequestBodyInfo):
                         raise BadRequest('Request body not given or in wrong format')
                     else:
-                        raise BadRequest('Parameter not given: {}'.format(name))
+                        raise BadRequest(f'Parameter not given: {name}')
                 result[k] = p.default
         return result
 
@@ -235,7 +235,7 @@ class FilterChainResolver:
             else:
                 f = self._constructor_resolver.instantiate(v)
                 assert isinstance(f, RequestFilter), 'Required a request filter, ' \
-                                                     'got: {}'.format(type(RequestFilter).__name__)
+                                                     f'got: {type(RequestFilter).__name__}'
         return result
 
 

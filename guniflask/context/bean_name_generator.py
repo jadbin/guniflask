@@ -21,7 +21,7 @@ class AnnotationBeanNameGenerator(BeanNameGenerator):
                 if name is not None:
                     if bean_name is not None and name != bean_name:
                         raise ValueError('Annotations suggest inconsistent component names: '
-                                         '"{}" versus {}'.format(bean_name, name))
+                                         f'"{bean_name}" versus {name}')
                     bean_name = name
         if bean_name is not None:
             return bean_name

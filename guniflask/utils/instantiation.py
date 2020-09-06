@@ -69,7 +69,7 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
         elif argc is ArgType.SET:
             collection_type = set
         else:
-            assert inspect.isclass(dtype), 'Cannot convert a list to {}'.format(dtype)
+            assert inspect.isclass(dtype), f'Cannot convert a list to {dtype}'
             collection_type = dtype
 
         result = []
@@ -150,10 +150,10 @@ def resolve_arg_type(arg_type: Optional[type]):
                         vt = None
                     etype = vt
         if argc is None:
-            raise ValueError('Unsupported generic argument type: {}'.format(arg_type))
+            raise ValueError(f'Unsupported generic argument type: {arg_type}')
         return argc, etype
     else:
-        assert inspect.isclass(arg_type), 'Non-generic argument type must be a class, but got: {}'.format(arg_type)
+        assert inspect.isclass(arg_type), f'Non-generic argument type must be a class, but got: {arg_type}'
         if issubclass(arg_type, List):
             return ArgType.LIST, None
         if issubclass(arg_type, Mapping):

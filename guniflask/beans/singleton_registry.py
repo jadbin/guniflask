@@ -18,8 +18,8 @@ class SingletonBeanRegistry:
     def register_singleton(self, bean_name: str, singleton_obj):
         old_object = self._singleton_objects.get(bean_name)
         if old_object is not None:
-            raise ValueError('Cannot register singleton object [{}], '
-                             'because the bean name "{}" already exists'.format(singleton_obj, bean_name))
+            raise ValueError(f'Cannot register singleton object [{singleton_obj}], '
+                             f'because the bean name "{bean_name}" already exists')
         self._add_singleton(bean_name, singleton_obj)
 
     def get_singleton(self, bean_name: str):
@@ -79,4 +79,4 @@ class SingletonBeanRegistry:
         try:
             bean.destroy()
         except Exception:
-            log.error('Failed to destroy the bean named "{}"'.format(bean_name), exc_info=True)
+            log.error(f'Failed to destroy the bean named "{bean_name}"', exc_info=True)

@@ -45,7 +45,7 @@ class ProviderManager(AuthenticationManager, InitializingBean):
 
         if result is None:
             if last_error is None:
-                last_error = ProviderNotFoundError('No authentication provider for {}'.format(to_test.__name__))
+                last_error = ProviderNotFoundError(f'No authentication provider for {to_test.__name__}')
             raise last_error
 
         return result

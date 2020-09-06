@@ -27,7 +27,7 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         self.dns_port = dns_port
         self.scheme = scheme
         self.session = requests.Session()
-        self.base_url = '{}://{}:{}/{}'.format(scheme, host, port, self.api_version)
+        self.base_url = f'{scheme}://{host}:{port}/{self.api_version}'
 
     def register_service(self, name: str,
                          service_id: str = None,
@@ -40,7 +40,7 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         if check is not None:
             args['replace-existing-checks'] = 'true'
         if len(args) > 0:
-            api_path = '{}?{}'.format(api_path, urlencode(args))
+            api_path = f'{api_path}?{urlencode(args)}'
 
         data = {
             'Name': name,
@@ -50,7 +50,7 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
             'Port': port,
             'Check': check
         }
-        url = '{}{}'.format(self.base_url, api_path)
+        url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.put(url, json=data)
         except Exception as e:
@@ -59,8 +59,8 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
             raise ConsulClientError(resp.text)
 
     def deregister_service(self, service_id: str):
-        api_path = '/agent/service/deregister/{}'.format(service_id)
-        url = '{}{}'.format(self.base_url, api_path)
+        api_path = f'/agent/service/deregister/{service_id}'
+        url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.put(url)
         except Exception as e:
@@ -69,8 +69,8 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
             raise ConsulClientError(resp.text)
 
     def get_service_by_id(self, service_id: str):
-        api_path = '/agent/service/{}'.format(service_id)
-        url = '{}{}'.format(self.base_url, api_path)
+        api_path = f'/agent/service/{service_id}'
+        url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.get(url)
         except Exception as e:
@@ -87,8 +87,8 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
                 'DeregisterCriticalServiceAfter': deregister_after}
 
     def get_service_instances(self, service_name: str) -> List[ServiceInstance]:
-        api_path = '/agent/health/service/name/{}'.format(service_name)
-        url = '{}{}'.format(self.base_url, api_path)
+        api_path = f'/agent/health/service/name/{service_name}'
+        url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.get(url)
         except Exception as e:
@@ -124,5 +124,5 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
 
     def reconstruct_url(self, service_instance: ServiceInstance, original_url: str) -> str:
         result = urlsplit(original_url)
-        result = result._replace(netloc='{}:{}'.format(service_instance.host, service_instance.port))
+        result = result._replace(netloc=f'{service_instance.host}:{service_instance.port}')
         return urlunsplit(result)

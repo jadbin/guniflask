@@ -21,7 +21,7 @@ class ServiceLock:
             return True
 
         temp_dir = join(tempfile.gettempdir(),
-                        'guniflask.{}'.format(getpass.getuser()),
+                        f'guniflask.{getpass.getuser()}',
                         self.__class__.__name__)
         if not exists(temp_dir):
             os.makedirs(temp_dir, exist_ok=True)
@@ -35,7 +35,7 @@ class ServiceLock:
         return True
 
     def _generate_instance_id(self) -> str:
-        return '{}.{}.lock'.format(settings['project_name'], settings['port'])
+        return f'{settings["project_name"]}.{settings["port"]}.lock'
 
     def release(self):
         instance_id = self._generate_instance_id()

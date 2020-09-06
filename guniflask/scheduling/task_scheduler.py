@@ -41,7 +41,7 @@ class DefaultTaskScheduler(TaskScheduler, SmartInitializingSingleton, Disposable
     def schedule_with_cron(self, task, cron: str, start_time: dt.datetime = None):
         values = cron.split()
         if len(values) != 5:
-            raise ValueError('Wrong number of fields: got {}, expected 5'.format(len(values)))
+            raise ValueError(f'Wrong number of fields: got {len(values)}, expected 5')
         cron_trigger = CronTrigger(minute=values[0], hour=values[1], day=values[2], month=values[3],
                                    day_of_week=values[4], start_date=start_time)
         self._scheduler.add_job(task, trigger=cron_trigger)

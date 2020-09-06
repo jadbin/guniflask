@@ -36,6 +36,6 @@ class PasswordTokenGranter(AbstractTokenGranter):
         except BadCredentialsError as e:
             raise InvalidGrantError(e)
         if user_auth is None or not user_auth.is_authenticated:
-            raise InvalidGrantError('Could not authenticate user: {}'.format(username))
+            raise InvalidGrantError(f'Could not authenticate user: {username}')
         oauth2_request = self.request_factory.create_oauth2_request_from_token_request(token_request, client)
         return OAuth2Authentication(oauth2_request, user_auth)

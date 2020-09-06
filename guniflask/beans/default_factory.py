@@ -172,7 +172,7 @@ class DefaultBeanFactory(AbstractBeanFactory, BeanDefinitionRegistry):
         try:
             bean = self._constructor_resolver.instantiate(func)
         except Exception as e:
-            raise BeanCreationError(bean_name, message='Cannot create bean named "{}"\n{}'.format(bean_name, e))
+            raise BeanCreationError(bean_name, message=f'Cannot create bean named "{bean_name}"\n{e}')
         return bean
 
     def _resolve_bean_type(self, bean_name: str, bean_definition: BeanDefinition) -> type:
@@ -250,7 +250,7 @@ class DefaultBeanFactory(AbstractBeanFactory, BeanDefinitionRegistry):
         old_bean_definition = self._bean_definition_map.get(bean_name)
         if old_bean_definition is not None:
             if not self.is_allow_bean_definition_overriding:
-                raise BeanDefinitionStoreError('A bean named "{}" is already bound'.format(bean_name))
+                raise BeanDefinitionStoreError(f'A bean named "{bean_name}" is already bound')
         self._bean_definition_map[bean_name] = bean_definition
 
     def get_bean_definition(self, bean_name: str) -> BeanDefinition:
