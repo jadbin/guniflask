@@ -31,7 +31,7 @@ class TokenStore(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def store_refresh_token(self, refresh_token: str, authentication: OAuth2Authentication):
+    def store_refresh_token(self, refresh_token: OAuth2RefreshToken, authentication: OAuth2Authentication):
         pass
 
     @abstractmethod
