@@ -1,31 +1,14 @@
 # coding=utf-8
 
-from importlib import import_module
 from typing import get_type_hints, List, Set, Any, Mapping, MutableMapping, Optional
 import datetime as dt
 import inspect
 from collections import OrderedDict
 
-
-def load_object(path):
-    if isinstance(path, str):
-        dot = path.rindex('.')
-        module, name = path[:dot], path[dot + 1:]
-        mod = import_module(module)
-        return getattr(mod, name)
-    return path
+from .datatime import string_to_datetime
 
 
-def string_to_datetime(s):
-    if isinstance(s, int):
-        return dt.datetime.fromtimestamp(s, tz=dt.timezone.utc).astimezone()
-    elif isinstance(s, str):
-        if 'GMT' in s:
-            return dt.datetime.strptime(s, '%a, %d %b %Y %H:%M:%S GMT').replace(tzinfo=dt.timezone.utc).astimezone()
-    return s
-
-
-def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
+def map_object(source, dtype: Any = None, target=None) -> Any:
     if source is None:
         return
     if isinstance(source, Mapping):
@@ -50,7 +33,7 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
                 prop = getattr(target, key, None)
                 prop_type = type_hints.get(key)
 
-                prop_value = instantiate_from_json(value, dtype=prop_type, target=prop)
+                prop_value = map_object(value, dtype=prop_type, target=prop)
                 if prop_value is not None:
                     setattr(target, key, prop_value)
 
@@ -74,7 +57,7 @@ def instantiate_from_json(source, dtype: Any = None, target=None) -> Any:
 
         result = []
         for v in source:
-            result.append(instantiate_from_json(v, dtype=etype))
+            result.append(map_object(v, dtype=etype))
         if collection_type is not None:
             result = collection_type(result)
         return result

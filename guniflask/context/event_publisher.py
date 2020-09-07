@@ -5,7 +5,7 @@ from typing import Type
 from guniflask.beans.factory import BeanFactory
 from guniflask.context.event import ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.utils.instantiation import inspect_args
+from guniflask.utils.inspect import inspect_args
 
 
 class ApplicationEventPublisher:

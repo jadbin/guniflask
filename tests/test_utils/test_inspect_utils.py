@@ -2,7 +2,7 @@
 
 from typing import List, Set
 
-from guniflask.utils.instantiation import instantiate_from_json
+from guniflask.utils.inspect import map_object
 
 
 class Person:
@@ -26,9 +26,9 @@ class Student(Person):
 
 
 def test_instantiate_from_json():
-    assert instantiate_from_json('1', dtype=int) == 1
-    assert instantiate_from_json([1, 2, 3]) == [1, 2, 3]
-    assert instantiate_from_json({'key': 'value'}) == {'key': 'value'}
+    assert map_object('1', dtype=int) == 1
+    assert map_object([1, 2, 3]) == [1, 2, 3]
+    assert map_object({'key': 'value'}) == {'key': 'value'}
 
     student_data = dict(
         name='Xiao Ming',
@@ -53,7 +53,7 @@ def test_instantiate_from_json():
         )
     )
 
-    student = instantiate_from_json(student_data, Student)
+    student = map_object(student_data, Student)
 
     assert isinstance(student, Student)
     assert student.name == 'Xiao Ming'

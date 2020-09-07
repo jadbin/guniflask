@@ -5,7 +5,7 @@ from importlib import import_module
 from flask import Blueprint
 
 from guniflask.config.app_config import AppConfig
-from guniflask.utils.traversal import walk_modules
+from guniflask.utils.path import walk_modules
 from guniflask.web.context import WebApplicationContext
 
 

@@ -8,7 +8,7 @@ from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.context.annotation import Component
 from guniflask.context.annotation_config_utils import AnnotationConfigUtils
-from guniflask.utils.traversal import walk_modules
+from guniflask.utils.path import walk_modules
 from guniflask.context.bean_name_generator import AnnotationBeanNameGenerator
 from guniflask.context.condition_evaluator import ConditionEvaluator
 

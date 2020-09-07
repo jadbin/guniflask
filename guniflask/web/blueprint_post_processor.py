@@ -14,7 +14,7 @@ from guniflask.web.filter_annotation import FilterChain
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
-from guniflask.utils.instantiation import instantiate_from_json, inspect_args
+from guniflask.utils.inspect import map_object, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation
@@ -22,7 +22,7 @@ from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.web.filter_annotation import MethodFilter
-from guniflask.utils.instantiation import resolve_arg_type, ArgType
+from guniflask.utils.inspect import resolve_arg_type, ArgType
 
 
 class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFactoryAware):
@@ -166,7 +166,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
                 data = request.json
-                v = instantiate_from_json(data, dtype=p.dtype)
+                v = map_object(data, dtype=p.dtype)
                 if v is not None:
                     result[k] = v
             # FIXME: handle files, form, cookie, header, etc.
