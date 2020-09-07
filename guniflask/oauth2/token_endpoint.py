@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from flask import jsonify
+from flask import jsonify, request
 
 from guniflask.web.bind_annotation import blueprint, get_route, post_route
 from guniflask.oauth2.abstract_endpoint import AbstractEndpoint
@@ -35,7 +35,7 @@ class TokenEndpoint(AbstractEndpoint):
         client_id = self._get_client_id(auth)
         authenticated_client = self.client_details_service.load_client_details_by_client_id(client_id)
 
-        parameters = OAuth2Utils.get_request_parameters()
+        parameters = dict(request.args)
         token_request = self.oauth2_request_factory.create_token_request(parameters, authenticated_client)
         if client_id:
             if client_id != token_request.client_id:

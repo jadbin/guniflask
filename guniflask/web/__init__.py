@@ -22,3 +22,4 @@ from .param_annotation import RequestBody
 from .param_annotation import ContextParam
 from .request_filter import RequestFilter
 from .request_filter import RequestFilterChain
+from .user_context import current_user
