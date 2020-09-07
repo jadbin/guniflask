@@ -14,7 +14,8 @@ from guniflask.web.filter_annotation import FilterChain
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
-from guniflask.utils.inspect import map_object, inspect_args
+from guniflask.utils.inspect import inspect_args
+from guniflask.utils.request import map_object
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation

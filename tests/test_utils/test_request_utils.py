@@ -2,7 +2,7 @@
 
 from typing import List, Set
 
-from guniflask.utils.inspect import map_object
+from guniflask.utils.request import map_object
 
 
 class Person:
