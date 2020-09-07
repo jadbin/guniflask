@@ -16,7 +16,7 @@ from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.instantiation import instantiate_from_json, inspect_args
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
-    RequestParamInfo, PathVariableInfo, RequestBodyInfo, ContextParamInfo
+    RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
@@ -164,16 +164,12 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
 
                     if v is not None:
                         result[k] = v
-            elif isinstance(p, ContextParamInfo):
-                name = p.name or k
-                if name in g:
-                    result[k] = g.get(name)
             elif isinstance(p, RequestBodyInfo):
-                # FIXME: handle files, multi-parts, etc.
                 data = request.json
                 v = instantiate_from_json(data, dtype=p.dtype)
                 if v is not None:
                     result[k] = v
+            # FIXME: handle files, form, cookie, header, etc.
 
             if k not in result:
                 if p.required:

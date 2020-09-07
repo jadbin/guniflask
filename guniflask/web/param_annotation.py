@@ -76,19 +76,73 @@ class RequestBodyInfo(FieldInfo):
     pass
 
 
-def ContextParam(name: str = None,
-                 default: Any = None,
-                 dtype: type = None,
-                 description: str = None,
-                 required: bool = None,
-                 **extract: Any) -> Any:
-    return RequestParamInfo(name=name,
-                            default=default,
-                            dtype=dtype,
-                            description=description,
-                            required=required,
-                            **extract)
+def RequestHeader(name: str = None,
+                  default: Any = None,
+                  dtype: type = None,
+                  description: str = None,
+                  required: bool = None,
+                  **extract: Any) -> Any:
+    return RequestHeaderInfo(name=name,
+                             default=default,
+                             dtype=dtype,
+                             description=description,
+                             required=required,
+                             **extract)
 
 
-class ContextParamInfo(FieldInfo):
+class RequestHeaderInfo(FieldInfo):
+    pass
+
+
+def CookieValue(name: str = None,
+                default: Any = None,
+                dtype: type = None,
+                description: str = None,
+                required: bool = None,
+                **extract: Any) -> Any:
+    return CookieValueInfo(name=name,
+                           default=default,
+                           dtype=dtype,
+                           description=description,
+                           required=required,
+                           **extract)
+
+
+class CookieValueInfo(FieldInfo):
+    pass
+
+
+def FormValue(name: str = None,
+              default: Any = None,
+              dtype: type = None,
+              description: str = None,
+              required: bool = None,
+              **extract: Any) -> Any:
+    return FormValueInfo(name=name,
+                         default=default,
+                         dtype=dtype,
+                         description=description,
+                         required=required,
+                         **extract)
+
+
+class FormValueInfo(FieldInfo):
+    pass
+
+
+def FilePart(name: str = None,
+             default: Any = None,
+             dtype: type = None,
+             description: str = None,
+             required: bool = None,
+             **extract: Any) -> Any:
+    return FilePartInfo(name=name,
+                        default=default,
+                        dtype=dtype,
+                        description=description,
+                        required=required,
+                        **extract)
+
+
+class FilePartInfo(FieldInfo):
     pass
