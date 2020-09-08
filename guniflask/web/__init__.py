@@ -9,7 +9,6 @@ from .bind_annotation import patch_route
 from .bind_annotation import delete_route
 from .context import WebApplicationContext
 from .cors import CorsFilter
-from .filter_annotation import filter_chain
 from .filter_annotation import before_request
 from .filter_annotation import after_request
 from .filter_annotation import app_before_request

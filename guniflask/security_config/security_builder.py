@@ -14,7 +14,7 @@ class AbstractSecurityBuilder(SecurityBuilder, metaclass=ABCMeta):
     def __init__(self):
         self._object: Any = None
 
-    def build(self):
+    def build(self) -> Any:
         self._object = self._do_build()
         return self._object
 

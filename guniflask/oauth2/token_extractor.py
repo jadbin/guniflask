@@ -36,3 +36,4 @@ class BearerTokenExtractor(TokenExtractor):
         token = request.args.get(OAuth2AccessToken.ACCESS_TOKEN)
         if token is not None:
             g.setdefault(OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE, OAuth2AccessToken.BEARER_TYPE)
+            return token

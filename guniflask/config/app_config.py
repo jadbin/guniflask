@@ -20,7 +20,7 @@ class AppConfig:
         self.app = app
 
     def init_app(self):
-        self.app.extensions['settings'] = self.settings
+        self.app.settings = self.settings
         for k, v in self.settings.items():
             if k.isupper():
                 self.app.config[k] = v
@@ -151,4 +151,4 @@ def getlist(v):
     return list(v)
 
 
-settings: Union[LocalProxy, Settings] = LocalProxy(lambda: current_app.extensions['settings'])
+settings: Union[LocalProxy, Settings] = LocalProxy(lambda: current_app.settings)

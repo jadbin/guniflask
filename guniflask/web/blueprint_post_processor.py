@@ -2,15 +2,11 @@
 
 from functools import update_wrapper
 import inspect
-from typing import List
 
-from flask import Blueprint as FlaskBlueprint, request, current_app, g
+from flask import Blueprint as FlaskBlueprint, request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
-from guniflask.web.request_filter import RequestFilter, RequestFilterChain
-from guniflask.beans.constructor_resolver import ConstructorResolver
-from guniflask.web.filter_annotation import FilterChain
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
@@ -19,21 +15,16 @@ from guniflask.utils.request import map_object
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
     RequestParamInfo, PathVariableInfo, RequestBodyInfo
 from guniflask.web import param_annotation
-from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
-from guniflask.web.filter_annotation import MethodFilter
+from guniflask.web.filter_annotation import MethodDefFilter
 from guniflask.utils.inspect import resolve_arg_type, ArgType
 
 
-class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFactoryAware):
+class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
     def __init__(self):
         self.blueprints = []
-        self._filter_chain_resolver: FilterChainResolver = None
-        self._method_filter_resolver = MethodFilterResolver()
-
-    def set_bean_factory(self, bean_factory: BeanFactory):
-        self._filter_chain_resolver = FilterChainResolver(bean_factory)
+        self._method_def_filter_resolver = MethodDefFilterResolver()
 
     def on_application_event(self, application_event: ApplicationEvent):
         if isinstance(application_event, ContextRefreshedEvent):
@@ -56,9 +47,8 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                                    endpoint=method.__name__,
                                    view_func=self.wrap_view_func(a['rule'], method),
                                    **rule_options)
-                self._method_filter_resolver.resolve(b, method)
+                self._method_def_filter_resolver.resolve(b, method)
             self.blueprints.append(b)
-            self._filter_chain_resolver.add_blueprint(bean_type)
         return bean
 
     def wrap_view_func(self, rule: str, method):
@@ -71,8 +61,6 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
         return update_wrapper(wrapper, method)
 
     def _register_blueprints(self):
-        self._filter_chain_resolver.build()
-
         for b in self.blueprints:
             current_app.register_blueprint(b)
 
@@ -199,47 +187,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener, BeanFa
                 pass
 
 
-class FilterChainResolver:
-    def __init__(self, bean_factory: BeanFactory):
-        self._constructor_resolver = ConstructorResolver(bean_factory)
-        self._blueprints = []
-
-    def add_blueprint(self, bean_type):
-        self._blueprints.append(bean_type)
-
-    def build(self):
-        for bean_type in self._blueprints:
-            filter_chain_annotation = AnnotationUtils.get_annotation(bean_type, FilterChain)
-            if filter_chain_annotation is not None:
-                request_filters = self._resolve_request_filters(filter_chain_annotation['values'])
-                if request_filters:
-                    chain = RequestFilterChain()
-                    for f in request_filters:
-                        chain.add_request_filter(f)
-
-                    blueprint_annotation = AnnotationUtils.get_annotation(bean_type, Blueprint)
-                    b = blueprint_annotation['blueprint']
-                    b.before_request(chain.before_request)
-                    b.after_request(chain.after_request)
-
-    def _resolve_request_filters(self, values) -> List[RequestFilter]:
-        if not hasattr(values, '__iter__'):
-            values = [values]
-        result = []
-        for v in values:
-            if isinstance(v, RequestFilter):
-                result.append(v)
-            else:
-                f = self._constructor_resolver.instantiate(v)
-                assert isinstance(f, RequestFilter), 'Required a request filter, ' \
-                                                     f'got: {type(RequestFilter).__name__}'
-        return result
-
-
-class MethodFilterResolver:
+class MethodDefFilterResolver:
 
     def resolve(self, blueprint, method):
-        a = AnnotationUtils.get_annotation(method, MethodFilter)
+        a = AnnotationUtils.get_annotation(method, MethodDefFilter)
         if a is None:
             return
         for v in a['values']:

@@ -3,9 +3,6 @@
 import datetime as dt
 import uuid
 
-from flask import current_app
-from werkzeug.local import LocalProxy
-
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.errors import InvalidTokenError
@@ -14,8 +11,6 @@ from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessToke
     UserAuthenticationConverter
 from guniflask.security.user import User
 from guniflask.security.jwt import JwtHelper
-
-jwt_manager = LocalProxy(lambda: current_app.extensions['jwt_manager'])
 
 
 class JwtManager(AuthenticationManager):
@@ -35,9 +30,6 @@ class JwtManager(AuthenticationManager):
         self.refresh_token_expires_in = refresh_token_expires_in
 
         self.token_converter = JwtAccessTokenConverter()
-
-        app = current_app._get_current_object()
-        app.extensions['jwt_manager'] = self
 
     def create_access_token(self, authorities=None, username=None, **user_details) -> str:
         expires_in = self.access_token_expires_in

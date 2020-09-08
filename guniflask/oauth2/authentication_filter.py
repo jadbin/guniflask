@@ -11,8 +11,8 @@ from guniflask.security.authentication_token import AuthenticationToken
 
 
 class OAuth2AuthenticationFilter(RequestFilter):
-    def __init__(self):
-        self.authentication_manager: AuthenticationManager = None
+    def __init__(self, authentication_manager: AuthenticationManager):
+        self.authentication_manager = authentication_manager
         self.token_extractor: TokenExtractor = BearerTokenExtractor()
 
     def before_request(self):

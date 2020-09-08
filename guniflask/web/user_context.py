@@ -12,22 +12,26 @@ from guniflask.security.user import User
 from guniflask.security.user_details import UserDetails
 
 
-def _load_user() -> Optional[User]:
-    ctx = _request_ctx_stack.top
-    if ctx is not None:
-        if not hasattr(ctx, 'user'):
-            user = None
-            auth = SecurityContext.get_authentication()
-            if auth is not None:
-                if isinstance(auth, OAuth2Authentication):
-                    auth = auth.user_authentication
-                if isinstance(auth, UserAuthentication):
-                    if isinstance(auth.principal, UserDetails):
-                        user = auth.principal
-                    else:
-                        user = User(username=auth.name, authorities=auth.authorities)
-            ctx.user = user
-        return ctx.user
+class UserContext:
+    USER = '__user'
+
+    @classmethod
+    def get_user(cls) -> Optional[User]:
+        ctx = _request_ctx_stack.top
+        if ctx is not None:
+            if not hasattr(ctx, cls.USER):
+                user = None
+                auth = SecurityContext.get_authentication()
+                if auth is not None:
+                    if isinstance(auth, OAuth2Authentication):
+                        auth = auth.user_authentication
+                    if isinstance(auth, UserAuthentication):
+                        if isinstance(auth.principal, UserDetails):
+                            user = auth.principal
+                        else:
+                            user = User(username=auth.name, authorities=auth.authorities)
+                setattr(ctx, cls.USER, user)
+            return getattr(ctx, cls.USER)
 
 
-current_user = LocalProxy(_load_user)
+current_user = LocalProxy(UserContext.get_user)

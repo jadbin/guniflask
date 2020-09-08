@@ -1,7 +1,5 @@
 # coding=utf-8
 
-from abc import ABCMeta, abstractmethod
-
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.token_service import ResourceServerTokenServices, DefaultTokenServices
 from guniflask.oauth2.token_store import TokenStore
@@ -49,8 +47,7 @@ class ResourceServerSecurityConfigurer(SecurityConfigurer):
 
     def configure(self, http: HttpSecurity):
         authentication_manager = self._get_oauth2_authentication_manager()
-        authentication_filter = OAuth2AuthenticationFilter()
-        authentication_filter.authentication_manager = authentication_manager
+        authentication_filter = OAuth2AuthenticationFilter(authentication_manager)
         if self._token_extractor is not None:
             authentication_filter.token_extractor = self._token_extractor
         http.add_request_filter(authentication_filter)
