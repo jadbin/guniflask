@@ -42,8 +42,8 @@ install_requires = [
 
 
 def main():
-    if sys.version_info < (3, 7):
-        raise RuntimeError("The minimal supported Python version is 3.7")
+    if sys.version_info < (3, 6):
+        raise RuntimeError("The minimal supported Python version is 3.6")
 
     setup(
         name="guniflask",
@@ -66,8 +66,8 @@ def main():
             "Intended Audience :: Developers",
             "Programming Language :: Python",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.7",
-            "Topic :: Software Development :: Libraries :: Python Modules"
+            "Topic :: Software Development :: Libraries :: Application Frameworks",
+            "Topic :: Software Development :: Libraries :: Python Modules",
         ]
     )
 
