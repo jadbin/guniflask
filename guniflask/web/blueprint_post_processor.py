@@ -12,8 +12,8 @@ from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.inspect import inspect_args
 from guniflask.utils.request import map_object
-from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, \
-    RequestParamInfo, PathVariableInfo, RequestBodyInfo
+from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
+    RequestBodyInfo, FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo, RequestBody
 from guniflask.web import param_annotation
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
@@ -98,7 +98,15 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 if arg in path_variable_type:
                     annotation = PathVariable(dtype=None if arg in type_hints else path_variable_type[arg])
                 else:
-                    annotation = RequestParam()
+                    if arg in type_hints:
+                        arg_type = type_hints[arg]
+                        argc, etype = resolve_arg_type(arg_type)
+                        if argc is ArgType.DICT:
+                            annotation = RequestBody()
+                        else:
+                            annotation = RequestParam()
+                    else:
+                        annotation = RequestParam()
                 annotation.default = default
                 default = annotation
             if arg in type_hints and default.dtype is None:
@@ -145,12 +153,11 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                             for i in range(len(v)):
                                 v[i] = self._read_value(v[i], etype)
                     elif argc is ArgType.SINGLE:
-                        v = request.args[name]
+                        v = request.args.get(name)
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
                     else:
-                        raise ValueError(f'Unsupported request param type: {p.dtype}')
-
+                        raise BadRequest(f'Unsupported type of parameter "{name}": {p.dtype}')
                     if v is not None:
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
@@ -158,7 +165,52 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 v = map_object(data, dtype=p.dtype)
                 if v is not None:
                     result[k] = v
-            # FIXME: handle files, form, cookie, header, etc.
+            elif isinstance(p, FilePartInfo):
+                file = request.files.get(name)
+                if file is not None:
+                    if p.dtype == bytes:
+                        result[k] = file.read()
+                    else:
+                        result[k] = file
+            elif isinstance(p, FormValueInfo):
+                argc, etype = resolve_arg_type(p.dtype)
+                if argc is ArgType.LIST:
+                    v = request.form.getlist(name)
+                    if etype:
+                        for i in range(len(v)):
+                            v[i] = self._read_value(v[i], etype)
+                elif argc is ArgType.SINGLE:
+                    v = request.form.get(name)
+                    if p.dtype is not None:
+                        v = self._read_value(v, p.dtype)
+                else:
+                    raise BadRequest(f'Unsupported type of parameter "{name}": {p.dtype}')
+                if v is not None:
+                    result[k] = v
+            elif isinstance(p, RequestHeaderInfo):
+                argc, etype = resolve_arg_type(p.dtype)
+                if argc is ArgType.LIST:
+                    v = request.headers.getlist(name)
+                    if etype:
+                        for i in range(len(v)):
+                            v[i] = self._read_value(v[i], etype)
+                elif argc is ArgType.SINGLE:
+                    v = request.headers.get(name)
+                    if p.dtype is not None:
+                        v = self._read_value(v, p.dtype)
+                else:
+                    raise BadRequest(f'Unsupported type of header "{name}": {p.dtype}')
+                if v is not None:
+                    result[k] = v
+                v = self._read_value(request.headers.get(name), p.dtype)
+                if v is not None:
+                    result[k] = v
+            elif isinstance(p, CookieValueInfo):
+                v = request.cookies.get(name)
+                if v is not None:
+                    if p.dtype is not None:
+                        v = self._read_value(v, p.dtype)
+                    result[k] = v
 
             if k not in result:
                 if p.required:
@@ -184,7 +236,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             try:
                 return dtype(v)
             except (ValueError, TypeError):
-                pass
+                raise BadRequest(f'The expected type is "{dtype.__name__}": {v}')
 
 
 class MethodDefFilterResolver:
