@@ -3,6 +3,17 @@
 Changelog
 =========
 
+0.9.0 (2020-09-??)
+------------------
+
+- 提供基于类型和默认值为视图函数注入request参数（query、body、file、form、header、cookie）的机制
+- 通过.env文件设置环境变量，移除原有和环境变量配置相关的shell文件
+- 新增 ``@condition_on_setting`` ，基于配置项是否存在控制是否初始化实例
+- 移除initdb命令
+- table2model取消了只支持MySQL的限制
+- 在gunicorn配置中放弃使用gevent worker，改为使用 ``uvicorn.workers.UvicornWorker``
+- 支持websocket
+
 0.8.9 (2020-08-20)
 ------------------
 

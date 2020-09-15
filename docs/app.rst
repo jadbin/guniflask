@@ -23,3 +23,5 @@ init_app
 
     :param app: Flask app
     :param settings: 项目配置
+
+此函数可用于初始化Flask和及其扩展。

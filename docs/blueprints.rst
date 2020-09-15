@@ -27,7 +27,7 @@ Using @blueprint
 
 
     @blueprint('/api')
-    class ExampleController:
+    class MathController:
         def __init__(self):
             self.add_service = lambda a, b: a + b
 
