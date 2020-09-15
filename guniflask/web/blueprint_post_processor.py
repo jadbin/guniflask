@@ -6,10 +6,11 @@ import inspect
 from flask import Blueprint as FlaskBlueprint, request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
+from starlette.websockets import WebSocketDisconnect
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.web.bind_annotation import Blueprint, Route
+from guniflask.web.bind_annotation import Blueprint, Route, WebSocket
 from guniflask.utils.inspect import inspect_args
 from guniflask.utils.request import map_object
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
@@ -24,7 +25,6 @@ from guniflask.utils.inspect import resolve_arg_type, ArgType
 class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
     def __init__(self):
         self.blueprints = []
-        self._method_def_filter_resolver = MethodDefFilterResolver()
 
     def on_application_event(self, application_event: ApplicationEvent):
         if isinstance(application_event, ContextRefreshedEvent):
@@ -40,18 +40,24 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             annotation['blueprint'] = b
             for m in dir(bean):
                 method = getattr(bean, m)
-                a = AnnotationUtils.get_annotation(method, Route)
-                if a is not None:
-                    rule_options = a['options'] or {}
-                    b.add_url_rule(a['rule'],
-                                   endpoint=method.__name__,
-                                   view_func=self.wrap_view_func(a['rule'], method),
-                                   **rule_options)
-                self._method_def_filter_resolver.resolve(b, method)
+                self._resolve_route(b, method)
+                self._resolve_websocket_route(b, method)
+                self._resolve_method_def_filter(b, method)
             self.blueprints.append(b)
         return bean
 
-    def wrap_view_func(self, rule: str, method):
+    def _resolve_route(self, blueprint: FlaskBlueprint, method):
+        a = AnnotationUtils.get_annotation(method, Route)
+        if a is not None:
+            rule_options = a['options'] or {}
+            blueprint.add_url_rule(
+                a['rule'],
+                endpoint=method.__name__,
+                view_func=self._wrap_view_func(a['rule'], method),
+                **rule_options
+            )
+
+    def _wrap_view_func(self, rule: str, method):
         params, param_names = self._resolve_method_parameters(rule, method)
 
         def wrapper(**kwargs):
@@ -59,6 +65,38 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             return method(**method_kwargs)
 
         return update_wrapper(wrapper, method)
+
+    def _resolve_websocket_route(self, blueprint: FlaskBlueprint, method):
+        a = AnnotationUtils.get_annotation(method, WebSocket)
+        if a is not None:
+            rule = a['rule'] or '/'
+            rule_prefix = blueprint.url_prefix or '/'
+            rule = '/'.join((rule_prefix.rstrip('/'), rule.lstrip('/')))
+            current_app.asgi_app.add_websocket_route(rule, self._wrap_websocket_func(method))
+
+    def _wrap_websocket_func(self, method):
+        app = current_app._get_current_object()
+
+        async def wrapper(*args, **kwargs):
+            with app.app_context():
+                try:
+                    return await method(*args, **kwargs)
+                except WebSocketDisconnect:
+                    pass
+
+        return update_wrapper(wrapper, method)
+
+    def _resolve_method_def_filter(self, blueprint, method):
+        a = AnnotationUtils.get_annotation(method, MethodDefFilter)
+        if a is None:
+            return
+        for v in a['values']:
+            name = v['name']
+            args = v['args']
+            if args is None:
+                getattr(blueprint, name)(method)
+            else:
+                getattr(blueprint, name)(*args)(method)
 
     def _register_blueprints(self):
         for b in self.blueprints:
@@ -237,18 +275,3 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 return dtype(v)
             except (ValueError, TypeError):
                 raise BadRequest(f'The expected type is "{dtype.__name__}": {v}')
-
-
-class MethodDefFilterResolver:
-
-    def resolve(self, blueprint, method):
-        a = AnnotationUtils.get_annotation(method, MethodDefFilter)
-        if a is None:
-            return
-        for v in a['values']:
-            name = v['name']
-            args = v['args']
-            if args is None:
-                getattr(blueprint, name)(method)
-            else:
-                getattr(blueprint, name)(*args)(method)

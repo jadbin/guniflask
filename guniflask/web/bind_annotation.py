@@ -7,7 +7,7 @@ from guniflask.context.annotation import Component
 
 
 class Blueprint(Component):
-    def __init__(self, url_prefix=None, **options):
+    def __init__(self, url_prefix: str = None, **options):
         super().__init__()
         self['url_prefix'] = url_prefix
         self['options'] = options
@@ -26,7 +26,7 @@ def blueprint(url_prefix: str = None, **options):
 
 
 class Route(Annotation):
-    def __init__(self, rule=None, **options):
+    def __init__(self, rule: str = None, **options):
         super().__init__(rule=rule, options=options)
 
 
@@ -35,7 +35,7 @@ def route(rule: str = None, **options):
         AnnotationUtils.add_annotation(func, Route(rule=rule, **options))
         return func
 
-    if inspect.isclass(rule) or inspect.isfunction(rule):
+    if inspect.isfunction(rule) or inspect.isclass(rule):
         f = rule
         rule = None
         return wrap_func(f)
@@ -65,3 +65,20 @@ def patch_route(rule: str = None, **options):
 def delete_route(rule: str = None, **options):
     options['methods'] = ['DELETE']
     return route(rule=rule, **options)
+
+
+class WebSocket(Annotation):
+    def __init__(self, rule: str = None):
+        super().__init__(rule=rule)
+
+
+def websocket(rule: str = None):
+    def wrap_func(func):
+        AnnotationUtils.add_annotation(func, WebSocket(rule=rule))
+        return func
+
+    if inspect.isfunction(rule) or inspect.isclass(rule):
+        f = rule
+        rule = None
+        return wrap_func(f)
+    return wrap_func
