@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import inspect
-from typing import Type, Collection, Union
+from typing import Type, Collection, Union, Any
 
 from guniflask.annotation import Annotation, AnnotationUtils, AnnotationMetadata
 from guniflask.context.condition import Condition, ConditionContext
@@ -83,15 +83,19 @@ def conditional(condition: Union[Type[Condition], Condition]):
 
 
 class SettingCondition(Condition):
-    def __init__(self, name: str):
+    def __init__(self, name: str, value: Any = None):
         self.name = name
+        self.value = value
 
     def matches(self, context: ConditionContext, metadata: AnnotationMetadata) -> bool:
-        return settings.get_by_prefix(self.name) is not None
+        v = settings.get_by_prefix(self.name)
+        if self.value is None:
+            return v is not None
+        return v == self.value
 
 
-def condition_on_setting(name: str):
-    return conditional(SettingCondition(name))
+def condition_on_setting(name: str, value: Any = None):
+    return conditional(SettingCondition(name, value=value))
 
 
 class Repository(Component):
