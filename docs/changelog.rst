@@ -3,6 +3,11 @@
 Changelog
 =========
 
+0.9.2 (2020-09-17)
+------------------
+
+- 新增UvicornWorker解决uvicorn提供的worker中存在的问题：(1) debug模式下worker无法reload；(2) 父进程退出后worker没有退出
+
 0.9.1 (2020-09-16)
 ------------------
 
