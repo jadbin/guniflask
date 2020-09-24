@@ -26,17 +26,16 @@ gunicorn详细的配置项可参考gunicorn文档: http://docs.gunicorn.org/en/s
 
 - daemon: ``True``
 - workers: ``os.cpu_count()``
-- worker_class: ``'gevent'``
-- pidfile: 默认存放在根目录下的 .pid 文件夹中
-- accesslog: 默认存放在根目录下的 .log 文件夹中
-- errorlog: 默认存放在根目录下的 .log 文件夹中
+- pidfile: 默认存放在项目根目录下的 .pid 文件夹中
+- accesslog: 默认存放在项目根目录下的 .log 文件夹中
+- errorlog: 默认存放在项目根目录下的 .log 文件夹中
 
 Application Configuration
 -------------------------
 
-我们在 conf/foo.py 中通过定义变量的方式添加配置项，包括用户自定义配置。
+我们在 conf/app.env 中定义应用启动时加载的环境变量。
 
-有关配置项的获取、内置配置项等详细信息可参考 :ref:`settings` 。
+我们在 conf/foo.py 中通过定义变量的方式添加配置项，包括系统功能配置、用户自定义配置等。有关配置项的获取、内置配置项等详细信息可参考 :ref:`settings` 。
 
 .. _profile:
 
@@ -49,11 +48,14 @@ Multiple Profiles
 我们通过引入profile的概念来区别不同的运行环境。
 例如，我们设定两个profile——prod和dev，分别对应生产环境和开发环境。
 那么我们可以在 conf/foo_prod.py 中声明生产环境下的项目配置，在 conf/foo_dev.py 中声明开发环境下的项目配置。
-gunicorn配置同样可以用profile后缀加以区分， conf 目录下配置文件的组织形式如下:
+环境变量配置和gunicorn配置同样可以用profile后缀加以区分， conf 目录下配置文件的组织形式如下:
 
 .. code-block:: text
 
     conf/
+        app.env
+        app_dev.env
+        app_prod.env
         foo.py
         foo_dev.py
         foo_prod.py
