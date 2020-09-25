@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.config.app_config import Settings
+from guniflask.config.app_settings import Settings
 
 
 def test_get():

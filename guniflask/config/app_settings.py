@@ -11,21 +11,6 @@ from werkzeug.local import LocalProxy
 log = logging.getLogger(__name__)
 
 
-class AppConfig:
-    def __init__(self, app, app_settings=None):
-        if app_settings is None:
-            self.settings = Settings()
-        if not isinstance(app_settings, Settings):
-            self.settings = Settings(app_settings)
-        self.app = app
-
-    def init_app(self):
-        self.app.settings = self.settings
-        for k, v in self.settings.items():
-            if k.isupper():
-                self.app.config[k] = v
-
-
 class Settings(MutableMapping):
     def __init__(self, __values=None, **kwargs):
         self.attributes = {}

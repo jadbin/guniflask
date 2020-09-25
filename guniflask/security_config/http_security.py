@@ -16,7 +16,7 @@ from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.context.bean_context import BeanContext
 from guniflask.annotation import AnnotationUtils
 from guniflask.web.bind_annotation import Blueprint
-from guniflask.config.app_config import settings
+from guniflask.config.app_settings import settings
 
 
 class HttpSecurity(HttpSecurityBuilder):

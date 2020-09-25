@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
-from guniflask.config.app_config import settings, Settings
+from guniflask.config.app_settings import settings, Settings
 from guniflask.utils.network import get_local_ip_address
 from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
 from guniflask.distributed.local_lock import ServiceLock

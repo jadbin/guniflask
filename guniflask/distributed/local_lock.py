@@ -6,7 +6,7 @@ from os.path import join, exists
 import fcntl
 import getpass
 
-from guniflask.config.app_config import settings
+from guniflask.config.app_settings import settings
 
 
 class ServiceLock:

@@ -1,3 +1,4 @@
 # coding=utf-8
 
-from .app_config import settings
+from .app_settings import settings
+from .app_settings import Settings
