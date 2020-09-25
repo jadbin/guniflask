@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.9.3 (2020-09-??)
+------------------
+
+- manage现在可以在任何路径下运行
+- debug模式下会融合对 ``reload_extra_files`` 的默认配置和自定义配置
+
 0.9.2 (2020-09-17)
 ------------------
 
@@ -110,7 +116,7 @@ Changelog
 - 对于guniflask的内置扩展功能提供更为统一的配置方式
 - 减少了initdb和table2model命令的参数，model所在路径的修改、多数据库相关配置等统一在 ``table2model_dest`` 中设置
 - 为避免歧义，@roles_required修改为@has_any_role，@authorities_required修改为@has_any_authority，同时提供@has_role和@has_authority
-- JwtManager创建access token时用户自定义字段会作为User的属性
+- JwtManager创建access token时对用户的自定义字段会作为User的属性
 - init命令将生成 foo/config 的目录，用于存放应用的配置
 - @global_singleton改为app级别的单例模式，当gunicorn启动多个worker时，只有一个worker下的单例会生效
 
@@ -188,7 +194,7 @@ Changelog
 0.3.0 (2018-10-24)
 ------------------
 
-- ``guniflask init`` 会将用户的选择保存在 .guniflask-init.json 中，再次使用该命令会直接使用保存的选择重新生成项目，如需重新进行选择可使用 ``guniflask init -f``
+- ``guniflask init`` 会将生成项目的选项保存在 .guniflask-init.json 中，再次使用该命令会直接使用保存的选择重新生成项目，如需重新进行选择可使用 ``guniflask init -f``
 - bin/manage.py 添加了默认环境变量的设置
 - 添加gunicorn默认配置 ``preload_app=True`` ，debug模式下自动设置 ``preload_app=False``
 - ``active_profiles`` 改为只能通过环境变量进行设置

@@ -18,7 +18,7 @@ Debug Mode
 
     export GUNIFLASK_DEBUG=1
 
-用户在代码中可以根据是否设置了 ``GUNIFLASK_DEBUG`` 环境变量来确定项目是否以debug模式启动。
+我们在代码中可以根据是否设置了 ``GUNIFLASK_DEBUG`` 环境变量来确定项目是否以debug模式启动。
 
 Debug Settings
 --------------
@@ -28,13 +28,13 @@ Debug Settings
 - accesslog : ``'-'``
 - errorlog : ``'-'``
 - loglevel : ``'debug'``
-- disable_redirect_access_to_syslog : ``True``
 - reload : ``True``
 - reload_extra_files : conf 文件夹下的所有文件
 - workers: ``1``
 - daemon: ``False``
 
-此时，用户在配置文件中对这些项的设定将不起作用。
+此时，我们在配置文件中对这些项的设定将不起作用。
+特别的，对于reload_extra_files会合并默认配置和自定义的配置。
 
 gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/stable/settings.html 。
 

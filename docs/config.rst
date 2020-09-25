@@ -35,7 +35,7 @@ Application Configuration
 
 我们在 conf/app.env 中定义应用启动时加载的环境变量。
 
-我们在 conf/foo.py 中通过定义变量的方式添加配置项，包括系统功能配置、用户自定义配置等。有关配置项的获取、内置配置项等详细信息可参考 :ref:`settings` 。
+我们在 conf/foo.py 中通过定义变量的方式添加配置项，包括系统功能配置、项目自定义配置等。有关配置项的获取、内置配置项等详细信息可参考 :ref:`settings` 。
 
 .. _profile:
 
