@@ -8,11 +8,13 @@ Changelog
 
 - manage现在可以在任何路径下运行
 - debug模式下会融合对 ``reload_extra_files`` 的默认配置和自定义配置
+- gunicorn配置恢复默认使用gevent worker，提供 ``uvicorn`` 选项代表使用 ``guniflask_cli.workers.UvicornWorker``
+- 新增guniflask.asgi配置项，用于配置是否开启ASGI模式（websocket功能需要开启ASGI模式）
 
 0.9.2 (2020-09-17)
 ------------------
 
-- 新增UvicornWorker解决uvicorn提供的worker中存在的问题：(1) debug模式下worker无法reload；(2) 父进程退出后worker没有退出
+- 新增 ``guniflask_cli.workers.UvicornWorker`` 解决uvicorn提供的worker中存在的问题：(1) debug模式下worker无法reload；(2) 父进程退出后worker没有退出
 
 0.9.1 (2020-09-16)
 ------------------
@@ -104,7 +106,7 @@ Changelog
 
 - 修复Python3.7下自动创建bean时的参数类型解析问题
 - 自动生成的model的添加继承 ``guniflask.orm.BaseModelMixin`` ，注入数据转换的方法，同时实现在不影响原有功能的前提下pycharm中输入类方法时能够看到提示。
-- 移除 ``guniflask.wrap_sqlalchemy_model`` 配置项
+- 移除guniflask.wrap_sqlalchemy_model配置项
 
 0.7.0 (2020-04-08)
 ------------------

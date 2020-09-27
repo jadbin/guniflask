@@ -72,7 +72,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             rule = a['rule'] or '/'
             rule_prefix = blueprint.url_prefix or '/'
             rule = '/'.join((rule_prefix.rstrip('/'), rule.lstrip('/')))
-            current_app.asgi_app.add_websocket_route(rule, self._wrap_websocket_func(method))
+            if hasattr(current_app, 'asgi_app'):
+                current_app.asgi_app.add_websocket_route(rule, self._wrap_websocket_func(method))
+            else:
+                raise RuntimeError('Only support websocket in ASGI mode')
 
     def _wrap_websocket_func(self, method):
         app = current_app._get_current_object()

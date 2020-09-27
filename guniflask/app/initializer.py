@@ -16,8 +16,13 @@ class AppInitializer:
             self.settings = Settings()
         if not isinstance(app_settings, Settings):
             self.settings = Settings(app_settings)
+        self.asgi = self.settings.get_by_prefix('guniflask.asgi')
 
     def init(self, with_context=True):
+        if self.asgi:
+            from starlette.applications import Starlette
+            self.app.asgi_app = Starlette()
+
         self._make_settings()
         if with_context:
             bean_context = WebApplicationContext(self.app)
@@ -28,6 +33,10 @@ class AppInitializer:
             if with_context:
                 self.app.bean_context.scan(self.settings['project_name'])
                 self._refresh_bean_context(self.app.bean_context)
+
+        if self.asgi:
+            from starlette.middleware.wsgi import WSGIMiddleware
+            self.app.asgi_app.mount('/', WSGIMiddleware(self.app))
 
     def _make_settings(self):
         app_module = self._get_app_module()
