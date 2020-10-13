@@ -19,7 +19,7 @@ class LoadBalancerClient(metaclass=ABCMeta):
         pass
 
 
-class LoadBalancedRequest(Session):
+class RestClient(Session):
 
     def __init__(self, load_balancer_client: LoadBalancerClient):
         assert load_balancer_client is not None, 'LoadBalancerClient is required'

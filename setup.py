@@ -38,7 +38,7 @@ install_requires = [
     'APScheduler>=3.6.3',
     'requests>=2.23.0',
     'dnspython>=2.0.0',
-    'starlette>=0.13.6'
+    'starlette>=0.13.6',
 ]
 
 

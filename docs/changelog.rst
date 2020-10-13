@@ -9,7 +9,6 @@ Changelog
 - manage现在可以在任何路径下运行
 - debug模式下会融合对 ``reload_extra_files`` 的默认配置和自定义配置
 - gunicorn配置恢复默认使用gevent worker，提供 ``uvicorn`` 选项代表使用 ``guniflask_cli.workers.UvicornWorker``
-- 新增guniflask.asgi配置项，用于配置是否开启ASGI模式（websocket功能需要开启ASGI模式）
 
 0.9.2 (2020-09-17)
 ------------------

@@ -53,30 +53,28 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.put(url, json=data)
+            resp.raise_for_status()
         except Exception as e:
             raise ConsulClientError(e)
-        if not resp.ok:
-            raise ConsulClientError(resp.text)
 
     def deregister_service(self, service_id: str):
         api_path = f'/agent/service/deregister/{service_id}'
         url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.put(url)
+            resp.raise_for_status()
         except Exception as e:
             raise ConsulClientError(e)
-        if not resp.ok:
-            raise ConsulClientError(resp.text)
 
     def get_service_by_id(self, service_id: str):
         api_path = f'/agent/service/{service_id}'
         url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.get(url)
+            resp.raise_for_status()
         except Exception as e:
             raise ConsulClientError(e)
-        if resp.status_code == 200:
-            return resp.json()
+        return resp.json()
 
     @staticmethod
     def http_check(name: str, url: str, check_id: str = None, interval: str = None, deregister_after: str = None):
@@ -91,10 +89,9 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.get(url)
+            resp.raise_for_status()
         except Exception as e:
             raise ConsulClientError(e)
-        if not resp.ok:
-            raise ConsulClientError(resp.text)
         data = resp.json()
         services = []
         for d in data:

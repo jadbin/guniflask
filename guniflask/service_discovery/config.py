@@ -13,7 +13,7 @@ from guniflask.distributed.local_lock import ServiceLock
 from guniflask.context.annotation import configuration, bean, condition_on_setting
 from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.discovery_client import DiscoveryClient
-from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, LoadBalancedRequest
+from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, RestClient
 
 log = logging.getLogger(__name__)
 
@@ -128,11 +128,11 @@ class ServiceDiscoveryConfiguration:
             return self._service_discovery_configurer.load_balancer_client
 
     @bean
-    def load_balanced_request(self) -> LoadBalancedRequest:
+    def load_balanced_request(self) -> RestClient:
         if self._service_discovery_configurer:
             load_balancer_client = self._service_discovery_configurer.load_balancer_client
             if load_balancer_client is not None:
-                return LoadBalancedRequest(load_balancer_client)
+                return RestClient(load_balancer_client)
 
     def _auto_register(self):
         if not self._register_lock.acquire():

@@ -2,7 +2,9 @@
 
 from importlib import import_module
 
-from flask import Blueprint
+from flask import Blueprint, Flask
+from starlette.applications import Starlette
+from starlette.middleware.wsgi import WSGIMiddleware
 
 from guniflask.config.app_settings import Settings
 from guniflask.utils.path import walk_modules
@@ -10,57 +12,54 @@ from guniflask.web.context import WebApplicationContext
 
 
 class AppInitializer:
-    def __init__(self, app, app_settings=None):
-        self.app = app
+    def __init__(self, name, app_settings=None):
+        self.name = name
         if app_settings is None:
             self.settings = Settings()
         if not isinstance(app_settings, Settings):
             self.settings = Settings(app_settings)
-        self.asgi = self.settings.get_by_prefix('guniflask.asgi')
 
     def init(self, with_context=True):
-        if self.asgi:
-            from starlette.applications import Starlette
-            self.app.asgi_app = Starlette()
+        app = Flask(self.name)
+        app.asgi_app = Starlette()
 
-        self._make_settings()
+        self._make_settings(app)
         if with_context:
-            bean_context = WebApplicationContext(self.app)
-            self.app.bean_context = bean_context  # register bean context for app
-        self._init_app()
-        with self.app.app_context():
-            self._register_blueprints()
+            bean_context = WebApplicationContext(app)
+            app.bean_context = bean_context  # register bean context for app
+        self._init_app(app)
+        with app.app_context():
+            self._register_blueprints(app)
             if with_context:
-                self.app.bean_context.scan(self.settings['project_name'])
-                self._refresh_bean_context(self.app.bean_context)
+                app.bean_context.scan(self.settings['project_name'])
+                self._refresh_bean_context(app.bean_context)
 
-        if self.asgi:
-            from starlette.middleware.wsgi import WSGIMiddleware
-            self.app.asgi_app.mount('/', WSGIMiddleware(self.app))
+        app.asgi_app.mount('/', WSGIMiddleware(app))
+        return app
 
-    def _make_settings(self):
+    def _make_settings(self, app):
         app_module = self._get_app_module()
         _make_settings = getattr(app_module, 'make_settings', None)
         if _make_settings:
             s = self.settings
-            _make_settings(self.app, s)
+            _make_settings(app, s)
 
-    def _init_app(self):
-        self.app.settings = self.settings
+    def _init_app(self, app):
+        app.settings = self.settings
         for k, v in self.settings.items():
             if k.isupper():
-                self.app.config[k] = v
+                app.config[k] = v
 
         app_module = self._get_app_module()
         _init_app = getattr(app_module, 'init_app', None)
         if _init_app:
             s = self.settings
-            _init_app(self.app, s)
+            _init_app(app, s)
 
     def _refresh_bean_context(self, bean_context: WebApplicationContext):
         bean_context.refresh()
 
-    def _register_blueprints(self):
+    def _register_blueprints(self, app):
         """
         Register declared Blueprint
         """
@@ -74,7 +73,7 @@ class AppInitializer:
                         registered_blueprints.add(obj)
 
         for b in iter_blueprints():
-            self.app.register_blueprint(b)
+            app.register_blueprint(b)
 
         del registered_blueprints
 
