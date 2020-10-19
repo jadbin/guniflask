@@ -6,11 +6,10 @@ import inspect
 from flask import Blueprint as FlaskBlueprint, request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
-from starlette.websockets import WebSocketDisconnect
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.web.bind_annotation import Blueprint, Route, WebSocket
+from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.utils.inspect import inspect_args
 from guniflask.utils.request import map_object
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
@@ -41,7 +40,6 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             for m in dir(bean):
                 method = getattr(bean, m)
                 self._resolve_route(b, method)
-                self._resolve_websocket_route(b, method)
                 self._resolve_method_def_filter(b, method)
             self.blueprints.append(b)
         return bean
@@ -63,29 +61,6 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
         def wrapper(**kwargs):
             method_kwargs = self._resolve_method_kwargs(kwargs, params, param_names)
             return method(**method_kwargs)
-
-        return update_wrapper(wrapper, method)
-
-    def _resolve_websocket_route(self, blueprint: FlaskBlueprint, method):
-        a = AnnotationUtils.get_annotation(method, WebSocket)
-        if a is not None:
-            rule = a['rule'] or '/'
-            rule_prefix = blueprint.url_prefix or '/'
-            rule = '/'.join((rule_prefix.rstrip('/'), rule.lstrip('/')))
-            if hasattr(current_app, 'asgi_app'):
-                current_app.asgi_app.add_websocket_route(rule, self._wrap_websocket_func(method))
-            else:
-                raise RuntimeError('Only support websocket in ASGI mode')
-
-    def _wrap_websocket_func(self, method):
-        app = current_app._get_current_object()
-
-        async def wrapper(*args, **kwargs):
-            with app.app_context():
-                try:
-                    return await method(*args, **kwargs)
-                except WebSocketDisconnect:
-                    pass
 
         return update_wrapper(wrapper, method)
 

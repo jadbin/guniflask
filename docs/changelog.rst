@@ -3,12 +3,14 @@
 Changelog
 =========
 
-0.9.3 (2020-09-??)
+0.10.0 (2020-10-??)
 ------------------
 
 - manage现在可以在任何路径下运行
 - debug模式下会融合对 ``reload_extra_files`` 的默认配置和自定义配置
-- gunicorn配置恢复默认使用gevent worker，提供 ``uvicorn`` 选项代表使用 ``guniflask_cli.workers.UvicornWorker``
+- gunicorn配置恢复默认使用gevent worker
+- 暂时移除对ASGI的相关支持，包括websocket
+- 修复 ``from guniflask.config import Settings`` 的引用错误
 
 0.9.2 (2020-09-17)
 ------------------
@@ -28,7 +30,7 @@ Changelog
 - 新增 ``@condition_on_setting`` ，基于配置项是否存在控制是否初始化实例
 - 移除initdb命令
 - table2model取消了只支持MySQL的限制
-- 在gunicorn配置中放弃使用gevent worker，改为使用 ``uvicorn.workers.UvicornWorker``
+- gunicorn worker默认使用 ``uvicorn.workers.UvicornWorker``
 - 支持websocket
 
 0.8.9 (2020-08-20)
