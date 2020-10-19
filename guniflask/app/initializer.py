@@ -3,8 +3,6 @@
 from importlib import import_module
 
 from flask import Blueprint, Flask
-from starlette.applications import Starlette
-from starlette.middleware.wsgi import WSGIMiddleware
 
 from guniflask.config.app_settings import Settings
 from guniflask.utils.path import walk_modules
@@ -21,8 +19,6 @@ class AppInitializer:
 
     def init(self, with_context=True):
         app = Flask(self.name)
-        app.asgi_app = Starlette()
-
         self._make_settings(app)
         if with_context:
             bean_context = WebApplicationContext(app)
@@ -33,8 +29,6 @@ class AppInitializer:
             if with_context:
                 app.bean_context.scan(self.settings['project_name'])
                 self._refresh_bean_context(app.bean_context)
-
-        app.asgi_app.mount('/', WSGIMiddleware(app))
         return app
 
     def _make_settings(self, app):
