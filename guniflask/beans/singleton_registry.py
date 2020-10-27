@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from typing import List
 import logging
+from typing import List
 
 from guniflask.beans.errors import BeanCurrentlyInCreationError
 from guniflask.beans.lifecycle import DisposableBean

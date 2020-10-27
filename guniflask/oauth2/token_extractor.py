@@ -4,10 +4,10 @@ from abc import ABCMeta, abstractmethod
 
 from flask import request, g
 
+from guniflask.oauth2.authentication_details import OAuth2AuthenticationDetails
+from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.security.authentication import Authentication
 from guniflask.security.preauth_token import PreAuthenticatedToken
-from guniflask.oauth2.token import OAuth2AccessToken
-from guniflask.oauth2.authentication_details import OAuth2AuthenticationDetails
 
 
 class TokenExtractor(metaclass=ABCMeta):

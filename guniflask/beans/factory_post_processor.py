@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from guniflask.beans.factory import ConfigurableBeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
+from guniflask.beans.factory import ConfigurableBeanFactory
 
 
 class BeanFactoryPostProcessor:

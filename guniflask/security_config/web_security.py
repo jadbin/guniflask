@@ -2,8 +2,8 @@
 
 from typing import List
 
-from guniflask.security_config.security_builder import SecurityBuilder
 from guniflask.security_config.configured_security_builder import ConfiguredSecurityBuilder
+from guniflask.security_config.security_builder import SecurityBuilder
 
 
 class WebSecurity(ConfiguredSecurityBuilder):

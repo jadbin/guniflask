@@ -1,15 +1,15 @@
 # coding=utf-8
 
 from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.client_details import ClientDetails
+from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.oauth2.errors import InvalidGrantError
+from guniflask.oauth2.request import TokenRequest
+from guniflask.oauth2.request_factory import OAuth2RequestFactory
 from guniflask.oauth2.token_granter import AbstractTokenGranter
 from guniflask.oauth2.token_service import AuthorizationServerTokenServices
-from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2.request_factory import OAuth2RequestFactory
-from guniflask.oauth2.request import TokenRequest
-from guniflask.oauth2.client_details import ClientDetails
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_token import UserAuthentication
-from guniflask.oauth2.errors import InvalidGrantError
 from guniflask.security.errors import BadCredentialsError
 
 

@@ -1,10 +1,10 @@
 # coding=utf-8
 
-from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.definition import BeanDefinition
-from guniflask.context.config_post_processor import ConfigurationClassPostProcessor
+from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.context.autowired_post_processor import AutowiredAnnotationBeanPostProcessor
 from guniflask.context.config_constants import *
+from guniflask.context.config_post_processor import ConfigurationClassPostProcessor
 
 
 class AnnotationConfigUtils:

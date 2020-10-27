@@ -2,12 +2,12 @@
 
 from flask import g
 
-from guniflask.web.request_filter import RequestFilter
-from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.oauth2.token_extractor import TokenExtractor, BearerTokenExtractor
-from guniflask.security.context import SecurityContext
 from guniflask.oauth2.authentication_details import OAuth2AuthenticationDetails
+from guniflask.oauth2.token_extractor import TokenExtractor, BearerTokenExtractor
+from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_token import AuthenticationToken
+from guniflask.security.context import SecurityContext
+from guniflask.web.request_filter import RequestFilter
 
 
 class OAuth2AuthenticationFilter(RequestFilter):

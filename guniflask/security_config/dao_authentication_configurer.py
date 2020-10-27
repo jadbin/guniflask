@@ -1,10 +1,10 @@
 # coding=utf-8
 
+from guniflask.security.dao_authentication_provider import DaoAuthenticationProvider
+from guniflask.security.password_encoder import PasswordEncoder
+from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security_config.provider_manager_builder import ProviderManagerBuilder
 from guniflask.security_config.user_details_aware_configurer import UserDetailsAwareConfigurer
-from guniflask.security.user_details_service import UserDetailsService
-from guniflask.security.password_encoder import PasswordEncoder
-from guniflask.security.dao_authentication_provider import DaoAuthenticationProvider
 
 
 class DaoAuthenticationConfigurer(UserDetailsAwareConfigurer):

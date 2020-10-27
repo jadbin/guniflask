@@ -1,9 +1,9 @@
 # coding=utf-8
 
-from guniflask.oauth2.token_granter import AbstractTokenGranter
-from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.request_factory import OAuth2RequestFactory
+from guniflask.oauth2.token_granter import AbstractTokenGranter
+from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 
 
 class ClientCredentialsTokenGranter(AbstractTokenGranter):

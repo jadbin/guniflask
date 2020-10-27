@@ -1,8 +1,8 @@
 # coding=utf-8
 
 import os
-from os.path import isfile, join, isdir
 from importlib import import_module
+from os.path import isfile, join, isdir
 from pkgutil import iter_modules
 
 

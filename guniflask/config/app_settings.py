@@ -1,7 +1,7 @@
 # coding=utf-8
 
-import logging
 import copy
+import logging
 from collections.abc import MutableMapping
 from typing import Union
 

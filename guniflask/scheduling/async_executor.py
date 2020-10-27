@@ -3,6 +3,7 @@
 from abc import ABCMeta, abstractmethod
 
 from apscheduler.schedulers.background import BackgroundScheduler
+
 from guniflask.beans.lifecycle import DisposableBean, SmartInitializingSingleton
 
 

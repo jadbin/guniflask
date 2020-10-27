@@ -1,10 +1,10 @@
 # coding=utf-8
 
-import os
 import base64
+import os
+from json import JSONEncoder as _JSONEncoder
 
 import jwt
-from json import JSONEncoder as _JSONEncoder
 
 
 class JsonEncoder(_JSONEncoder):

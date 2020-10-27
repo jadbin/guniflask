@@ -2,8 +2,8 @@
 
 from abc import ABCMeta, abstractmethod
 
-from guniflask.security_config.security_builder import SecurityBuilder
 from guniflask.security.authentication_provider import AuthenticationProvider
+from guniflask.security_config.security_builder import SecurityBuilder
 
 
 class ProviderManagerBuilder(SecurityBuilder, metaclass=ABCMeta):

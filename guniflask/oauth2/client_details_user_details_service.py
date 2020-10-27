@@ -1,12 +1,12 @@
 # coding=utf-8
 
-from guniflask.security.user_details import UserDetails
-from guniflask.security.user_details_service import UserDetailsService
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.security.password_encoder import PasswordEncoder
 from guniflask.oauth2.errors import NoSuchClientError
 from guniflask.security.errors import UsernameNotFoundError
+from guniflask.security.password_encoder import PasswordEncoder
 from guniflask.security.user import User
+from guniflask.security.user_details import UserDetails
+from guniflask.security.user_details_service import UserDetailsService
 
 
 class ClientDetailsUserDetailsService(UserDetailsService):

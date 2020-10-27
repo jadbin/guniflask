@@ -2,13 +2,13 @@
 
 from typing import Any, List
 
-from guniflask.security_config.configured_security_builder import ConfiguredSecurityBuilder
 from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security.authentication_provider import AuthenticationProvider
 from guniflask.security.provider_manager import ProviderManager
-from guniflask.security_config.provider_manager_builder import ProviderManagerBuilder
+from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security_config.configured_security_builder import ConfiguredSecurityBuilder
 from guniflask.security_config.dao_authentication_configurer import DaoAuthenticationConfigurer
+from guniflask.security_config.provider_manager_builder import ProviderManagerBuilder
 
 
 class AuthenticationManagerBuilder(ConfiguredSecurityBuilder, ProviderManagerBuilder):

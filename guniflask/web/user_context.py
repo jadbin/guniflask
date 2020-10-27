@@ -5,9 +5,9 @@ from typing import Optional
 from flask import _request_ctx_stack
 from werkzeug.local import LocalProxy
 
+from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.context import SecurityContext
-from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.user import User
 from guniflask.security.user_details import UserDetails
 

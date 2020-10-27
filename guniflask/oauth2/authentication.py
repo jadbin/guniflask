@@ -1,8 +1,8 @@
 # coding=utf-8
 
+from guniflask.oauth2.request import OAuth2Request
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_token import AuthenticationToken
-from guniflask.oauth2.request import OAuth2Request
 
 
 class OAuth2Authentication(AuthenticationToken):

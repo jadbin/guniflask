@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from typing import Union, Collection
 from abc import ABCMeta, abstractmethod
+from typing import Union, Collection
 
 from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 from guniflask.oauth2.errors import InvalidTokenError
+from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 
 

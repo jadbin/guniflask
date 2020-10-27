@@ -2,8 +2,8 @@
 
 from guniflask.annotation import AnnotationMetadata
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
-from guniflask.context.condition import ConditionContext, Condition
 from guniflask.context.annotation import Conditional
+from guniflask.context.condition import ConditionContext, Condition
 
 
 class ConditionEvaluator:

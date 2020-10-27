@@ -2,12 +2,12 @@
 
 from flask import Flask
 
-from guniflask.context.default_bean_context import AnnotationConfigBeanContext
-from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
-from guniflask.security_config.web_security_config import WebSecurityConfiguration
-from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
-from guniflask.web.config_constants import *
 from guniflask.beans.definition import BeanDefinition
+from guniflask.context.default_bean_context import AnnotationConfigBeanContext
+from guniflask.security_config.web_security_config import WebSecurityConfiguration
+from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
+from guniflask.web.config_constants import *
+from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 
 
 class WebApplicationContext(AnnotationConfigBeanContext):

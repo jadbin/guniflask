@@ -1,11 +1,11 @@
 # coding=utf-8
 
 from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.user_details_authentication_provider import UserDetailsAuthenticationProvider
-from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security.errors import BadCredentialsError
 from guniflask.security.password_encoder import PasswordEncoder, PlainPasswordEncoder
 from guniflask.security.user_details import UserDetails
-from guniflask.security.errors import BadCredentialsError
+from guniflask.security.user_details_authentication_provider import UserDetailsAuthenticationProvider
+from guniflask.security.user_details_service import UserDetailsService
 
 
 class DaoAuthenticationProvider(UserDetailsAuthenticationProvider):

@@ -1,18 +1,18 @@
 # coding=utf-8
 
-from typing import Optional
-from abc import ABCMeta, abstractmethod
 import datetime as dt
 import re
+from abc import ABCMeta, abstractmethod
+from typing import Optional
 
+from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.errors import InvalidTokenError
+from guniflask.oauth2.request import OAuth2Request
+from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security.jwt import JwtHelper
-from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
-from guniflask.oauth2.request import OAuth2Request
-from guniflask.oauth2.errors import InvalidTokenError
+from guniflask.security.user_details_service import UserDetailsService
 
 
 class AccessTokenConverter(metaclass=ABCMeta):

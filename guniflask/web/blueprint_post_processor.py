@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from functools import update_wrapper
 import inspect
+from functools import update_wrapper
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -9,16 +9,16 @@ from werkzeug.routing import parse_rule
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.web.bind_annotation import Blueprint, Route
+from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
+from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.utils.inspect import inspect_args
+from guniflask.utils.inspect import resolve_arg_type, ArgType
 from guniflask.utils.request import map_object
+from guniflask.web import param_annotation
+from guniflask.web.bind_annotation import Blueprint, Route
+from guniflask.web.filter_annotation import MethodDefFilter
 from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
     RequestBodyInfo, FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo, RequestBody
-from guniflask.web import param_annotation
-from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
-from guniflask.web.filter_annotation import MethodDefFilter
-from guniflask.utils.inspect import resolve_arg_type, ArgType
 
 
 class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):

@@ -1,11 +1,11 @@
 # coding=utf-8
 
-from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.oauth2.token_service import ResourceServerTokenServices
 from guniflask.beans.lifecycle import InitializingBean
-from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError, ClientRegistrationError
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.oauth2.errors import InvalidTokenError, OAuth2AccessDeniedError, ClientRegistrationError
+from guniflask.oauth2.token_service import ResourceServerTokenServices
+from guniflask.security.authentication_manager import AuthenticationManager
 
 
 class OAuth2AuthenticationManager(AuthenticationManager, InitializingBean):

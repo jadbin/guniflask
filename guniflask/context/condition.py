@@ -3,8 +3,8 @@
 from abc import ABCMeta, abstractmethod
 
 from guniflask.annotation import AnnotationMetadata
-from guniflask.beans.factory import BeanFactory
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
+from guniflask.beans.factory import BeanFactory
 
 
 class ConditionContext:

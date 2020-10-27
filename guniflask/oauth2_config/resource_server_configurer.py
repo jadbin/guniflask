@@ -1,14 +1,14 @@
 # coding=utf-8
 
-from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.oauth2.token_service import ResourceServerTokenServices, DefaultTokenServices
-from guniflask.oauth2.token_store import TokenStore
-from guniflask.oauth2.token_extractor import TokenExtractor
+from guniflask.oauth2.authentication_filter import OAuth2AuthenticationFilter
 from guniflask.oauth2.authentication_manager import OAuth2AuthenticationManager
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.security_config.security_configurer import SecurityConfigurer
-from guniflask.oauth2.authentication_filter import OAuth2AuthenticationFilter
+from guniflask.oauth2.token_extractor import TokenExtractor
+from guniflask.oauth2.token_service import ResourceServerTokenServices, DefaultTokenServices
+from guniflask.oauth2.token_store import TokenStore
+from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security_config.http_security import HttpSecurity
+from guniflask.security_config.security_configurer import SecurityConfigurer
 
 
 class ResourceServerSecurityConfigurer(SecurityConfigurer):

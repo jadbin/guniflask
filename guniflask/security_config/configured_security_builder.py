@@ -1,8 +1,8 @@
 # coding=utf-8
 
 from abc import ABCMeta, abstractmethod
-from typing import Type, List, Any, Optional
 from collections import defaultdict
+from typing import Type, List, Any, Optional
 
 from guniflask.security_config.security_builder import AbstractSecurityBuilder
 from guniflask.security_config.security_configurer import SecurityConfigurer

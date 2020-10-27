@@ -1,20 +1,20 @@
 # coding=utf-8
 
 import datetime as dt
-from typing import Optional
 import uuid
 from abc import ABCMeta, abstractmethod
+from typing import Optional
 
+from guniflask.beans.lifecycle import InitializingBean
 from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
-from guniflask.oauth2.token_store import TokenStore
-from guniflask.oauth2.token_converter import TokenEnhancer
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2.request import TokenRequest, OAuth2Request
 from guniflask.oauth2.errors import InvalidTokenError, InvalidGrantError, InvalidScopeError, ClientRegistrationError
+from guniflask.oauth2.request import TokenRequest, OAuth2Request
+from guniflask.oauth2.token import OAuth2AccessToken, OAuth2RefreshToken
+from guniflask.oauth2.token_converter import TokenEnhancer
+from guniflask.oauth2.token_store import TokenStore
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.preauth_token import PreAuthenticatedToken
-from guniflask.beans.lifecycle import InitializingBean
 
 
 class AuthorizationServerTokenServices(metaclass=ABCMeta):

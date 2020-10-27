@@ -1,22 +1,22 @@
 # coding=utf-8
 
-from typing import Union
 import inspect
+from typing import Union
 
 from flask import current_app, Flask
 
-from guniflask.security_config.http_security_builder import HttpSecurityBuilder
-from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
-from guniflask.security.user_details_service import UserDetailsService
-from guniflask.security.authentication_provider import AuthenticationProvider
-from guniflask.web.request_filter import RequestFilter, RequestFilterChain
-from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
-from guniflask.security_config.cors_configurer import CorsConfigurer
-from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.context.bean_context import BeanContext
 from guniflask.annotation import AnnotationUtils
-from guniflask.web.bind_annotation import Blueprint
 from guniflask.config.app_settings import settings
+from guniflask.context.bean_context import BeanContext
+from guniflask.security.authentication_manager import AuthenticationManager
+from guniflask.security.authentication_provider import AuthenticationProvider
+from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
+from guniflask.security_config.cors_configurer import CorsConfigurer
+from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
+from guniflask.security_config.http_security_builder import HttpSecurityBuilder
+from guniflask.web.bind_annotation import Blueprint
+from guniflask.web.request_filter import RequestFilter, RequestFilterChain
 
 
 class HttpSecurity(HttpSecurityBuilder):

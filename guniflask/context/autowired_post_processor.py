@@ -3,12 +3,12 @@
 import inspect
 from collections import defaultdict
 
-from guniflask.beans.factory import BeanFactory
-from guniflask.beans.post_processor import BeanPostProcessor
-from guniflask.beans.factory import BeanFactoryAware
 from guniflask.annotation import AnnotationUtils
-from guniflask.context.annotation import Autowired
 from guniflask.beans.constructor_resolver import ConstructorResolver
+from guniflask.beans.factory import BeanFactory
+from guniflask.beans.factory import BeanFactoryAware
+from guniflask.beans.post_processor import BeanPostProcessor
+from guniflask.context.annotation import Autowired
 
 
 class AutowiredAnnotationBeanPostProcessor(BeanPostProcessor, BeanFactoryAware):

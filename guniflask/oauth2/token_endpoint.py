@@ -2,20 +2,20 @@
 
 from flask import jsonify, request
 
-from guniflask.web.bind_annotation import blueprint, get_route, post_route
 from guniflask.oauth2.abstract_endpoint import AbstractEndpoint
-from guniflask.oauth2.token_converter import JwtAccessTokenConverter
+from guniflask.oauth2.authentication import OAuth2Authentication
+from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.errors import InvalidClientError, InvalidRequestError, InvalidGrantError, \
     UnsupportedGrantTypeError, OAuth2AccessDeniedError, OAuth2Error
-from guniflask.security.errors import InsufficientAuthenticationError, AuthenticationError
-from guniflask.security.context import SecurityContext
-from guniflask.security.authentication import Authentication
-from guniflask.oauth2.authentication import OAuth2Authentication
-from guniflask.oauth2.request_factory import DefaultOAuth2RequestValidator
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
+from guniflask.oauth2.request_factory import DefaultOAuth2RequestValidator
 from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token_converter import JwtAccessTokenConverter
 from guniflask.oauth2.token_granter import TokenGranter
-from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.security.authentication import Authentication
+from guniflask.security.context import SecurityContext
+from guniflask.security.errors import InsufficientAuthenticationError, AuthenticationError
+from guniflask.web.bind_annotation import blueprint, get_route, post_route
 from guniflask.web.filter_annotation import error_handler
 
 

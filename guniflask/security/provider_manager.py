@@ -2,10 +2,10 @@
 
 from typing import List
 
+from guniflask.beans.lifecycle import InitializingBean
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_provider import AuthenticationProvider
-from guniflask.beans.lifecycle import InitializingBean
 from guniflask.security.errors import AuthenticationError, ProviderNotFoundError
 
 

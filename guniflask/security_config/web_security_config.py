@@ -2,10 +2,10 @@
 
 from typing import List
 
-from guniflask.context.annotation import configuration
 from guniflask.beans.lifecycle import SmartInitializingSingleton
-from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
+from guniflask.context.annotation import configuration
 from guniflask.security_config.web_security import WebSecurity
+from guniflask.security_config.web_security_configurer import WebSecurityConfigurer
 
 
 @configuration

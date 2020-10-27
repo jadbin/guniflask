@@ -2,8 +2,8 @@
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.context.annotation import Include
-from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.security_config.authentication_config import AuthenticationConfiguration
+from guniflask.security_config.web_security_config import WebSecurityConfiguration
 
 
 def enable_authentication(func):

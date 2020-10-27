@@ -1,10 +1,10 @@
 # coding=utf-8
 
+import fcntl
+import getpass
 import os
 import tempfile
 from os.path import join, exists
-import fcntl
-import getpass
 
 from guniflask.config.app_settings import settings
 

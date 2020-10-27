@@ -7,13 +7,13 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from guniflask.config.app_settings import settings, Settings
-from guniflask.utils.network import get_local_ip_address
-from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
-from guniflask.distributed.local_lock import ServiceLock
 from guniflask.context.annotation import configuration, bean, condition_on_setting
-from guniflask.service_discovery.heath_endpoint import HealthEndpoint
+from guniflask.distributed.local_lock import ServiceLock
+from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
+from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, RestClient
+from guniflask.utils.network import get_local_ip_address
 
 log = logging.getLogger(__name__)
 

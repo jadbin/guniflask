@@ -1,9 +1,9 @@
 # coding=utf-8
 
+from guniflask.annotation import AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.name_generator import DefaultBeanNameGenerator, BeanNameGenerator
-from guniflask.annotation import AnnotationUtils
 from guniflask.context.annotation import Component
 
 

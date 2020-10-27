@@ -1,19 +1,19 @@
 # coding=utf-8
 
-from typing import List
 import logging
+from typing import List
 
 from guniflask.beans.default_factory import DefaultBeanFactory
-from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor, BeanDefinitionRegistryPostProcessor
-from guniflask.context.annotation_config_registry import AnnotationConfigRegistry
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.annotation_config_registry import AnnotatedBeanDefinitionReader, ModuleBeanDefinitionScanner
+from guniflask.context.annotation_config_registry import AnnotationConfigRegistry
+from guniflask.context.bean_context import BeanContext
 from guniflask.context.config_constants import *
+from guniflask.context.context_aware_processor import BeanContextAwareProcessor
 from guniflask.context.event import ApplicationEvent, ContextRefreshedEvent, ContextClosedEvent
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.context.event_publisher import ApplicationEventPublisher
-from guniflask.context.context_aware_processor import BeanContextAwareProcessor
-from guniflask.context.bean_context import BeanContext
 
 log = logging.getLogger(__name__)
 

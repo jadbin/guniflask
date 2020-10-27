@@ -1,7 +1,7 @@
 # coding=utf-8
 
-import time
 import datetime as dt
+import time
 
 
 class OAuth2RefreshToken:

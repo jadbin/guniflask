@@ -2,8 +2,8 @@
 
 from flask import abort
 
-from guniflask.web.bind_annotation import blueprint, get_route
 from guniflask.config.app_settings import settings
+from guniflask.web.bind_annotation import blueprint, get_route
 
 
 @blueprint

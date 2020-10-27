@@ -3,14 +3,14 @@
 import datetime as dt
 import uuid
 
-from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.oauth2.errors import InvalidTokenError
 from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
     UserAuthenticationConverter
-from guniflask.security.user import User
+from guniflask.security.authentication_manager import AuthenticationManager
+from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.jwt import JwtHelper
+from guniflask.security.user import User
 
 
 class JwtManager(AuthenticationManager):

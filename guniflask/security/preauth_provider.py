@@ -1,12 +1,12 @@
 # coding=utf-8
 
-from typing import Type
 import inspect
+from typing import Type
 
 from guniflask.security.authentication import Authentication
-from guniflask.security.preauth_token import PreAuthenticatedToken
 from guniflask.security.authentication_provider import AuthenticationProvider
 from guniflask.security.authentication_user_details_service import AuthenticationUserDetailsService
+from guniflask.security.preauth_token import PreAuthenticatedToken
 
 
 class PreAuthenticatedProvider(AuthenticationProvider):

@@ -5,9 +5,9 @@ from typing import Union
 
 from guniflask.oauth2.client_details import ClientDetails
 from guniflask.oauth2.client_details_service import ClientDetailsService
+from guniflask.oauth2.errors import InvalidClientError, InvalidScopeError
 from guniflask.oauth2.oauth2_utils import OAuth2Utils
 from guniflask.oauth2.request import AuthorizationRequest, OAuth2Request, TokenRequest
-from guniflask.oauth2.errors import InvalidClientError, InvalidScopeError
 
 
 class OAuth2RequestFactory(metaclass=ABCMeta):

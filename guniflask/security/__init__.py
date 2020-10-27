@@ -1,10 +1,10 @@
 # coding=utf-8
 
-from .access_annotation import login_required
-from .access_annotation import has_any_role
-from .access_annotation import has_role
 from .access_annotation import has_any_authority
+from .access_annotation import has_any_role
 from .access_annotation import has_authority
+from .access_annotation import has_role
+from .access_annotation import login_required
 from .authentication import Authentication
 from .authentication_manager import AuthenticationManager
 from .authentication_provider import AuthenticationProvider
@@ -14,9 +14,9 @@ from .context import SecurityContext
 from .dao_authentication_provider import DaoAuthenticationProvider
 from .errors import AuthenticationError
 from .errors import BadCredentialsError
+from .errors import InsufficientAuthenticationError
 from .errors import ProviderNotFoundError
 from .errors import UsernameNotFoundError
-from .errors import InsufficientAuthenticationError
 from .jwt import JwtHelper
 from .jwt_provider import JwtManager
 from .password_encoder import PasswordEncoder

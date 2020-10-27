@@ -4,12 +4,12 @@ import base64
 
 from flask import request
 
-from guniflask.web.request_filter import RequestFilter
 from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.security.context import SecurityContext
 from guniflask.security.authentication_token import UserAuthentication
-from guniflask.security.web_authentication_details import WebAuthenticationDetails
+from guniflask.security.context import SecurityContext
 from guniflask.security.errors import BadCredentialsError
+from guniflask.security.web_authentication_details import WebAuthenticationDetails
+from guniflask.web.request_filter import RequestFilter
 
 
 class BasicAuthenticationFilter(RequestFilter):

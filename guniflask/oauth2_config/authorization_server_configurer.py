@@ -3,25 +3,25 @@
 from typing import Collection
 
 from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2.token_service import AuthorizationServerTokenServices, DefaultTokenServices
-from guniflask.oauth2.token_store import TokenStore, JwtTokenStore
-from guniflask.oauth2.token_converter import TokenEnhancer, AccessTokenConverter, JwtAccessTokenConverter, \
-    DefaultAccessTokenConverter
-from guniflask.security.authentication_manager import AuthenticationManager
+from guniflask.oauth2.client_details_service import InMemoryClientDetailsService
+from guniflask.oauth2.client_details_user_details_service import ClientDetailsUserDetailsService
+from guniflask.oauth2.client_grant import ClientCredentialsTokenGranter
+from guniflask.oauth2.password_grant import PasswordTokenGranter
+from guniflask.oauth2.refresh_grant import RefreshTokenGranter
 from guniflask.oauth2.request_factory import OAuth2RequestFactory, OAuth2RequestValidator, \
     DefaultOAuth2RequestValidator, DefaultOAuth2RequestFactory
+from guniflask.oauth2.token_converter import TokenEnhancer, AccessTokenConverter, JwtAccessTokenConverter, \
+    DefaultAccessTokenConverter
 from guniflask.oauth2.token_granter import TokenGranter, CompositeTokenGranter
-from guniflask.oauth2.password_grant import PasswordTokenGranter
-from guniflask.oauth2.client_grant import ClientCredentialsTokenGranter
-from guniflask.oauth2.refresh_grant import RefreshTokenGranter
-from guniflask.security_config.http_security import HttpSecurity
-from guniflask.security.password_encoder import PasswordEncoder
-from guniflask.oauth2.client_details_user_details_service import ClientDetailsUserDetailsService
-from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
-from guniflask.oauth2.client_details_service import InMemoryClientDetailsService
-from guniflask.security.user_details_service import UserDetailsService
-from guniflask.security_config.security_configurer import SecurityConfigurer
+from guniflask.oauth2.token_service import AuthorizationServerTokenServices, DefaultTokenServices
+from guniflask.oauth2.token_store import TokenStore, JwtTokenStore
 from guniflask.oauth2_config.client_details_service_configurer import ClientDetailsServiceConfigurer
+from guniflask.security.authentication_manager import AuthenticationManager
+from guniflask.security.password_encoder import PasswordEncoder
+from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
+from guniflask.security_config.http_security import HttpSecurity
+from guniflask.security_config.security_configurer import SecurityConfigurer
 
 
 class AuthorizationServerEndpointsConfigurer:

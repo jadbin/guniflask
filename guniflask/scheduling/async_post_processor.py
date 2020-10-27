@@ -4,11 +4,11 @@ import logging
 from functools import partial, update_wrapper
 
 from guniflask.annotation import AnnotationUtils
-from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
 from guniflask.beans.lifecycle import SmartInitializingSingleton
-from guniflask.scheduling.async_executor import AsyncExecutor
+from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.scheduling.annotation import AsyncRun
+from guniflask.scheduling.async_executor import AsyncExecutor
 
 log = logging.getLogger(__name__)
 

@@ -3,14 +3,14 @@
 from abc import ABCMeta, abstractmethod
 from typing import Optional, Collection
 
-from guniflask.oauth2.token_service import AuthorizationServerTokenServices
-from guniflask.oauth2.client_details_service import ClientDetailsService
-from guniflask.oauth2.request_factory import OAuth2RequestFactory
-from guniflask.oauth2.request import TokenRequest
-from guniflask.oauth2.token import OAuth2AccessToken
 from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.oauth2.client_details import ClientDetails
+from guniflask.oauth2.client_details_service import ClientDetailsService
 from guniflask.oauth2.errors import InvalidClientError
+from guniflask.oauth2.request import TokenRequest
+from guniflask.oauth2.request_factory import OAuth2RequestFactory
+from guniflask.oauth2.token import OAuth2AccessToken
+from guniflask.oauth2.token_service import AuthorizationServerTokenServices
 
 
 class TokenGranter(metaclass=ABCMeta):

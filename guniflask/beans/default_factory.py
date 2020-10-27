@@ -1,19 +1,19 @@
 # coding=utf-8
 
-from typing import List, get_type_hints
 import inspect
-from functools import partial
 from abc import ABCMeta, abstractmethod
+from functools import partial
+from typing import List, get_type_hints
 
-from guniflask.beans.post_processor import BeanPostProcessor
+from guniflask.beans.constructor_resolver import ConstructorResolver
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.beans.errors import BeanTypeNotDeclaredError, BeanTypeNotAllowedError, BeanCreationError, \
     BeanNotOfRequiredTypeError, NoUniqueBeanDefinitionError
-from guniflask.beans.lifecycle import InitializingBean, SmartInitializingSingleton, DisposableBean
-from guniflask.beans.constructor_resolver import ConstructorResolver
-from guniflask.beans.factory import BeanFactoryAware, BeanNameAware, ConfigurableBeanFactory
 from guniflask.beans.errors import NoSuchBeanDefinitionError, BeanDefinitionStoreError
+from guniflask.beans.factory import BeanFactoryAware, BeanNameAware, ConfigurableBeanFactory
+from guniflask.beans.lifecycle import InitializingBean, SmartInitializingSingleton, DisposableBean
+from guniflask.beans.post_processor import BeanPostProcessor
 
 
 class AbstractBeanFactory(ConfigurableBeanFactory, metaclass=ABCMeta):

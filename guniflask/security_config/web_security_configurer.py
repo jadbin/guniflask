@@ -2,17 +2,17 @@
 
 from typing import List
 
-from guniflask.security.user_details import UserDetails
-from guniflask.security.authentication import Authentication
-from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
-from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.security_config.http_security import HttpSecurity
-from guniflask.security_config.authentication_config import AuthenticationConfiguration
 from guniflask.context.annotation import autowired
+from guniflask.context.bean_context import BeanContext, BeanContextAware
+from guniflask.security.authentication import Authentication
+from guniflask.security.authentication_manager import AuthenticationManager
+from guniflask.security.user_details import UserDetails
+from guniflask.security.user_details_service import UserDetailsService
+from guniflask.security_config.authentication_config import AuthenticationConfiguration
+from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
+from guniflask.security_config.http_security import HttpSecurity
 from guniflask.security_config.security_configurer import SecurityConfigurer
 from guniflask.security_config.web_security import WebSecurity
-from guniflask.security.user_details_service import UserDetailsService
-from guniflask.context.bean_context import BeanContext, BeanContextAware
 
 
 class WebSecurityConfigurer(SecurityConfigurer, BeanContextAware):

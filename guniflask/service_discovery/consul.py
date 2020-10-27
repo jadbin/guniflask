@@ -3,15 +3,15 @@
 from typing import List, Union
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
-import requests
 import dns.message
 import dns.query
 import dns.rdatatype
+import requests
 
-from guniflask.service_discovery.service_instance import ServiceInstance
-from guniflask.service_discovery.errors import ServiceDiscoveryError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
+from guniflask.service_discovery.errors import ServiceDiscoveryError
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient
+from guniflask.service_discovery.service_instance import ServiceInstance
 
 
 class ConsulClientError(ServiceDiscoveryError):

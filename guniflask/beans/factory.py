@@ -1,7 +1,7 @@
 # coding=utf-8
 
-from typing import List
 from abc import ABCMeta, abstractmethod
+from typing import List
 
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.beans.singleton_registry import SingletonBeanRegistry

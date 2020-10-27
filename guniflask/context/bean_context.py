@@ -3,9 +3,9 @@
 import logging
 from abc import ABCMeta, abstractmethod
 
+from guniflask.beans.factory import BeanFactory
 from guniflask.beans.factory_post_processor import BeanFactoryPostProcessor
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.beans.factory import BeanFactory
 
 log = logging.getLogger(__name__)
 
