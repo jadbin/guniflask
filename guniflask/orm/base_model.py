@@ -2,10 +2,14 @@
 
 from typing import Union, List
 
+from sqlalchemy.orm import Query
+
 from guniflask.orm.model_utils import dict_to_model, model_to_dict, update_model_by_dict, result_to_dict
 
 
 class BaseModelMixin:
+
+    query: Query
 
     @classmethod
     def from_dict(cls, dict_obj: dict,
