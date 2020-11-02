@@ -5,17 +5,17 @@ from importlib import import_module
 from flask import Blueprint, Flask
 
 from guniflask.config.app_settings import Settings
+from guniflask.config.env import app_name_from_env
+from guniflask.config.loader import load_app_settings
 from guniflask.utils.path import walk_modules
 from guniflask.web.context import WebApplicationContext
 
 
 class AppInitializer:
-    def __init__(self, name, app_settings=None):
-        self.name = name
-        if app_settings is None:
-            self.settings = Settings()
-        if not isinstance(app_settings, Settings):
-            self.settings = Settings(app_settings)
+    def __init__(self):
+        self.name = app_name_from_env()
+        app_settings = load_app_settings(self.name)
+        self.settings = Settings(app_settings)
 
     def init(self, with_context=True):
         app = Flask(self.name)
