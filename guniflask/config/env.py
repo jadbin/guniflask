@@ -8,7 +8,7 @@ from os.path import join, isfile
 from dotenv import load_dotenv
 
 
-def set_app_env():
+def set_app_default_env():
     home_dir = os.environ.get('GUNIFLASK_HOME')
     if not home_dir:
         home_dir = os.getcwd()
@@ -17,7 +17,6 @@ def set_app_env():
         sys.path.append(home_dir)
     if not os.environ.get('GUNIFLASK_CONF_DIR'):
         os.environ['GUNIFLASK_CONF_DIR'] = join(home_dir, 'conf')
-    load_app_env()
 
 
 def load_env(fname):
