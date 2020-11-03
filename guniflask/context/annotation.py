@@ -4,7 +4,7 @@ import inspect
 from typing import Type, Collection, Union, Any
 
 from guniflask.annotation import Annotation, AnnotationUtils, AnnotationMetadata
-from guniflask.config import settings
+from guniflask.config.app_settings import settings
 from guniflask.context.condition import Condition, ConditionContext
 
 
