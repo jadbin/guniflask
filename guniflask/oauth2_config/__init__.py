@@ -1,9 +1,0 @@
-# coding=utf-8
-
-from .annotation import enable_authorization_server
-from .annotation import enable_resource_server
-from .authorization_server_configurer import AuthorizationServerConfigurer
-from .authorization_server_configurer import AuthorizationServerEndpointsConfigurer
-from .client_details_service_configurer import ClientDetailsServiceConfigurer
-from .resource_server_configurer import ResourceServerConfigurer
-from .resource_server_configurer import ResourceServerSecurityConfigurer

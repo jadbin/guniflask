@@ -5,7 +5,6 @@ from typing import Optional
 from flask import _request_ctx_stack
 from werkzeug.local import LocalProxy
 
-from guniflask.oauth2.authentication import OAuth2Authentication
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.context import SecurityContext
 from guniflask.security.user import User
@@ -23,8 +22,6 @@ class UserContext:
                 user = None
                 auth = SecurityContext.get_authentication()
                 if auth is not None:
-                    if isinstance(auth, OAuth2Authentication):
-                        auth = auth.user_authentication
                     if isinstance(auth, UserAuthentication):
                         if isinstance(auth.principal, UserDetails):
                             user = auth.principal

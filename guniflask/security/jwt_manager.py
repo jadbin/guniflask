@@ -3,21 +3,18 @@
 import datetime as dt
 import uuid
 
-from guniflask.oauth2.errors import InvalidTokenError
-from guniflask.oauth2.token import OAuth2AccessToken
-from guniflask.oauth2.token_converter import AccessTokenConverter, JwtAccessTokenConverter, \
-    UserAuthenticationConverter
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_token import UserAuthentication
+from guniflask.security.errors import InvalidTokenError
 from guniflask.security.jwt import JwtHelper
 from guniflask.security.user import User
 
 
 class JwtManager(AuthenticationManager):
-    EXP = AccessTokenConverter.EXP
-    JTI = AccessTokenConverter.JTI
-    AUTHORITIES = AccessTokenConverter.AUTHORITIES
-    USERNAME = UserAuthenticationConverter.USERNAME
+    EXP = 'exp'
+    JTI = 'jti'
+    AUTHORITIES = 'authorities'
+    USERNAME = 'username'
     USER_DETAILS = 'user_details'
 
     def __init__(self, secret='', public_key=None, private_key=None, algorithm='HS256',
@@ -28,8 +25,6 @@ class JwtManager(AuthenticationManager):
         self.algorithm = algorithm
         self.access_token_expires_in = access_token_expires_in
         self.refresh_token_expires_in = refresh_token_expires_in
-
-        self.token_converter = JwtAccessTokenConverter()
 
     def create_access_token(self, authorities=None, username=None, **user_details) -> str:
         expires_in = self.access_token_expires_in
@@ -45,10 +40,6 @@ class JwtManager(AuthenticationManager):
 
         return JwtHelper.encode_jwt(payload, self.secret or self.private_key,
                                     self.algorithm)
-
-    def read_access_token(self, access_token_value: str) -> OAuth2AccessToken:
-        payload = self._decode(access_token_value)
-        return self.token_converter.extract_access_token(access_token_value, payload)
 
     def authenticate(self, authentication):
         access_token_value = authentication.principal

@@ -28,3 +28,9 @@ class InsufficientAuthenticationError(AuthenticationError):
     """
     Insufficient authentication exception
     """
+
+
+class InvalidTokenError(AuthenticationError):
+    """
+    Invalid token exception
+    """

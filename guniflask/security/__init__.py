@@ -18,7 +18,7 @@ from .errors import InsufficientAuthenticationError
 from .errors import ProviderNotFoundError
 from .errors import UsernameNotFoundError
 from .jwt import JwtHelper
-from .jwt_provider import JwtManager
+from .jwt_manager import JwtManager
 from .password_encoder import PasswordEncoder
 from .preauth_provider import PreAuthenticatedProvider
 from .preauth_token import PreAuthenticatedToken
