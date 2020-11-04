@@ -83,11 +83,11 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
     def _do_consul_register(self, consul: ConsulClient, app_settings: Settings):
         local_ip = get_local_ip_address()
         port = app_settings['port']
-        service_id = f'{app_settings["project_name"]}-{local_ip}-{port}'
+        service_id = f'{app_settings["app_name"]}-{local_ip}-{port}'
         heath_url = f'http://{local_ip}:{port}/_health?' \
-                    f'name={app_settings["project_name"]}&active_profiles={app_settings["active_profiles"]}'
+                    f'name={app_settings["app_name"]}&active_profiles={app_settings["active_profiles"]}'
         try:
-            consul.register_service(app_settings['project_name'],
+            consul.register_service(app_settings['app_name'],
                                     service_id=service_id,
                                     address=local_ip,
                                     port=port,
@@ -139,6 +139,6 @@ class ServiceDiscoveryConfiguration:
             return
 
         app_settings = settings._get_current_object()
-        service_name = app_settings['project_name']
+        service_name = app_settings['app_name']
         if self._service_discovery_configurer is not None:
             self._service_discovery_configurer.configure(service_name, app_settings)

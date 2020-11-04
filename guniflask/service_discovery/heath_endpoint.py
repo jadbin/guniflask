@@ -20,7 +20,7 @@ class HealthEndpoint:
         return self.health_check()
 
     def _check_info(self, name: str, active_profile: str):
-        if name != settings['project_name']:
+        if name != settings['app_name']:
             return False
 
         if not active_profile:

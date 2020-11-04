@@ -67,7 +67,7 @@ def load_app_settings(app_name) -> dict:
 
 def get_constant_settings_from_env() -> dict:
     kwargs = {'home': os.environ.get('GUNIFLASK_HOME'),
-              'project_name': os.environ.get('GUNIFLASK_PROJECT_NAME')}
+              'app_name': os.environ.get('GUNIFLASK_APP_NAME')}
     if os.environ.get('GUNIFLASK_DEBUG'):
         kwargs['debug'] = True
     else:

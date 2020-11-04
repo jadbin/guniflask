@@ -11,6 +11,7 @@ Changelog
 - 提供接口级别单元测试方案
 - 移除oauth2相关功能，后续身份认证、授权等相关功能将基于Keycloak实现
 - ``current_user`` 的定义移动到 ``guniflask.security`` 模块中
+- 内置配置项 ``project_name`` 更名为 ``app_name`` ，环境变量配置项 ``GUNIFLASK_PROJECT_NAME`` 更名为 ``GUNIFLASK_APP_NAME``
 
 0.10.0 (2020-10-19)
 ------------------

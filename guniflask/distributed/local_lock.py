@@ -35,7 +35,7 @@ class ServiceLock:
         return True
 
     def _generate_instance_id(self) -> str:
-        return f'{settings["project_name"]}.{settings["port"]}.lock'
+        return f'{settings["app_name"]}.{settings["port"]}.lock'
 
     def release(self):
         instance_id = self._generate_instance_id()

@@ -33,10 +33,10 @@ home
 
 项目的根目录。
 
-project_name
-^^^^^^^^^^^^
+app_name
+^^^^^^^^
 
-项目的名称，可以通过环境变量 ``GUNIFLASK_PROJECT_NAME`` 进行设置。
+项目的名称，可以通过环境变量 ``GUNIFLASK_APP_NAME`` 进行设置。
 
 .. _active_profiles:
 

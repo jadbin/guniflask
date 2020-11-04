@@ -63,7 +63,7 @@ class AppInitializer:
     def _refresh_bean_context(self, app):
         if hasattr(app, 'bean_context'):
             bean_context: WebApplicationContext = getattr(app, 'bean_context')
-            bean_context.scan(self.settings['project_name'])
+            bean_context.scan(self.settings['app_name'])
             bean_context.refresh()
 
     def _register_blueprints(self, app):
@@ -73,7 +73,7 @@ class AppInitializer:
         registered_blueprints = set()
 
         def iter_blueprints():
-            for module in walk_modules(self.settings['project_name']):
+            for module in walk_modules(self.settings['app_name']):
                 for obj in vars(module).values():
                     if isinstance(obj, Blueprint) and obj not in registered_blueprints:
                         yield obj
@@ -85,4 +85,4 @@ class AppInitializer:
         del registered_blueprints
 
     def _get_app_module(self):
-        return import_module(self.settings['project_name'] + '.app')
+        return import_module(self.settings['app_name'] + '.app')

@@ -62,8 +62,8 @@ def infer_project_name(home_dir):
 
 
 def app_name_from_env():
-    if not os.environ.get('GUNIFLASK_PROJECT_NAME'):
+    if not os.environ.get('GUNIFLASK_APP_NAME'):
         project_name = infer_project_name(os.environ.get('GUNIFLASK_HOME'))
         if project_name:
-            os.environ['GUNIFLASK_PROJECT_NAME'] = project_name
-    return os.environ.get('GUNIFLASK_PROJECT_NAME')
+            os.environ['GUNIFLASK_APP_NAME'] = project_name
+    return os.environ.get('GUNIFLASK_APP_NAME')
