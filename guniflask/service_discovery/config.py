@@ -7,7 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from guniflask.config.app_settings import settings, Settings
-from guniflask.context.annotation import configuration, bean, condition_on_setting
+from guniflask.context.annotation import configuration, bean, condition_on_setting, include
 from guniflask.distributed.local_lock import ServiceLock
 from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
@@ -101,10 +101,8 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
 
 
 @configuration
+@include(ConsulConfigurer)
 class ServiceDiscoveryConfiguration:
-    SERVICE_DISCOVERY = {
-        'consul': ConsulConfigurer,
-    }
 
     def __init__(self, service_discovery_configurer: ServiceDiscoveryConfigurer = None):
         self._service_discovery_configurer = service_discovery_configurer
