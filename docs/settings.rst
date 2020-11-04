@@ -36,7 +36,7 @@ home
 app_name
 ^^^^^^^^
 
-项目的名称，可以通过环境变量 ``GUNIFLASK_APP_NAME`` 进行设置。
+运行的应用的名称，可以通过环境变量 ``GUNIFLASK_APP_NAME`` 指定运行的应用。
 
 .. _active_profiles:
 
