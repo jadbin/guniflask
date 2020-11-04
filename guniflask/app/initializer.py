@@ -7,8 +7,12 @@ from flask import Blueprint, Flask
 from guniflask.config.app_settings import Settings
 from guniflask.config.env import app_name_from_env
 from guniflask.config.loader import load_app_settings
+from guniflask.security_config.web_security_config import WebSecurityConfiguration
+from guniflask.security_config.authentication_config import AuthenticationConfiguration
+from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
 from guniflask.utils.path import walk_modules
 from guniflask.web.context import WebApplicationContext
+from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 
 
 class AppInitializer:
@@ -21,14 +25,11 @@ class AppInitializer:
         app = Flask(self.name)
         self._make_settings(app)
         if with_context:
-            bean_context = WebApplicationContext(app)
-            app.bean_context = bean_context  # register bean context for app
+            self._create_bean_context(app)
         self._init_app(app)
         with app.app_context():
             self._register_blueprints(app)
-            if with_context:
-                app.bean_context.scan(self.settings['project_name'])
-                self._refresh_bean_context(app.bean_context)
+            self._refresh_bean_context(app)
         return app
 
     def _make_settings(self, app):
@@ -39,7 +40,7 @@ class AppInitializer:
             _make_settings(app, s)
 
     def _init_app(self, app):
-        app.settings = self.settings
+        setattr(app, 'settings', self.settings)
         for k, v in self.settings.items():
             if k.isupper():
                 app.config[k] = v
@@ -50,8 +51,20 @@ class AppInitializer:
             s = self.settings
             _init_app(app, s)
 
-    def _refresh_bean_context(self, bean_context: WebApplicationContext):
-        bean_context.refresh()
+    def _create_bean_context(self, app):
+        bean_context = WebApplicationContext(app)
+        bean_context.register(AuthenticationConfiguration)
+        bean_context.register(WebSecurityConfiguration)
+        bean_context.register(WebAsyncConfiguration)
+        bean_context.register(WebSchedulingConfiguration)
+        bean_context.register(ServiceDiscoveryConfiguration)
+        setattr(app, 'bean_context', bean_context)
+
+    def _refresh_bean_context(self, app):
+        if hasattr(app, 'bean_context'):
+            bean_context: WebApplicationContext = getattr(app, 'bean_context')
+            bean_context.scan(self.settings['project_name'])
+            bean_context.refresh()
 
     def _register_blueprints(self, app):
         """

@@ -39,6 +39,7 @@ def load_profile_env(conf_dir, profiles: str = None):
 
 
 def load_app_env():
+    set_app_default_env()
     conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
     active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
     load_profile_env(conf_dir, active_profiles)

@@ -24,4 +24,3 @@ from .param_annotation import RequestHeader
 from .param_annotation import RequestParam
 from .request_filter import RequestFilter
 from .request_filter import RequestFilterChain
-from .user_context import current_user

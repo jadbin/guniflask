@@ -4,7 +4,7 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import Unauthorized
 
-from guniflask.web.user_context import current_user
+from guniflask.security.user_context import current_user
 
 
 def login_required(func):

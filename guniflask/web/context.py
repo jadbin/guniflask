@@ -4,10 +4,8 @@ from flask import Flask
 
 from guniflask.beans.definition import BeanDefinition
 from guniflask.context.default_bean_context import AnnotationConfigBeanContext
-from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.web.blueprint_post_processor import BlueprintPostProcessor
 from guniflask.web.config_constants import *
-from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 
 
 class WebApplicationContext(AnnotationConfigBeanContext):
@@ -21,13 +19,3 @@ class WebApplicationContext(AnnotationConfigBeanContext):
         if not self.contains_bean_definition(BLUEPRINT_POST_PROCESSOR):
             bean_definition = BeanDefinition(BlueprintPostProcessor)
             self.register_bean_definition(BLUEPRINT_POST_PROCESSOR, bean_definition)
-
-        self._reader.register(WebSecurityConfiguration)
-        self._reader.register(WebAsyncConfiguration)
-        self._reader.register(WebSchedulingConfiguration)
-        self._enable_service_discovery()
-
-    def _enable_service_discovery(self):
-        from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
-
-        self._reader.register(ServiceDiscoveryConfiguration)
