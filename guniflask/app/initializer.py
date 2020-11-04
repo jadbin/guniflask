@@ -7,8 +7,8 @@ from flask import Blueprint, Flask
 from guniflask.config.app_settings import Settings
 from guniflask.config.env import app_name_from_env
 from guniflask.config.loader import load_app_settings
-from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.security_config.authentication_config import AuthenticationConfiguration
+from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
 from guniflask.utils.path import walk_modules
 from guniflask.web.context import WebApplicationContext
@@ -53,12 +53,15 @@ class AppInitializer:
 
     def _create_bean_context(self, app):
         bean_context = WebApplicationContext(app)
+        self._auto_configure_bean_context(bean_context)
+        setattr(app, 'bean_context', bean_context)
+
+    def _auto_configure_bean_context(self, bean_context: WebApplicationContext):
         bean_context.register(AuthenticationConfiguration)
         bean_context.register(WebSecurityConfiguration)
         bean_context.register(WebAsyncConfiguration)
         bean_context.register(WebSchedulingConfiguration)
         bean_context.register(ServiceDiscoveryConfiguration)
-        setattr(app, 'bean_context', bean_context)
 
     def _refresh_bean_context(self, app):
         if hasattr(app, 'bean_context'):
