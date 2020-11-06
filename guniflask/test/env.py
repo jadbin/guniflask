@@ -15,5 +15,6 @@ def set_test_env():
                 break
             home = dirname(home)
         os.environ['GUNIFLASK_HOME'] = home
+    os.environ.setdefault('GUNIFLASK_DEBUG', '1')
     os.environ.setdefault('GUNIFLASK_ACTIVE_PROFILES', 'dev')
     load_app_env()
