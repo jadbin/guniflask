@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from guniflask.data_model.base import DataModel
+from guniflask.data_model import DataModel
 
 
 class Person(DataModel):
