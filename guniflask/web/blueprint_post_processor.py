@@ -11,9 +11,7 @@ from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.utils.inspect import inspect_args
-from guniflask.utils.inspect import resolve_arg_type, ArgType
-from guniflask.utils.request import map_object
+from guniflask.data_model.mapping import map_json, inspect_args, resolve_arg_type, ArgType
 from guniflask.web import param_annotation
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.web.filter_annotation import MethodDefFilter
@@ -178,7 +176,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
                 data = request.json
-                v = map_object(data, dtype=p.dtype)
+                v = map_json(data, dtype=p.dtype)
                 if v is not None:
                     result[k] = v
             elif isinstance(p, FilePartInfo):

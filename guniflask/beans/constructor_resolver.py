@@ -4,7 +4,7 @@ import inspect
 
 from guniflask.beans.errors import NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.factory import BeanFactory
-from guniflask.utils.inspect import inspect_args, resolve_arg_type, ArgType
+from guniflask.data_model.mapping import inspect_args, resolve_arg_type, ArgType
 
 
 class ConstructorResolver:
