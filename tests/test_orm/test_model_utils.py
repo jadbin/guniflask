@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import backref, relationship, sessionmaker
 
 from guniflask.orm import result_to_dict, BaseModelMixin
-from guniflask.orm.model_utils import _get_field_set
+from guniflask.orm.model_utils import _to_set, _ignore_set, _only_set
 
 Base = declarative_base()
 
@@ -37,7 +37,7 @@ def session():
 
     user = User(id=1, name='Bob', nickname='Good Boy')
     session.add(user)
-    article = Article(id=1, title='Happy', content='Happy Day!', author=user)
+    article = Article(id=1, title='Title', content='Content', author=user)
     session.add(article)
     session.commit()
 
@@ -55,7 +55,7 @@ def test_model_from_dict():
     assert article.title == 'Title'
 
 
-def test_model_from_dict_recursively():
+def test_model_from_dict_with_many_to_one_relation():
     article_data = dict(
         id=1,
         title='Title',
@@ -68,23 +68,38 @@ def test_model_from_dict_recursively():
         ),
     )
     article = Article.from_dict(article_data)
+    assert article.id == 1
+    assert article.title == 'Title'
+    assert article.content == 'Content'
     assert article.user_id == 1
     assert article.author.id == 1
+    assert article.author.name == 'Bob'
+    assert article.author.nickname == 'Good Boy'
 
+
+def test_model_from_dict_with_one_to_many_relation():
     user_data = dict(
         id=1,
         name='Bob',
         nickname='Good Boy',
         articles=[
             dict(
-                id='1',
+                id=1,
                 title='Title',
                 content='Content',
+                user_id=1,
             )
         ],
     )
     user = User.from_dict(user_data)
-    # todo
+    assert user.id == 1
+    assert user.name == 'Bob'
+    assert user.nickname == 'Good Boy'
+    article = user.articles[0]
+    assert article.id == 1
+    assert article.title == 'Title'
+    assert article.content == 'Content'
+    assert article.user_id == 1
 
 
 def test_model_from_dict_with_ignore():
@@ -100,48 +115,96 @@ def test_model_from_dict_with_only():
     assert article.content == 'Content'
 
 
-def test_model_to_dict(session):
+def test_model_to_dict():
+    article = Article(id=1, title='Title', content='Content', user_id=1,
+                      author=User(id=1, name='Bob', nickname='Good Boy'))
+    d = article.to_dict()
+    assert d == {'id': 1, 'title': 'Title', 'content': 'Content', 'user_id': 1,
+                 'author': {'id': 1, 'name': 'Bob', 'nickname': 'Good Boy'}}
+
+
+def test_model_to_dict_with_ignore():
+    article = Article(id=1, title='Title', content='Content', user_id=1,
+                      author=User(id=1, name='Bob', nickname='Good Boy'))
+    d = article.to_dict(ignore='id,user_id,author.id')
+    assert d == {'title': 'Title', 'content': 'Content',
+                 'author': {'name': 'Bob', 'nickname': 'Good Boy'}}
+
+
+def test_model_to_dict_with_only():
+    article = Article(id=1, title='Title', content='Content', user_id=1,
+                      author=User(id=1, name='Bob', nickname='Good Boy'))
+    d = article.to_dict(only='title,content,author.name,author.nickname')
+    assert d == {'title': 'Title', 'content': 'Content',
+                 'author': {'name': 'Bob', 'nickname': 'Good Boy'}}
+
+
+def test_model_to_dict_with_one_to_many_relation(session):
+    user = session.query(User).filter_by(id=1).first()
+    d = user.to_dict()
+    assert d == {'id': 1, 'name': 'Bob', 'nickname': 'Good Boy',
+                 'articles': [{'id': 1, 'title': 'Title', 'content': 'Content', 'user_id': 1}]}
+
+
+def test_model_to_dict_with_many_to_one_relation(session):
     article = session.query(Article).filter_by(id=1).first()
     d = article.to_dict()
-    assert d == {'id': 1, 'title': 'Happy', 'content': 'Happy Day!', 'user_id': 1}
-
-
-def test_model_to_dict_with_ignore(session):
-    article = session.query(Article).filter_by(id=1).first()
-    d = article.to_dict(ignore='id,user_id')
-    assert d == {'title': 'Happy', 'content': 'Happy Day!'}
-
-
-def test_model_to_dict_with_only(session):
-    article = session.query(Article).filter_by(id=1).first()
-    d = article.to_dict(only='title,content')
-    assert d == {'title': 'Happy', 'content': 'Happy Day!'}
+    assert d == {'id': 1, 'title': 'Title', 'content': 'Content', 'user_id': 1,
+                 'author': {'id': 1, 'name': 'Bob', 'nickname': 'Good Boy'}}
 
 
 def test_update_model_by_dict():
     article = Article()
-    article.update_by_dict(dict(id=1, title='Title'))
+    article.update_by_dict(dict(id=1, title='Title', author=dict(id=1, name='Bob')))
     assert article.id == 1
     assert article.title == 'Title'
+    assert article.author.id == 1
+    assert article.author.name == 'Bob'
 
 
 def test_update_model_by_dict_with_ignore():
-    article = Article()
-    article.update_by_dict(dict(id=1, title='Title'), ignore='id')
+    article = Article(author=User())
+    article.update_by_dict(dict(id=1, title='Title', author=dict(id=1, name='Bob')), ignore='id,author.id')
     assert article.id is None
     assert article.title == 'Title'
+    assert article.author.id is None
+    assert article.author.name == 'Bob'
 
 
 def test_update_model_by_dict_with_only():
     article = Article()
-    article.update_by_dict(dict(id=1, title='Title', content='Content'), only='title,content')
+    article.update_by_dict(
+        dict(
+            id=1,
+            title='Title',
+            content='Content',
+            author=dict(id=1, name='Bob'),
+        ),
+        only='title,content,author.name',
+    )
     assert article.id is None
     assert article.title == 'Title'
     assert article.content == 'Content'
+    assert article.author.id is None
+    assert article.author.name == 'Bob'
 
 
-def test_get_field_set():
-    assert _get_field_set('a') == {'a'}
-    assert _get_field_set('a,b') == {'a', 'b'}
-    assert _get_field_set({'a'}) == {'a'}
-    assert _get_field_set(['a', 'b']) == {'a', 'b'}
+def test_update_model_by_dict_with_list():
+    user = User()
+    with pytest.raises(RuntimeError):
+        user.update_by_dict({'name': 'Bob', 'articles': [{'title': 'Title'}]})
+
+
+def test_to_set():
+    assert _to_set('a') == {'a'}
+    assert _to_set('a,b') == {'a', 'b'}
+    assert _to_set({'a'}) == {'a'}
+    assert _to_set(['a', 'b']) == {'a', 'b'}
+
+
+def test_ignore_set():
+    assert _ignore_set('a.b') == {'a.b'}
+
+
+def test_only_set():
+    assert _only_set('a.b') == {'a', 'a.b'}
