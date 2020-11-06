@@ -76,6 +76,8 @@ def update_model_by_dict(model, dict_obj, ignore=None, only=None):
 
 
 def _get_field_set(field):
+    if isinstance(field, set):
+        return field
     if isinstance(field, str):
         field = [i.strip() for i in field.split(',')]
     return set(field or [])

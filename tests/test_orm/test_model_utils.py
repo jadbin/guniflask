@@ -7,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import backref, relationship, sessionmaker
 
 from guniflask.orm import result_to_dict, BaseModelMixin
+from guniflask.orm.model_utils import _get_field_set
 
 Base = declarative_base()
 
@@ -52,6 +53,38 @@ def test_model_from_dict():
     article = Article.from_dict(dict(id=1, title='Title'))
     assert article.id == 1
     assert article.title == 'Title'
+
+
+def test_model_from_dict_recursively():
+    article_data = dict(
+        id=1,
+        title='Title',
+        content='Content',
+        user_id=1,
+        author=dict(
+            id=1,
+            name='Bob',
+            nickname='Good Boy',
+        ),
+    )
+    article = Article.from_dict(article_data)
+    assert article.user_id == 1
+    assert article.author.id == 1
+
+    user_data = dict(
+        id=1,
+        name='Bob',
+        nickname='Good Boy',
+        articles=[
+            dict(
+                id='1',
+                title='Title',
+                content='Content',
+            )
+        ],
+    )
+    user = User.from_dict(user_data)
+    # todo
 
 
 def test_model_from_dict_with_ignore():
@@ -105,3 +138,10 @@ def test_update_model_by_dict_with_only():
     assert article.id is None
     assert article.title == 'Title'
     assert article.content == 'Content'
+
+
+def test_get_field_set():
+    assert _get_field_set('a') == {'a'}
+    assert _get_field_set('a,b') == {'a', 'b'}
+    assert _get_field_set({'a'}) == {'a'}
+    assert _get_field_set(['a', 'b']) == {'a', 'b'}
