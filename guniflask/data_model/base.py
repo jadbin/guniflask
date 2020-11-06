@@ -2,6 +2,7 @@
 
 from typing import get_type_hints, Any
 
+from guniflask.data_model.mapping import map_json
 from guniflask.orm.base_model import BaseModelMixin
 
 
@@ -23,11 +24,7 @@ class DataModel:
 
     @classmethod
     def from_dict(cls, obj: dict):
-        d = cls()
-        for k in get_type_hints(cls):
-            if k in obj:
-                setattr(d, k, obj[k])
-        return d
+        return map_json(obj, cls)
 
     @classmethod
     def from_orm(cls, obj: BaseModelMixin):
