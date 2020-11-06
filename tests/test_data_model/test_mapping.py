@@ -1,8 +1,10 @@
 # coding=utf-8
 
-from typing import List, Set
+from typing import List, Set, Mapping, Dict, Union
 
-from guniflask.data_model.mapping import map_json
+import pytest
+
+from guniflask.data_model.mapping import map_json, resolve_arg_type, ArgType
 
 
 class Person:
@@ -78,3 +80,67 @@ def test_map_object_data():
     assert mentor.age == 41
     assert isinstance(mentor.classes, set)
     assert mentor.classes == {'English', 'Math'}
+
+
+def test_resolve_arg_type():
+    c, t = resolve_arg_type(None)
+    assert c is ArgType.SINGLE, t is None
+
+    with pytest.raises(ValueError):
+        resolve_arg_type('')
+
+    with pytest.raises(ValueError):
+        resolve_arg_type(Union[int, str])
+
+    c, t = resolve_arg_type(list)
+    assert c is ArgType.LIST, t is None
+
+    c, t = resolve_arg_type(set)
+    assert c is ArgType.SET, t is None
+
+    c, t = resolve_arg_type(dict)
+    assert c is ArgType.DICT, t is None
+
+    c, t = resolve_arg_type(int)
+    assert c is ArgType.SINGLE, t is int
+
+    c, t = resolve_arg_type(str)
+    assert c is ArgType.SINGLE, t is str
+
+    c, t = resolve_arg_type(List)
+    assert c is ArgType.LIST, t is None
+
+    c, t = resolve_arg_type(Set)
+    assert c is ArgType.SET, t is None
+
+    c, t = resolve_arg_type(Mapping)
+    assert c is ArgType.DICT, t is None
+
+    c, t = resolve_arg_type(Dict)
+    assert c is ArgType.DICT, t is None
+
+    class A:
+        pass
+
+    c, t = resolve_arg_type(A)
+    assert c is ArgType.SINGLE, t is A
+
+    c, t = resolve_arg_type(List[A])
+    assert c is ArgType.LIST, t is A
+    c, t = resolve_arg_type(List[str])
+    assert c is ArgType.LIST, t is str
+
+    c, t = resolve_arg_type(Set[A])
+    assert c is ArgType.SET, t is A
+    c, t = resolve_arg_type(Set[str])
+    assert c is ArgType.SET, t is str
+
+    c, t = resolve_arg_type(Mapping[str, A])
+    assert c is ArgType.DICT, t == (str, A)
+    c, t = resolve_arg_type(Mapping[str, str])
+    assert c is ArgType.DICT, t == (str, str)
+
+    c, t = resolve_arg_type(Dict[str, A])
+    assert c is ArgType.DICT, t == (str, A)
+    c, t = resolve_arg_type(Dict[str, str])
+    assert c is ArgType.DICT, t == (str, str)

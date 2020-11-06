@@ -103,48 +103,50 @@ def resolve_arg_type(arg_type: Optional[type]):
 
         argc = None
         etype = None
-        if issubclass(origin, List):
-            argc = ArgType.LIST
-            if hasattr(arg_type, '__args__'):
-                args = getattr(arg_type, '__args__')
-                if args and len(args) == 1:
-                    vt = args[0]
-                    if not inspect.isclass(vt):
-                        vt = None
-                    etype = vt
-        elif issubclass(origin, Mapping):
-            argc = ArgType.DICT
-            if hasattr(arg_type, '__args__'):
-                args = getattr(arg_type, '__args__')
-                if args and len(args) == 2:
-                    kt = args[0]
-                    vt = args[1]
-                    if not inspect.isclass(kt):
-                        kt = None
-                    if not inspect.isclass(vt):
-                        vt = None
-                    etype = (kt, vt)
-        elif issubclass(origin, Set):
-            argc = ArgType.SET
-            if hasattr(arg_type, '__args__'):
-                args = getattr(arg_type, '__args__')
-                if args and len(args) == 1:
-                    vt = args[0]
-                    if not inspect.isclass(vt):
-                        vt = None
-                    etype = vt
+        if inspect.isclass(origin):
+            if issubclass(origin, List):
+                argc = ArgType.LIST
+                if hasattr(arg_type, '__args__'):
+                    args = getattr(arg_type, '__args__')
+                    if args and len(args) == 1:
+                        vt = args[0]
+                        if not inspect.isclass(vt):
+                            vt = None
+                        etype = vt
+            elif issubclass(origin, Mapping):
+                argc = ArgType.DICT
+                if hasattr(arg_type, '__args__'):
+                    args = getattr(arg_type, '__args__')
+                    if args and len(args) == 2:
+                        kt = args[0]
+                        vt = args[1]
+                        if not inspect.isclass(kt):
+                            kt = None
+                        if not inspect.isclass(vt):
+                            vt = None
+                        etype = (kt, vt)
+            elif issubclass(origin, Set):
+                argc = ArgType.SET
+                if hasattr(arg_type, '__args__'):
+                    args = getattr(arg_type, '__args__')
+                    if args and len(args) == 1:
+                        vt = args[0]
+                        if not inspect.isclass(vt):
+                            vt = None
+                        etype = vt
         if argc is None:
             raise ValueError(f'Unsupported generic argument type: {arg_type}')
         return argc, etype
-    else:
-        assert inspect.isclass(arg_type), f'Non-generic argument type must be a class, but got: {arg_type}'
-        if issubclass(arg_type, List):
-            return ArgType.LIST, None
-        if issubclass(arg_type, Mapping):
-            return ArgType.DICT, None
-        if issubclass(arg_type, Set):
-            return ArgType.SET, None
-        return ArgType.SINGLE, arg_type
+
+    if not inspect.isclass(arg_type):
+        raise ValueError(f'Non-generic argument type must be a class, but got: {arg_type}')
+    if issubclass(arg_type, List):
+        return ArgType.LIST, None
+    if issubclass(arg_type, Mapping):
+        return ArgType.DICT, None
+    if issubclass(arg_type, Set):
+        return ArgType.SET, None
+    return ArgType.SINGLE, arg_type
 
 
 class ArgType:
