@@ -1,10 +1,11 @@
 # coding=utf-8
 
+import inspect
 from typing import List, Set, Mapping, Dict, Union
 
 import pytest
 
-from guniflask.data_model.mapping import map_json, resolve_arg_type, ArgType
+from guniflask.data_model.mapping import map_json, resolve_arg_type, ArgType, inspect_args
 
 
 class Person:
@@ -144,3 +145,21 @@ def test_resolve_arg_type():
     assert c is ArgType.DICT, t == (str, A)
     c, t = resolve_arg_type(Dict[str, str])
     assert c is ArgType.DICT, t == (str, str)
+
+
+def test_inspect_args():
+    class A:
+        pass
+
+    def func(a, b: int, c: List, d=1, e: List = None, f: List[str] = None, g: A = None) -> dict:
+        pass
+
+    args, hints = inspect_args(func)
+    assert args['a'] is inspect._empty
+    assert args['b'] is inspect._empty
+    assert args['c'] is inspect._empty
+    assert args['d'] == 1
+    assert args['e'] is None
+    assert args['f'] is None
+    assert args['g'] is None
+    assert hints == {'return': dict, 'b': int, 'c': List, 'e': List, 'f': List[str], 'g': A}

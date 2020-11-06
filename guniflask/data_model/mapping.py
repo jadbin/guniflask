@@ -75,7 +75,7 @@ def map_json(source: Any, dtype: Any = None, target=None) -> Any:
 
 def inspect_args(func):
     signature = inspect.signature(func)
-    paramters = signature.parameters
+    parameters = signature.parameters
     return_type = signature.return_annotation
 
     hints = {}
@@ -83,7 +83,7 @@ def inspect_args(func):
         hints['return'] = return_type
 
     args = OrderedDict()
-    for p in paramters.values():
+    for p in parameters.values():
         args[p.name] = p.default
         if p.annotation is not inspect._empty:
             hints[p.name] = p.annotation
