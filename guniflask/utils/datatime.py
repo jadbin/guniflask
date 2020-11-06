@@ -3,7 +3,7 @@
 import datetime as dt
 
 
-def string_to_datetime(s):
+def convert_to_datetime(s):
     if isinstance(s, int):
         return dt.datetime.fromtimestamp(s, tz=dt.timezone.utc).astimezone()
     elif isinstance(s, str):

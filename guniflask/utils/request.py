@@ -4,7 +4,7 @@ import datetime as dt
 import inspect
 from typing import get_type_hints, List, Any, Mapping, MutableMapping
 
-from .datatime import string_to_datetime
+from .datatime import convert_to_datetime
 from .inspect import ArgType, resolve_arg_type
 
 
@@ -63,7 +63,7 @@ def map_object(source, dtype: Any = None, target=None) -> Any:
         return result
     else:
         if dtype == dt.datetime:
-            source = string_to_datetime(source)
+            source = convert_to_datetime(source)
         elif dtype is not None:
             try:
                 source = dtype(source)

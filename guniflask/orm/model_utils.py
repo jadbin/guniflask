@@ -4,7 +4,7 @@ import datetime as dt
 
 import sqlalchemy
 
-from guniflask.utils.datatime import string_to_datetime
+from guniflask.utils.datatime import convert_to_datetime
 
 
 def model_to_dict(model, ignore=None, only=None, only_not_none=False):
@@ -59,7 +59,7 @@ def dict_to_model(dict_obj, model_cls, ignore=None, only=None, only_not_none=Fal
                 continue
             v = dict_obj[c.key]
             if isinstance(columns[c.key].type, sqlalchemy.DateTime):
-                v = string_to_datetime(v)
+                v = convert_to_datetime(v)
             if only_not_none and v is None:
                 continue
             kwargs[c.key] = v
@@ -79,7 +79,7 @@ def update_model_by_dict(model, dict_obj, ignore=None, only=None, only_not_none=
                 continue
             v = dict_obj[c.key]
             if isinstance(columns[c.key].type, sqlalchemy.DateTime):
-                v = string_to_datetime(v)
+                v = convert_to_datetime(v)
             if only_not_none and v is None:
                 continue
             setattr(model, c.key, v)
