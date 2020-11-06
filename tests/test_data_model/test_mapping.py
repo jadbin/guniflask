@@ -23,38 +23,40 @@ class Student(Person):
     graduated: bool = False
 
 
-def test_instantiate_from_json():
+def test_map_simple_data():
     assert map_json('1', dtype=int) == 1
     assert map_json([1, 2, 3]) == [1, 2, 3]
     assert map_json({'key': 'value'}) == {'key': 'value'}
 
+
+def test_map_object_data():
     student_data = dict(
-        name='Xiao Ming',
+        name='Bob',
         age=12,
         graduated=True,
         hobbies=['Programming', 'Piano'],
         scores={'Math': 100},
         parents=[
             dict(
-                name='Wang Shu',
+                name='Billy',
                 age=40
             ),
             dict(
-                name='Wang Shener',
+                name='Judy',
                 age=39
             )
         ],
         mentor=dict(
-            name='Jia Meng',
+            name='Alice',
             age=41,
-            classes=['English', 'Yuwen']
+            classes=['English', 'Math']
         )
     )
 
     student = map_json(student_data, Student)
 
     assert isinstance(student, Student)
-    assert student.name == 'Xiao Ming'
+    assert student.name == 'Bob'
     assert student.age == 12
     assert student.graduated is True
     assert student.hobbies == ['Programming', 'Piano']
@@ -63,16 +65,16 @@ def test_instantiate_from_json():
 
     assert isinstance(student.parents, list) and len(student.parents) == 2
     for parent in student.parents:
-        if parent.name == 'Wang Shu':
+        if parent.name == 'Billy':
             assert parent.age == 40
-        elif parent.name == 'Wang Shener':
+        elif parent.name == 'Judy':
             assert parent.age == 39
         else:
             raise RuntimeError
 
     assert isinstance(student.mentor, Teacher)
     mentor = student.mentor
-    assert mentor.name == 'Jia Meng'
+    assert mentor.name == 'Alice'
     assert mentor.age == 41
     assert isinstance(mentor.classes, set)
-    assert mentor.classes == {'English', 'Yuwen'}
+    assert mentor.classes == {'English', 'Math'}
