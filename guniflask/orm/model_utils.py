@@ -11,7 +11,11 @@ class DictRecursionError(Exception):
     pass
 
 
-def model_to_dict(model, ignore=None, only=None, __prefix='', __exists=None) -> dict:
+def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __exists=None) -> dict:
+    if max_depth is not None:
+        if max_depth <= 0:
+            raise DictRecursionError
+        max_depth -= 1
     if __exists is None:
         __exists = set()
     if model in __exists:
@@ -46,6 +50,7 @@ def model_to_dict(model, ignore=None, only=None, __prefix='', __exists=None) -> 
                                 obj,
                                 ignore=ignore_set,
                                 only=only_set,
+                                max_depth=max_depth,
                                 __prefix=_new_prefix(__prefix, key),
                                 __exists=__exists,
                             )
@@ -57,6 +62,7 @@ def model_to_dict(model, ignore=None, only=None, __prefix='', __exists=None) -> 
                             v,
                             ignore=ignore_set,
                             only=only_set,
+                            max_depth=max_depth,
                             __prefix=_new_prefix(__prefix, key),
                             __exists=__exists,
                         )

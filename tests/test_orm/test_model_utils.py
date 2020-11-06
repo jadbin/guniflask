@@ -139,6 +139,16 @@ def test_model_to_dict_with_only():
                  'author': {'name': 'Bob', 'nickname': 'Good Boy'}}
 
 
+def test_model_to_dict_with_max_depth():
+    article = Article(id=1, title='Title', content='Content', user_id=1,
+                      author=User(id=1, name='Bob', nickname='Good Boy'))
+    d = article.to_dict(max_depth=1)
+    assert d == {'id': 1, 'title': 'Title', 'content': 'Content', 'user_id': 1}
+    d = article.to_dict(max_depth=2)
+    assert d == {'id': 1, 'title': 'Title', 'content': 'Content', 'user_id': 1,
+                 'author': {'id': 1, 'name': 'Bob', 'nickname': 'Good Boy'}}
+
+
 def test_model_to_dict_with_one_to_many_relation(session):
     user = session.query(User).filter_by(id=1).first()
     d = user.to_dict()

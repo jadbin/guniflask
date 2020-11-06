@@ -23,8 +23,9 @@ class BaseModelMixin:
             self,
             ignore: Union[str, List] = None,
             only: Union[str, List] = None,
+            max_depth: int = None,
     ):
-        return model_to_dict(self, ignore=ignore, only=only)
+        return model_to_dict(self, ignore=ignore, only=only, max_depth=max_depth)
 
     def update_by_dict(
             self,
