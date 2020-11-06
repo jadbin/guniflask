@@ -7,7 +7,7 @@ import sqlalchemy
 from guniflask.utils.datatime import convert_to_datetime
 
 
-def model_to_dict(model, ignore=None, only=None, only_not_none=False):
+def model_to_dict(model, ignore=None, only=None):
     col_attrs = sqlalchemy.inspect(model).mapper.column_attrs
     d = {}
     tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
@@ -20,33 +20,27 @@ def model_to_dict(model, ignore=None, only=None, only_not_none=False):
             v = getattr(model, c.key)
             if isinstance(v, dt.datetime) and v.tzinfo is None:
                 v = v.replace(tzinfo=tz_info)
-            if only_not_none and v is None:
-                continue
             d[c.key] = v
     return d
 
 
-def result_to_dict(result, model_cls, ignore=None, only=None, only_not_none=False):
+def result_to_dict(result, ignore=None, only=None):
     res = {}
-    col_attrs = sqlalchemy.inspect(model_cls).mapper.column_attrs
     tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
     ignore_set = _get_field_set(ignore)
     only_set = _get_field_set(only)
-    for c in col_attrs:
-        if c.key not in ignore_set:
-            if only and c.key not in only_set:
+    for key in result.keys():
+        if key not in ignore_set:
+            if only and key not in only_set:
                 continue
-            if hasattr(result, c.key):
-                v = getattr(result, c.key)
-                if isinstance(v, dt.datetime) and v.tzinfo is None:
-                    v = v.replace(tzinfo=tz_info)
-                if only_not_none and v is None:
-                    continue
-                res[c.key] = v
+            v = getattr(result, key)
+            if isinstance(v, dt.datetime) and v.tzinfo is None:
+                v = v.replace(tzinfo=tz_info)
+            res[key] = v
     return res
 
 
-def dict_to_model(dict_obj, model_cls, ignore=None, only=None, only_not_none=False):
+def dict_to_model(dict_obj, model_cls, ignore=None, only=None):
     mapper = sqlalchemy.inspect(model_cls).mapper
     columns = mapper.columns
     col_attrs = mapper.column_attrs
@@ -60,14 +54,12 @@ def dict_to_model(dict_obj, model_cls, ignore=None, only=None, only_not_none=Fal
             v = dict_obj[c.key]
             if isinstance(columns[c.key].type, sqlalchemy.DateTime):
                 v = convert_to_datetime(v)
-            if only_not_none and v is None:
-                continue
             kwargs[c.key] = v
     model = model_cls(**kwargs)
     return model
 
 
-def update_model_by_dict(model, dict_obj, ignore=None, only=None, only_not_none=False):
+def update_model_by_dict(model, dict_obj, ignore=None, only=None):
     mapper = sqlalchemy.inspect(model).mapper
     columns = mapper.columns
     col_attrs = mapper.column_attrs
@@ -80,8 +72,6 @@ def update_model_by_dict(model, dict_obj, ignore=None, only=None, only_not_none=
             v = dict_obj[c.key]
             if isinstance(columns[c.key].type, sqlalchemy.DateTime):
                 v = convert_to_datetime(v)
-            if only_not_none and v is None:
-                continue
             setattr(model, c.key, v)
 
 
