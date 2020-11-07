@@ -19,4 +19,4 @@ class ConditionContext:
 class Condition(metaclass=ABCMeta):
     @abstractmethod
     def matches(self, context: ConditionContext, metadata: AnnotationMetadata) -> bool:
-        pass
+        pass  # pragma: no cover

@@ -6,11 +6,11 @@ from abc import ABCMeta, abstractmethod
 class PasswordEncoder(metaclass=ABCMeta):
     @abstractmethod
     def encode(self, raw_password: bytes) -> str:
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def matches(self, raw_password: bytes, encoded_password: str) -> bool:
-        pass
+        pass  # pragma: no cover
 
 
 class PlainPasswordEncoder(PasswordEncoder):

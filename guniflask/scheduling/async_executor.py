@@ -11,7 +11,7 @@ class AsyncExecutor(metaclass=ABCMeta):
 
     @abstractmethod
     def submit(self, task):
-        pass
+        pass  # pragma: no cover
 
 
 class DefaultAsyncExecutor(AsyncExecutor, SmartInitializingSingleton, DisposableBean):

@@ -9,4 +9,4 @@ class UserDetailsService(metaclass=ABCMeta):
 
     @abstractmethod
     def load_user_by_username(self, username: str) -> UserDetails:
-        pass
+        pass  # pragma: no cover

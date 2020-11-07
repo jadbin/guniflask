@@ -7,7 +7,7 @@ from typing import Any
 class SecurityBuilder(metaclass=ABCMeta):
     @abstractmethod
     def build(self):
-        pass
+        pass  # pragma: no cover
 
 
 class AbstractSecurityBuilder(SecurityBuilder, metaclass=ABCMeta):
@@ -24,4 +24,4 @@ class AbstractSecurityBuilder(SecurityBuilder, metaclass=ABCMeta):
 
     @abstractmethod
     def _do_build(self) -> Any:
-        pass
+        pass  # pragma: no cover

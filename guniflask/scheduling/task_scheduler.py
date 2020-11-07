@@ -14,15 +14,15 @@ from guniflask.beans.lifecycle import SmartInitializingSingleton, DisposableBean
 class TaskScheduler(metaclass=ABCMeta):
     @abstractmethod
     def schedule(self, task, start_time: dt.datetime = None):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def schedule_with_cron(self, task, cron: str, start_time: dt.datetime = None):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def schedule_with_fixed_interval(self, task, interval: int, start_time: dt.datetime = None):
-        pass
+        pass  # pragma: no cover
 
 
 class DefaultTaskScheduler(TaskScheduler, SmartInitializingSingleton, DisposableBean):

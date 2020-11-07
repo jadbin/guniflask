@@ -9,4 +9,4 @@ class ApplicationEventListener(metaclass=ABCMeta):
 
     @abstractmethod
     def on_application_event(self, application_event: ApplicationEvent):
-        pass
+        pass  # pragma: no cover

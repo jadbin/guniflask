@@ -10,4 +10,4 @@ class DiscoveryClient(metaclass=ABCMeta):
 
     @abstractmethod
     def get_service_instances(self, service_name: str) -> List[ServiceInstance]:
-        pass
+        pass  # pragma: no cover

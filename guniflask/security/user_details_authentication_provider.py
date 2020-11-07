@@ -14,11 +14,11 @@ class UserDetailsAuthenticationProvider(AuthenticationProvider, metaclass=ABCMet
 
     @abstractmethod
     def retrieve_user(self, username: str, authentication: UserAuthentication) -> UserDetails:
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def check_authentication(self, user_details: UserDetails, authentication: UserAuthentication):
-        pass
+        pass  # pragma: no cover
 
     def authenticate(self, authentication: Authentication):
         assert isinstance(authentication, UserAuthentication)

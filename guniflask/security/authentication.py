@@ -14,17 +14,17 @@ class Authentication(metaclass=ABCMeta):
     @property
     @abstractmethod
     def name(self):
-        raise NotImplemented
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def principal(self):
-        raise NotImplemented
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def credentials(self):
-        raise NotImplemented
+        pass  # pragma: no cover
 
     def authenticate(self, value):
         self._authenticated = value

@@ -10,4 +10,4 @@ class UserDetailsAwareConfigurer(SecurityConfigurer, metaclass=ABCMeta):
     @property
     @abstractmethod
     def user_details_service(self) -> UserDetailsService:
-        pass
+        pass  # pragma: no cover

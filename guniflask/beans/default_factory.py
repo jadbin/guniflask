@@ -41,11 +41,13 @@ class AbstractBeanFactory(ConfigurableBeanFactory, metaclass=ABCMeta):
         else:
             bean_definition = self.get_bean_definition(bean_name)
             if bean_definition.is_singleton():
-                bean = self.get_singleton_from_factory(bean_name,
-                                                       partial(self.create_bean, bean_name, bean_definition))
+                bean = self.get_singleton_from_factory(
+                    bean_name,
+                    partial(self.create_bean, bean_name, bean_definition),
+                )
             elif bean_definition.is_prototype():
-                # TODO: support prototype
-                pass
+                # FIXME: support prototype
+                raise RuntimeError('Do not support prototype now')
 
         # Check if required type matches the type of the actual bean instance.
         if bean is not None and required_type is not None:
@@ -94,15 +96,15 @@ class AbstractBeanFactory(ConfigurableBeanFactory, metaclass=ABCMeta):
 
     @abstractmethod
     def create_bean(self, bean_name: str, bean_definition: BeanDefinition):
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def contains_bean_definition(self, bean_name: str) -> bool:
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def get_bean_definition(self, bean_name: str) -> BeanDefinition:
-        pass
+        pass  # pragma: no cover
 
 
 class DefaultBeanFactory(AbstractBeanFactory, BeanDefinitionRegistry):

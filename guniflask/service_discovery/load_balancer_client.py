@@ -12,11 +12,11 @@ class LoadBalancerClient(metaclass=ABCMeta):
 
     @abstractmethod
     def choose(self, service_name: str) -> ServiceInstance:
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def reconstruct_url(self, service_instance: ServiceInstance, original_url: str) -> str:
-        pass
+        pass  # pragma: no cover
 
 
 class RestClient(Session):

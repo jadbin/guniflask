@@ -42,7 +42,7 @@ class ConfiguredSecurityBuilder(AbstractSecurityBuilder, metaclass=ABCMeta):
 
     @abstractmethod
     def _perform_build(self) -> Any:
-        pass
+        pass  # pragma: no cover
 
     def _do_build(self) -> Any:
         self._before_init()

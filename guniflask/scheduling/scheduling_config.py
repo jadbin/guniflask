@@ -11,7 +11,7 @@ from guniflask.scheduling.task_scheduler import TaskScheduler, DefaultTaskSchedu
 class SchedulingConfigurer(metaclass=ABCMeta):
     @abstractmethod
     def get_task_scheduler(self) -> TaskScheduler:
-        pass
+        pass  # pragma: no cover
 
 
 @configuration

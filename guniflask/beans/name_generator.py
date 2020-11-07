@@ -11,7 +11,7 @@ class BeanNameGenerator(metaclass=ABCMeta):
     @abstractmethod
     def generate_bean_name(self, bean_definition: BeanDefinition,
                            registry: BeanDefinitionRegistry) -> str:
-        pass
+        pass  # pragma: no cover
 
 
 class DefaultBeanNameGenerator(BeanNameGenerator):

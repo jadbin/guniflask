@@ -10,4 +10,4 @@ class HttpSecurityBuilder(ConfiguredSecurityBuilder, metaclass=ABCMeta):
 
     @abstractmethod
     def add_request_filter(self, request_filter: RequestFilter):
-        pass
+        pass  # pragma: no cover

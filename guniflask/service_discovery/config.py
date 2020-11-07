@@ -21,17 +21,17 @@ log = logging.getLogger(__name__)
 class ServiceDiscoveryConfigurer(metaclass=ABCMeta):
     @abstractmethod
     def configure(self, service_name: str, app_settings: Settings) -> bool:
-        pass
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def discovery_client(self) -> DiscoveryClient:
-        pass
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def load_balancer_client(self) -> LoadBalancerClient:
-        pass
+        pass  # pragma: no cover
 
 
 @condition_on_setting('guniflask.consul')

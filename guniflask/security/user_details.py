@@ -8,14 +8,14 @@ class UserDetails(metaclass=ABCMeta):
     @property
     @abstractmethod
     def username(self):
-        pass
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def password(self):
-        pass
+        pass  # pragma: no cover
 
     @property
     @abstractmethod
     def authorities(self):
-        pass
+        pass  # pragma: no cover

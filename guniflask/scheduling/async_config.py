@@ -11,7 +11,7 @@ from guniflask.scheduling.config_constants import *
 class AsyncConfigurer(metaclass=ABCMeta):
     @abstractmethod
     def get_async_executor(self) -> AsyncExecutor:
-        pass
+        pass  # pragma: no cover
 
 
 @configuration
