@@ -3,6 +3,7 @@
 import io
 import json
 import os
+import time
 from os.path import dirname, abspath, join
 
 import pytest
@@ -17,6 +18,23 @@ def rest_client():
     with app_test_client() as client:
         client.application.config['TESTING'] = True
         yield client
+        clear_env()
+
+
+@pytest.fixture
+def scheduler_client():
+    os.environ['GUNIFLASK_HOME'] = join(dirname(abspath(__file__)), 'scheduler_app')
+    with app_test_client() as client:
+        monkeypatch.delenv('GUNIFLASK_HOME')
+        client.application.config['TESTING'] = True
+        yield client
+        clear_env()
+
+
+def clear_env():
+    for k in os.environ:
+        if k.startswith('GUNIFLASK_'):
+            os.environ.pop(k)
 
 
 def get_json(resp):
@@ -25,6 +43,13 @@ def get_json(resp):
 
 
 class TestRestApp:
+    def test_health_info(self, rest_client: FlaskClient):
+        data = get_json(rest_client.get('/health'))
+        assert data == {'status': 'UP'}
+
+        data = get_json(rest_client.get('/_health?name=rest_app&active_profiles=dev'))
+        assert data == {'status': 'UP'}
+
     def test_get_default_setting(self, rest_client: FlaskClient):
         data = get_json(rest_client.get('/settings/app_name'))
         assert data['app_name'] == 'rest_app'
@@ -133,3 +158,31 @@ class TestRestApp:
             )
         )
         assert data['x'] == '1'
+
+    def test_login(self, rest_client: FlaskClient):
+        data = get_json(
+            rest_client.post(
+                '/login?username=root&password=123456',
+            )
+        )
+        assert data['username'] == 'root'
+        assert 'access_token' in data
+        token = data['access_token']
+        data = get_json(
+            rest_client.get(
+                '/accounts/root',
+                headers={'Authorization': 'Bearer ' + token},
+            )
+        )
+        assert data['username'] == 'root'
+        assert data['authorities'] == ['role_admin']
+
+
+class TestSchedulerApp:
+    def test_schedule_task(self, scheduler_client: FlaskClient):
+        scheduler_client.post('/async-add?x=1&y=2')
+        time.sleep(1.2)
+        data = get_json(scheduler_client.get('/scheduled'))
+        assert data['result'] is True
+        data = get_json(scheduler_client.get('/async-add'))
+        assert data['result'] == 3

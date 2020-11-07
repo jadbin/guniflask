@@ -2,12 +2,10 @@
 
 from guniflask.web import blueprint, get_route
 
-from ..services.math_service import MathService
-
 
 @blueprint('/api')
 class MathController:
-    def __init__(self, math_service: MathService):
+    def __init__(self, math_service):
         self.math_service = math_service
 
     @get_route('/math/add')
