@@ -3,10 +3,11 @@
 Changelog
 =========
 
-0.11.2 (2020-11-06)
+0.11.2 (2020-11-07)
 ------------------
 
 - ``from_dict`` 、 ``to_dict`` 、 ``update_by_dict`` 支持递归， ``update_by_dict`` 暂时不支持更新list形式的字段
+- 修复jwt配置模版中抽取authorization header的bug
 
 0.11.1 (2020-11-05)
 ------------------
