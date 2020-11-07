@@ -49,8 +49,6 @@ Getting Started
 
     $ bash bin/manage debug
 
-在浏览器中访问 http://localhost:8000/hello-world 。
-
 Documentation
 =============
 
