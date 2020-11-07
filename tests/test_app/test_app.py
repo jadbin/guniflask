@@ -25,7 +25,6 @@ def rest_client():
 def scheduler_client():
     os.environ['GUNIFLASK_HOME'] = join(dirname(abspath(__file__)), 'scheduler_app')
     with app_test_client() as client:
-        monkeypatch.delenv('GUNIFLASK_HOME')
         client.application.config['TESTING'] = True
         yield client
         clear_env()
