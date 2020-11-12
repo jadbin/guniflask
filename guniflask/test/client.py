@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from contextlib import contextmanager
 
 from guniflask.app.factory import create_app

@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from typing import Optional
 
 from flask import _request_ctx_stack

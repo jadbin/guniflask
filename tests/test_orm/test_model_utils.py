@@ -1,6 +1,3 @@
-# coding=utf-8
-
-
 import pytest
 from sqlalchemy import create_engine, Column, String, Integer, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base

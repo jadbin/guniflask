@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .bind_annotation import blueprint
 from .bind_annotation import delete_route
 from .bind_annotation import get_route

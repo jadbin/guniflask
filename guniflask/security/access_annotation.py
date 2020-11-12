@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from functools import update_wrapper
 
 from werkzeug.exceptions import Unauthorized

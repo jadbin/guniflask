@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import os
 from os.path import dirname, curdir, join, exists, abspath
 

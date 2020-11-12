@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .annotation import async_run
 from .annotation import scheduled
 from .async_config import AsyncConfigurer

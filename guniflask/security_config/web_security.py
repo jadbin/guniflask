@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from typing import List
 
 from guniflask.security_config.configured_security_builder import ConfiguredSecurityBuilder

@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from typing import List, Union
 from urllib.parse import urlencode, urlsplit, urlunsplit
 

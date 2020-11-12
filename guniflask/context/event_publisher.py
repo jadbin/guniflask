@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from typing import Type
 
 from guniflask.beans.factory import BeanFactory

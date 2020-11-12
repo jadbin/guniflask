@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security_config.http_security_builder import HttpSecurityBuilder
 from guniflask.security_config.security_configurer import SecurityConfigurer
 from guniflask.web.cors import CorsFilter

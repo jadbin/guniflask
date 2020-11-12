@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import os
 from importlib import import_module
 from os.path import isfile, join, isdir

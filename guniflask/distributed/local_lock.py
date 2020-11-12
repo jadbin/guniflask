@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import fcntl
 import getpass
 import os

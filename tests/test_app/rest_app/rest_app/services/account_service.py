@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from flask import abort
 from guniflask.context import service
 

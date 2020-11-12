@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from flask import jsonify
 
 from guniflask.web import blueprint, post_route, RequestBody, get_route, FormValue, FilePart, CookieValue, RequestHeader

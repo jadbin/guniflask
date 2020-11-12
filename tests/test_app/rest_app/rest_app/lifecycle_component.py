@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.beans import InitializingBean, SmartInitializingSingleton, DisposableBean
 from guniflask.context import component
 

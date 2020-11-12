@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry

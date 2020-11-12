@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from flask_cors.core import parse_resources, serialize_options, DEFAULT_OPTIONS
 from flask_cors.extension import make_after_request_function
 

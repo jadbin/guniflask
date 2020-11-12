@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from abc import ABCMeta, abstractmethod
 
 from guniflask.security.authentication import Authentication

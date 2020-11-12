@@ -1,6 +1,3 @@
-# coding=utf-8
-
-
 class BeanDefinition:
     SCOPE_SINGLETON = 'singleton'
     SCOPE_PROTOTYPE = 'prototype'

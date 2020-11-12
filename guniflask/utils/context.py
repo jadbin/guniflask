@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from functools import update_wrapper
 
 from flask import _request_ctx_stack, copy_current_request_context, current_app

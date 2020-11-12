@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import inspect
 from functools import update_wrapper
 

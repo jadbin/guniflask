@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.app.initializer import AppInitializer
 from guniflask.config import load_app_env
 

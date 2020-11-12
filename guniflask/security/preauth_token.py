@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security.authentication_token import AuthenticationToken
 
 

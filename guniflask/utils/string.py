@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import re
 
 _camelcase_invalid_chars = re.compile(r'[^a-zA-Z\d]')

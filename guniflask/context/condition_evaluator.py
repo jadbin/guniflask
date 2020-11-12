@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.annotation import AnnotationMetadata
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.context.annotation import Conditional

@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .base_model import BaseModelMixin
 from .model_utils import dict_to_model
 from .model_utils import model_to_dict

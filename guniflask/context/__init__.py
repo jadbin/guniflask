@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .annotation import autowired
 from .annotation import bean
 from .annotation import component

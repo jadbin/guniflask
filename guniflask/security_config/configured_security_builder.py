@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from typing import Type, List, Any, Optional

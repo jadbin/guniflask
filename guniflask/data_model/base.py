@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from enum import Enum
 from typing import get_type_hints, Any
 

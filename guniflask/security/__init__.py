@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .access_annotation import has_any_authority
 from .access_annotation import has_any_role
 from .access_annotation import has_authority

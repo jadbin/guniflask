@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.context.annotation import bean, configuration
 from guniflask.scheduling.async_config import AsyncConfiguration
 from guniflask.scheduling.async_post_processor import AsyncPostProcessor

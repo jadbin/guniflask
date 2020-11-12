@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .authentication_manager_builder import AuthenticationManagerBuilder
 from .dao_authentication_configurer import DaoAuthenticationConfigurer
 from .http_security import HttpSecurity

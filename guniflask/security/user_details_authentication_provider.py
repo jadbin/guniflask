@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import inspect
 from abc import ABCMeta, abstractmethod
 from typing import Type

@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.utils.string import string_camelcase, string_lowercase_hyphen, \
     string_lowercase_underscore, string_uppercase_underscore
 

@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.context import configuration
 from guniflask.security_config import WebSecurityConfigurer, HttpSecurity
 

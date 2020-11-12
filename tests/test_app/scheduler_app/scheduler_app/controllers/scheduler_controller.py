@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.scheduling import scheduled, async_run
 from guniflask.web import blueprint, post_route, get_route
 

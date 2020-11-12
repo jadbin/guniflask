@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .app_settings import Settings
 from .app_settings import settings
 from .env import app_name_from_env

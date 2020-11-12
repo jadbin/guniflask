@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security_config.security_builder import SecurityBuilder
 
 

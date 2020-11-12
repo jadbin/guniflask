@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.errors import BadCredentialsError
 from guniflask.security.password_encoder import PasswordEncoder, PlainPasswordEncoder

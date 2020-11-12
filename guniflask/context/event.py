@@ -1,6 +1,3 @@
-# coding=utf-8
-
-
 class ApplicationEvent:
     def __init__(self, source):
         self.source = source

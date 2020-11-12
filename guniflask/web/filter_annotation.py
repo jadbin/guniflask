@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.annotation import Annotation, AnnotationUtils
 
 

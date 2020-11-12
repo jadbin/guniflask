@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.bean_context import BeanContext, BeanContextAware
 

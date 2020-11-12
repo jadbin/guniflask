@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security import has_role
 from guniflask.web import blueprint, post_route, get_route
 

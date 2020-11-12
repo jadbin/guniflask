@@ -1,5 +1,3 @@
-# coding=utf-8
-
 import base64
 import os
 from json import JSONEncoder as _JSONEncoder

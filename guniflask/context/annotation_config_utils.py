@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.beans.definition import BeanDefinition
 from guniflask.beans.definition_registry import BeanDefinitionRegistry
 from guniflask.context.autowired_post_processor import AutowiredAnnotationBeanPostProcessor

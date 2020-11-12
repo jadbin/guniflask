@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from abc import abstractmethod, ABCMeta
 
 from guniflask.beans.definition import BeanDefinition

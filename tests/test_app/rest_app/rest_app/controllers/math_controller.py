@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.web import blueprint, get_route
 
 

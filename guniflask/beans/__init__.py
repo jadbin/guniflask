@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from .default_factory import DefaultBeanFactory
 from .definition import BeanDefinition
 from .definition_registry import BeanDefinitionRegistry

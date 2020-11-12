@@ -1,5 +1,3 @@
-# coding=utf-8
-
 from guniflask.security.dao_authentication_provider import DaoAuthenticationProvider
 from guniflask.security.password_encoder import PasswordEncoder
 from guniflask.security.user_details_service import UserDetailsService
