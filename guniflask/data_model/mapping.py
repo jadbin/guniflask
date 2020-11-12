@@ -7,7 +7,7 @@ from typing import get_type_hints, Any, MutableMapping
 from guniflask.utils.datatime import convert_to_datetime
 
 
-def map_json(source: Any, dtype: Any = None, target=None) -> Any:
+def map_json(source: Any, dtype: Any = None, target: Any = None) -> Any:
     if source is None:
         return
     if isinstance(source, Mapping):
