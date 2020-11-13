@@ -105,7 +105,7 @@ class ServiceDiscoveryConfiguration:
     def __init__(self, service_discovery_configurer: ServiceDiscoveryConfigurer = None):
         self._service_discovery_configurer = service_discovery_configurer
 
-        self._register_lock = ServiceLock('service_registration_lock')
+        self._register_lock = ServiceLock('__service_registration_lock')
         self._auto_register()
 
     @bean
