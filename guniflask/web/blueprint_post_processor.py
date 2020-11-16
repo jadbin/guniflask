@@ -10,10 +10,10 @@ from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
 from guniflask.data_model.mapping import map_json, inspect_args, resolve_arg_type, ArgType
-from guniflask.web import param_annotation
+from guniflask.web import request_annotation
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.web.filter_annotation import MethodDefFilter
-from guniflask.web.param_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
+from guniflask.web.request_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
     RequestBodyInfo, FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo, RequestBody
 
 
@@ -104,7 +104,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 default = None
             else:
                 required = False
-            if inspect.isfunction(default) and getattr(param_annotation, default.__name__, None) is default:
+            if inspect.isfunction(default) and getattr(request_annotation, default.__name__, None) is default:
                 default = default()
             if not isinstance(default, FieldInfo):
                 if arg in path_variable_type:
