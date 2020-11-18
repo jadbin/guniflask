@@ -9,11 +9,7 @@ class DictRecursionError(Exception):
     pass
 
 
-def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __exists=None) -> dict:
-    if max_depth is not None:
-        if max_depth <= 0:
-            raise DictRecursionError
-        max_depth -= 1
+def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __exists=None) -> dict:
     if __exists is None:
         __exists = set()
     if model in __exists:
@@ -26,7 +22,11 @@ def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __
     tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
     ignore_set = _ignore_set(ignore)
     only_set = _only_set(only)
-    keys = list(col_attrs.keys()) + list(relationships.keys())
+    include_set = _include_set(include)
+    keys = list(col_attrs.keys())
+    for k in relationships.keys():
+        if _new_prefix(__prefix, k) in include_set:
+            keys.append(k)
     for key in keys:
         if _in_set(__prefix, key, ignore_set):
             continue
@@ -39,6 +39,8 @@ def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __
                 v = v.replace(tzinfo=tz_info)
             d[key] = v
         elif key in relationships:
+            if not hasattr(model, key):
+                continue
             v = getattr(model, key)
             try:
                 if v:
@@ -48,7 +50,7 @@ def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __
                                 obj,
                                 ignore=ignore_set,
                                 only=only_set,
-                                max_depth=max_depth,
+                                include=include_set,
                                 __prefix=_new_prefix(__prefix, key),
                                 __exists=__exists,
                             )
@@ -60,7 +62,7 @@ def model_to_dict(model, ignore=None, only=None, max_depth=None, __prefix='', __
                             v,
                             ignore=ignore_set,
                             only=only_set,
-                            max_depth=max_depth,
+                            include=include_set,
                             __prefix=_new_prefix(__prefix, key),
                             __exists=__exists,
                         )
@@ -182,6 +184,12 @@ def _to_set(field):
 
 
 def _ignore_set(field):
+    if isinstance(field, set):
+        return field
+    return _to_set(field)
+
+
+def _include_set(field):
     if isinstance(field, set):
         return field
     return _to_set(field)
