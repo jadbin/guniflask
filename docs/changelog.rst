@@ -4,29 +4,30 @@ Changelog
 =========
 
 0.11.4 (2020-11-??)
-------------------
+-------------------
 
-- ``to_dict`` 不再默认递归映射relationship，通过 ``include`` 参数指定处理哪些relationship
+- BaseModelMixin: ``to_dict`` 不再默认递归映射relationship，通过 ``include`` 参数指定处理哪些relationship
+- table2model: 优化了判断one-to-one关系的方法; 在定义one-to-one和one-to-many关系时用 ``back_populates`` 取代 ``backref``
 
 0.11.3 (2020-11-12)
-------------------
+-------------------
 
 - 提供以对象形式存储数据的基类 ``DataModel``
 - 去掉生成的py文件中的encoding注释
 
 0.11.2 (2020-11-07)
-------------------
+-------------------
 
-- ``from_dict`` 、 ``to_dict`` 、 ``update_by_dict`` 支持递归， ``update_by_dict`` 暂时不支持更新list形式的字段
+- BaseModelMixin: ``from_dict`` 、 ``to_dict`` 、 ``update_by_dict`` 支持递归， ``update_by_dict`` 暂时不支持更新list形式的字段
 - 修复jwt配置模版中抽取authorization header的bug
 
 0.11.1 (2020-11-05)
-------------------
+-------------------
 
 - 支持构建测试应用时自动推断项目的根目录
 
 0.11.0 (2020-11-05)
-------------------
+-------------------
 
 - 项目依赖默认不再生成PyMySQL，用户可根据实际使用的数据库选择合适的依赖
 - BaseModelMixin声明query的类型
@@ -36,7 +37,7 @@ Changelog
 - 内置配置项 ``project_name`` 更名为 ``app_name`` ，环境变量配置项 ``GUNIFLASK_PROJECT_NAME`` 更名为 ``GUNIFLASK_APP_NAME``
 
 0.10.0 (2020-10-19)
-------------------
+-------------------
 
 - manage现在可以在任何路径下运行
 - debug模式下会融合对 ``reload_extra_files`` 的默认配置和自定义配置
