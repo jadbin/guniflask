@@ -3,7 +3,7 @@
 Changelog
 =========
 
-0.11.4 (2020-11-??)
+0.11.4 (2020-11-18)
 -------------------
 
 - BaseModelMixin: ``to_dict`` 不再默认递归映射relationship，通过 ``include`` 参数指定处理哪些relationship
