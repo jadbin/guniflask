@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import get_type_hints, Any
+from typing import get_type_hints, Any, Union, List
 
 from guniflask.data_model.mapping import map_json
 from guniflask.orm.base_model import BaseModelMixin
@@ -37,5 +37,17 @@ class DataModel:
         return map_json(obj, cls)
 
     @classmethod
-    def from_orm(cls, obj: BaseModelMixin) -> 'DataModel':
-        return cls.from_dict(obj.to_dict())
+    def from_orm(
+            cls,
+            obj: BaseModelMixin,
+            ignore: Union[str, List] = None,
+            only: Union[str, List] = None,
+            include: Union[str, List] = None,
+    ) -> 'DataModel':
+        return cls.from_dict(
+            obj.to_dict(
+                ignore=ignore,
+                only=only,
+                include=include,
+            )
+        )
