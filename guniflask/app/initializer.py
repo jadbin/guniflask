@@ -19,8 +19,9 @@ class AppInitializer:
         app_settings = load_app_settings(self.name)
         self.settings = Settings(app_settings)
 
-    def init(self, with_context=True):
-        app = Flask(self.name)
+    def init(self, app=None, with_context=True):
+        if app is None:
+            app = Flask(self.name)
         self._make_settings(app)
         if with_context:
             self._create_bean_context(app)
