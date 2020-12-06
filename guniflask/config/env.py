@@ -43,7 +43,7 @@ def load_app_env():
     load_profile_env(conf_dir, active_profiles)
 
 
-project_name_regex = re.compile(r'[a-z0-9_]+')
+project_name_regex = re.compile(r'[a-zA-Z0-9_]+')
 
 
 def infer_project_name(home_dir):
