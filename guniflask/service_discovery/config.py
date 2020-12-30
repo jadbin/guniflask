@@ -82,8 +82,8 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
         local_ip = get_local_ip_address()
         port = app_settings['port']
         service_id = f'{app_settings["app_name"]}-{local_ip}-{port}'
-        heath_url = f'http://{local_ip}:{port}/_health?' \
-                    f'name={app_settings["app_name"]}&active_profiles={app_settings["active_profiles"]}'
+        heath_url = f'http://{local_ip}:{port}/health?' \
+                    f'app_id={app_settings["app_id"]}'
         try:
             consul.register_service(app_settings['app_name'],
                                     service_id=service_id,

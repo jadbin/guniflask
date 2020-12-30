@@ -1,4 +1,5 @@
 import os
+import uuid
 from os.path import isfile, join
 
 
@@ -53,6 +54,7 @@ def load_app_settings(app_name) -> dict:
     active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
     kwargs = get_settings_from_env()
     kwargs['app_name'] = app_name
+    kwargs['app_id'] = uuid.uuid4().hex
     if conf_dir:
         c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
     # builtin settings should not be changed
