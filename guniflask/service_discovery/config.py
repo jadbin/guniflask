@@ -11,7 +11,6 @@ from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
 from guniflask.service_discovery.heath_endpoint import HealthEndpoint
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, RestClient
-from guniflask.utils.network import get_local_ip_address
 
 log = logging.getLogger(__name__)
 
@@ -79,7 +78,7 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
         return ConsulClient(**client_config)
 
     def _do_consul_register(self, consul: ConsulClient, app_settings: Settings):
-        local_ip = get_local_ip_address()
+        local_ip = app_settings['ip_address']
         port = app_settings['port']
         service_id = f'{app_settings["app_name"]}-{local_ip}-{port}'
         heath_url = f'http://{local_ip}:{port}/health?' \

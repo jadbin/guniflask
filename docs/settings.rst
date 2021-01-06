@@ -38,6 +38,11 @@ app_name
 
 运行的应用的名称，可以通过环境变量 ``GUNIFLASK_APP_NAME`` 指定运行的应用。
 
+app_id
+^^^^^^
+
+应用启动时为应用指定的唯一标识。
+
 .. _active_profiles:
 
 active_profiles
@@ -60,12 +65,18 @@ debug
 host
 ^^^^
 
-项目运行时绑定的IP地址。
+应用运行时绑定的地址。
 
 port
 ^^^^
 
-项目运行时绑定的端口。
+应用运行时绑定的端口。
+
+ip_address
+^^^^^^^^^^
+
+应用所在的主机的IP地址。
+
 
 Settings to Configure the Built-in Features
 -------------------------------------------

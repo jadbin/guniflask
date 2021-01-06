@@ -2,6 +2,8 @@ import os
 import uuid
 from os.path import isfile, join
 
+from guniflask.utils.network import get_local_ip_address
+
 
 def load_config(fname, **kwargs) -> dict:
     if fname is None or not isfile(fname):
@@ -54,11 +56,13 @@ def load_app_settings(app_name) -> dict:
     active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
     kwargs = get_settings_from_env()
     kwargs['app_name'] = app_name
-    kwargs['app_id'] = uuid.uuid4().hex
     if conf_dir:
         c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
-    # builtin settings should not be changed
-    _update_config(c, kwargs)
+    if 'app_id' not in c:
+        c['app_id'] = uuid.uuid4().hex
+    if 'ip_address' not in c:
+        c['ip_address'] = get_local_ip_address()
+
     s = {}
     for name in c:
         if not name.startswith('_'):
