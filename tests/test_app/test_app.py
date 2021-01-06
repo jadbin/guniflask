@@ -44,9 +44,6 @@ class TestRestApp:
         data = get_json(rest_client.get('/health'))
         assert data == {'status': 'UP'}
 
-        data = get_json(rest_client.get('/_health?name=rest_app&active_profiles=dev'))
-        assert data == {'status': 'UP'}
-
     def test_get_default_setting(self, rest_client: FlaskClient):
         data = get_json(rest_client.get('/settings/app_name'))
         assert data['app_name'] == 'rest_app'

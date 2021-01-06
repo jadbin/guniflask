@@ -9,7 +9,7 @@ from guniflask.context.annotation import configuration, bean, condition_on_setti
 from guniflask.distributed.local_lock import ServiceLock
 from guniflask.service_discovery.consul import ConsulClient, ConsulClientError
 from guniflask.service_discovery.discovery_client import DiscoveryClient
-from guniflask.service_discovery.heath_endpoint import HealthEndpoint
+from guniflask.service_discovery.health_endpoint import HealthEndpoint
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient, RestClient
 
 log = logging.getLogger(__name__)
