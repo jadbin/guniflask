@@ -1,10 +1,8 @@
 import fcntl
-import getpass
-import os
-import tempfile
-from os.path import join, exists
+from os.path import join
 
 from guniflask.config.app_settings import settings
+from guniflask.utils.path import make_temp_dir
 
 
 class ServiceLock:
@@ -18,12 +16,7 @@ class ServiceLock:
         if instance_id in self.locks:
             return True
 
-        temp_dir = join(tempfile.gettempdir(),
-                        f'guniflask.{getpass.getuser()}',
-                        self.__class__.__name__)
-        if not exists(temp_dir):
-            os.makedirs(temp_dir, exist_ok=True)
-
+        temp_dir = make_temp_dir(self.__class__.__name__)
         fd = open(join(temp_dir, instance_id), 'w')
         try:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
