@@ -1,11 +1,6 @@
-import inspect
-from typing import Union
+from flask import current_app
 
-from flask import current_app, Flask
-
-from guniflask.annotation import AnnotationUtils
 from guniflask.config.app_settings import settings
-from guniflask.context.bean_context import BeanContext
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_provider import AuthenticationProvider
 from guniflask.security.user_details_service import UserDetailsService
@@ -13,7 +8,6 @@ from guniflask.security_config.authentication_manager_builder import Authenticat
 from guniflask.security_config.cors_configurer import CorsConfigurer
 from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
 from guniflask.security_config.http_security_builder import HttpSecurityBuilder
-from guniflask.web.bind_annotation import Blueprint
 from guniflask.web.request_filter import RequestFilter, RequestFilterChain
 
 
@@ -29,20 +23,9 @@ class HttpSecurity(HttpSecurityBuilder):
         self._blueprints = []
 
     def _perform_build(self):
-        if not self._blueprints:
-            self._blueprints = [current_app._get_current_object()]
-        for b in self._blueprints:
-            if isinstance(b, Flask):
-                b.before_request(self._security_filter_chain.before_request)
-                b.after_request(self._security_filter_chain.after_request)
-            else:
-                b_cls = type(b)
-                annotation = AnnotationUtils.get_annotation(b_cls, Blueprint)
-                if annotation:
-                    blueprint = annotation['blueprint']
-                    if blueprint:
-                        blueprint.before_request(self._security_filter_chain.before_request)
-                        blueprint.after_request(self._security_filter_chain.after_request)
+        app = current_app._get_current_object()
+        app.before_request(self._security_filter_chain.before_request)
+        app.after_request(self._security_filter_chain.after_request)
 
     def _before_configure(self):
         cors = settings.get_by_prefix('guniflask.cors')
@@ -76,19 +59,4 @@ class HttpSecurity(HttpSecurityBuilder):
 
     def add_request_filter(self, request_filter: RequestFilter) -> 'HttpSecurity':
         self._security_filter_chain.add_request_filter(request_filter)
-        return self
-
-    def authorize_blueprint(self, blueprint: Union[str, type]) -> 'HttpSecurity':
-        context: BeanContext = self.get_shared_object(BeanContext)
-        if inspect.isclass(blueprint):
-            bean = context.get_bean_of_type(blueprint)
-            if not bean:
-                raise ValueError(f'No such blueprint with type "{blueprint.__name__}"')
-        elif isinstance(blueprint, str):
-            bean = context.get_bean(blueprint)
-            if not bean:
-                raise ValueError(f'No such blueprint named "{blueprint}"')
-        else:
-            raise ValueError(f'Cannot resolve the blueprint: {blueprint}')
-        self._blueprints.append(bean)
         return self
