@@ -13,7 +13,7 @@ class JwtManager(AuthenticationManager):
     JTI = 'jti'
     AUTHORITIES = 'authorities'
     USERNAME = 'username'
-    USER_DETAILS = 'user_details'
+    USERINFO = 'userinfo'
 
     def __init__(self, secret='', public_key=None, private_key=None, algorithm='HS256',
                  access_token_expires_in=12 * 60 * 60, refresh_token_expires_in=30 * 24 * 60 * 60):
@@ -24,7 +24,7 @@ class JwtManager(AuthenticationManager):
         self.access_token_expires_in = access_token_expires_in
         self.refresh_token_expires_in = refresh_token_expires_in
 
-    def create_access_token(self, authorities=None, username=None, **user_details) -> str:
+    def create_access_token(self, authorities=None, username=None, **userinfo) -> str:
         expires_in = self.access_token_expires_in
         payload = {
             self.JTI: uuid.uuid4().hex
@@ -34,7 +34,7 @@ class JwtManager(AuthenticationManager):
 
         payload[self.AUTHORITIES] = authorities
         payload[self.USERNAME] = username
-        payload[self.USER_DETAILS] = user_details
+        payload[self.USERINFO] = userinfo
 
         return JwtHelper.encode_jwt(payload, self.secret or self.private_key,
                                     self.algorithm)
@@ -44,10 +44,10 @@ class JwtManager(AuthenticationManager):
         payload = self._decode(access_token_value)
         authorities = payload.get(self.AUTHORITIES)
         username = payload.get(self.USERNAME)
-        user_details = payload.get(self.USER_DETAILS)
+        userinfo = payload.get(self.USERINFO)
         user = User(username=username, authorities=authorities)
-        if user_details and isinstance(user_details, dict):
-            for k, v in user_details.items():
+        if userinfo and isinstance(userinfo, dict):
+            for k, v in userinfo.items():
                 setattr(user, k, v)
         user_auth = UserAuthentication(user, authorities=authorities)
         user_auth.authenticate(True)
