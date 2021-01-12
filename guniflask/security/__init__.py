@@ -19,6 +19,7 @@ from .jwt import JwtHelper
 from .jwt_manager import JwtManager
 from .password_encoder import PasswordEncoder
 from .preauth_provider import PreAuthenticatedProvider
+from .preauth_token import BearerTokenExtractor
 from .preauth_token import PreAuthenticatedToken
 from .provider_manager import ProviderManager
 from .user import User
