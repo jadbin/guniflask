@@ -2,12 +2,12 @@ from functools import update_wrapper
 
 from werkzeug.exceptions import Unauthorized
 
-from guniflask.security.user_context import current_user
+from guniflask.security.context import SecurityContext
 
 
 def login_required(func):
     def wrapper(*args, **kwargs):
-        user = current_user._get_current_object()
+        user = SecurityContext.get_user()
         if user is None:
             raise Unauthorized
         return func(*args, **kwargs)
@@ -18,7 +18,7 @@ def login_required(func):
 def has_any_role(*roles):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            user = current_user._get_current_object()
+            user = SecurityContext.get_user()
             if user is None or not user.has_any_role(*roles):
                 raise Unauthorized
             return func(*args, **kwargs)
@@ -35,7 +35,7 @@ def has_role(role):
 def has_any_authority(*authorities):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            user = current_user._get_current_object()
+            user = SecurityContext.get_user()
             if user is None or not user.has_any_authority(*authorities):
                 raise Unauthorized
             return func(*args, **kwargs)

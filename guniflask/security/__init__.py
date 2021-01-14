@@ -9,6 +9,7 @@ from .authentication_provider import AuthenticationProvider
 from .authentication_token import UserAuthentication
 from .authentication_user_details_service import AuthenticationUserDetailsService
 from .context import SecurityContext
+from .context import current_user
 from .dao_authentication_provider import DaoAuthenticationProvider
 from .errors import AuthenticationError
 from .errors import BadCredentialsError
@@ -23,7 +24,6 @@ from .preauth_token import BearerTokenExtractor
 from .preauth_token import PreAuthenticatedToken
 from .provider_manager import ProviderManager
 from .user import User
-from .user_context import current_user
 from .user_details import UserDetails
 from .user_details_authentication_provider import UserDetailsAuthenticationProvider
 from .user_details_by_name_service import UserDetailsByNameService
