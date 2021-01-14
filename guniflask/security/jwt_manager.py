@@ -36,8 +36,11 @@ class JwtManager(AuthenticationManager):
         payload[self.USERNAME] = username
         payload[self.USERINFO] = userinfo
 
-        return JwtHelper.encode_jwt(payload, self.secret or self.private_key,
-                                    self.algorithm)
+        return JwtHelper.encode_jwt(
+            payload,
+            self.secret or self.private_key,
+            self.algorithm,
+        )
 
     def authenticate(self, authentication):
         access_token_value = authentication.principal
@@ -55,8 +58,7 @@ class JwtManager(AuthenticationManager):
 
     def _decode(self, access_token_value):
         try:
-            payload = JwtHelper.decode_jwt(access_token_value, self.secret or self.public_key,
-                                           self.algorithm)
+            payload = JwtHelper.decode_jwt(access_token_value, self.secret or self.public_key)
         except Exception as e:
             raise InvalidTokenError(e)
         return payload
