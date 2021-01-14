@@ -18,12 +18,16 @@ class JwtHelper:
         return base64.b64encode(os.urandom(n), altchars=b'-_').decode().replace('=', '')
 
     @staticmethod
-    def decode_jwt(token, key, **kwargs):
-        return jwt.decode(token, key=key, **kwargs)
+    def decode_jwt(token, key, algorithms=None, **kwargs):
+        if algorithms is None:
+            header = jwt.get_unverified_header(token)
+            algorithms = [header['alg']]
+
+        return jwt.decode(token, key=key, algorithms=algorithms, **kwargs)
 
     @staticmethod
-    def encode_jwt(payload, key, algorithm, **kwargs):
-        token = jwt.encode(payload, key, algorithm=algorithm, json_encoder=JsonEncoder, **kwargs)
+    def encode_jwt(payload, key, algorithm=None, **kwargs):
+        token = jwt.encode(payload, key, algorithm=algorithm or 'HS256', json_encoder=JsonEncoder, **kwargs)
         if isinstance(token, bytes):
             token = token.decode('utf-8')
         return token

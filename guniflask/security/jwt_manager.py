@@ -1,6 +1,7 @@
 import datetime as dt
 import uuid
 
+from guniflask.security import Authentication
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_token import UserAuthentication
 from guniflask.security.errors import InvalidTokenError
@@ -15,7 +16,7 @@ class JwtManager(AuthenticationManager):
     USERNAME = 'username'
     USERINFO = 'userinfo'
 
-    def __init__(self, secret='', public_key=None, private_key=None, algorithm='HS256',
+    def __init__(self, secret='', public_key=None, private_key=None, algorithm=None,
                  access_token_expires_in=12 * 60 * 60, refresh_token_expires_in=30 * 24 * 60 * 60):
         self.secret = secret
         self.public_key = public_key
@@ -39,10 +40,10 @@ class JwtManager(AuthenticationManager):
         return JwtHelper.encode_jwt(
             payload,
             self.secret or self.private_key,
-            self.algorithm,
+            algorithm=self.algorithm,
         )
 
-    def authenticate(self, authentication):
+    def authenticate(self, authentication: Authentication):
         access_token_value = authentication.principal
         payload = self._decode(access_token_value)
         authorities = payload.get(self.AUTHORITIES)
@@ -58,7 +59,11 @@ class JwtManager(AuthenticationManager):
 
     def _decode(self, access_token_value):
         try:
-            payload = JwtHelper.decode_jwt(access_token_value, self.secret or self.public_key)
+            payload = JwtHelper.decode_jwt(
+                access_token_value,
+                self.secret or self.public_key,
+                algorithms=[self.algorithm] if self.algorithm else None,
+            )
         except Exception as e:
             raise InvalidTokenError(e)
         return payload
