@@ -19,7 +19,7 @@ def has_any_role(*roles):
     def decorator(func):
         def wrapper(*args, **kwargs):
             user = SecurityContext.get_user()
-            if user is None or not user.has_any_role(*roles):
+            if user is None or not SecurityContext.has_any_role(user, roles):
                 raise Unauthorized
             return func(*args, **kwargs)
 
@@ -36,7 +36,7 @@ def has_any_authority(*authorities):
     def decorator(func):
         def wrapper(*args, **kwargs):
             user = SecurityContext.get_user()
-            if user is None or not user.has_any_authority(*authorities):
+            if user is None or not SecurityContext.has_any_authority(user, authorities):
                 raise Unauthorized
             return func(*args, **kwargs)
 
