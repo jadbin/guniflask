@@ -3,7 +3,7 @@ from typing import List, Set, Mapping, Dict, Union
 
 import pytest
 
-from guniflask.data_model.mapping import map_json, resolve_arg_type, ArgType, inspect_args
+from guniflask.data_model.mapping import map_json, analyze_arg_type, inspect_args
 
 
 class Person:
@@ -82,67 +82,67 @@ def test_map_object_data():
 
 
 def test_resolve_arg_type():
-    c, t = resolve_arg_type(None)
-    assert c is ArgType.SINGLE, t is None
+    arg_ = analyze_arg_type(None)
+    assert arg_.is_class() and arg_.arg_type is None
 
     with pytest.raises(ValueError):
-        resolve_arg_type('')
+        analyze_arg_type('')
 
     with pytest.raises(ValueError):
-        resolve_arg_type(Union[int, str])
+        analyze_arg_type(Union[int, str])
 
-    c, t = resolve_arg_type(list)
-    assert c is ArgType.LIST, t is None
+    arg_ = analyze_arg_type(list)
+    assert arg_.is_list() and arg_.arg_type is None
 
-    c, t = resolve_arg_type(set)
-    assert c is ArgType.SET, t is None
+    arg_ = analyze_arg_type(set)
+    assert arg_.is_set() and arg_.arg_type is None
 
-    c, t = resolve_arg_type(dict)
-    assert c is ArgType.DICT, t is None
+    arg_ = analyze_arg_type(dict)
+    assert arg_.is_dict() and arg_.arg_type is None
 
-    c, t = resolve_arg_type(int)
-    assert c is ArgType.SINGLE, t is int
+    arg_ = analyze_arg_type(int)
+    assert arg_.is_class() and arg_.arg_type is int
 
-    c, t = resolve_arg_type(str)
-    assert c is ArgType.SINGLE, t is str
+    arg_ = analyze_arg_type(str)
+    assert arg_.is_class() and arg_.arg_type is str
 
-    c, t = resolve_arg_type(List)
-    assert c is ArgType.LIST, t is None
+    arg_ = analyze_arg_type(List)
+    assert arg_.is_list() and arg_.arg_type is None
 
-    c, t = resolve_arg_type(Set)
-    assert c is ArgType.SET, t is None
+    arg_ = analyze_arg_type(Set)
+    assert arg_.is_set() and arg_.arg_type is None
 
-    c, t = resolve_arg_type(Mapping)
-    assert c is ArgType.DICT, t is None
+    arg_ = analyze_arg_type(Mapping)
+    assert arg_.is_dict() and arg_.arg_type == (None, None)
 
-    c, t = resolve_arg_type(Dict)
-    assert c is ArgType.DICT, t is None
+    arg_ = analyze_arg_type(Dict)
+    assert arg_.is_dict() and arg_.arg_type == (None, None)
 
     class A:
         pass
 
-    c, t = resolve_arg_type(A)
-    assert c is ArgType.SINGLE, t is A
+    arg_ = analyze_arg_type(A)
+    assert arg_.is_class() and arg_.arg_type is A
 
-    c, t = resolve_arg_type(List[A])
-    assert c is ArgType.LIST, t is A
-    c, t = resolve_arg_type(List[str])
-    assert c is ArgType.LIST, t is str
+    arg_ = analyze_arg_type(List[A])
+    assert arg_.is_list() and arg_.arg_type is A
+    arg_ = analyze_arg_type(List[str])
+    assert arg_.is_list() and arg_.arg_type is str
 
-    c, t = resolve_arg_type(Set[A])
-    assert c is ArgType.SET, t is A
-    c, t = resolve_arg_type(Set[str])
-    assert c is ArgType.SET, t is str
+    arg_ = analyze_arg_type(Set[A])
+    assert arg_.is_set() and arg_.arg_type is A
+    arg_ = analyze_arg_type(Set[str])
+    assert arg_.is_set() and arg_.arg_type is str
 
-    c, t = resolve_arg_type(Mapping[str, A])
-    assert c is ArgType.DICT, t == (str, A)
-    c, t = resolve_arg_type(Mapping[str, str])
-    assert c is ArgType.DICT, t == (str, str)
+    arg_ = analyze_arg_type(Mapping[str, A])
+    assert arg_.is_dict() and arg_.arg_type == (str, A)
+    arg_ = analyze_arg_type(Mapping[str, str])
+    assert arg_.is_dict() and arg_.arg_type == (str, str)
 
-    c, t = resolve_arg_type(Dict[str, A])
-    assert c is ArgType.DICT, t == (str, A)
-    c, t = resolve_arg_type(Dict[str, str])
-    assert c is ArgType.DICT, t == (str, str)
+    arg_ = analyze_arg_type(Dict[str, A])
+    assert arg_.is_dict() and arg_.arg_type == (str, A)
+    arg_ = analyze_arg_type(Dict[str, str])
+    assert arg_.is_dict() and arg_.arg_type == (str, str)
 
 
 def test_inspect_args():

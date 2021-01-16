@@ -44,11 +44,11 @@ def map_json(source: Any, dtype: Any = None, target: Any = None) -> Any:
         if dtype is None:
             return source
 
-        argc, etype = resolve_arg_type(dtype)
+        arg_ = analyze_arg_type(dtype)
 
-        if argc is ArgType.LIST:
+        if arg_.is_list():
             collection_type = list
-        elif argc is ArgType.SET:
+        elif arg_.is_set():
             collection_type = set
         else:
             assert inspect.isclass(dtype), f'Cannot convert a list to {dtype}'
@@ -56,7 +56,7 @@ def map_json(source: Any, dtype: Any = None, target: Any = None) -> Any:
 
         result = []
         for v in source:
-            result.append(map_json(v, dtype=etype))
+            result.append(map_json(v, dtype=arg_.arg_type))
         if collection_type is not None:
             result = collection_type(result)
         return result
@@ -89,9 +89,34 @@ def inspect_args(func):
     return args, hints
 
 
-def resolve_arg_type(arg_type: Optional[type]):
+class ArgTypeClass:
+    CLASS = object()
+    DICT = object()
+    LIST = object()
+    SET = object()
+
+
+class ArgTypeResult:
+    def __init__(self, arg_type_class, arg_type):
+        self.arg_type = arg_type
+        self._arg_type_class = arg_type_class
+
+    def is_class(self):
+        return self._arg_type_class is ArgTypeClass.CLASS
+
+    def is_dict(self):
+        return self._arg_type_class is ArgTypeClass.DICT
+
+    def is_list(self):
+        return self._arg_type_class is ArgTypeClass.LIST
+
+    def is_set(self):
+        return self._arg_type_class is ArgTypeClass.SET
+
+
+def analyze_arg_type(arg_type: Optional[type]) -> ArgTypeResult:
     if arg_type is None:
-        return ArgType.SINGLE, arg_type
+        return ArgTypeResult(ArgTypeClass.CLASS, arg_type)
 
     if hasattr(arg_type, '__origin__'):
         # handle generic type
@@ -99,20 +124,20 @@ def resolve_arg_type(arg_type: Optional[type]):
         if origin is None:
             origin = arg_type
 
-        argc = None
-        etype = None
+        typec = None
+        dtype = None
         if inspect.isclass(origin):
             if issubclass(origin, List):
-                argc = ArgType.LIST
+                typec = ArgTypeClass.LIST
                 if hasattr(arg_type, '__args__'):
                     args = getattr(arg_type, '__args__')
                     if args and len(args) == 1:
                         vt = args[0]
                         if not inspect.isclass(vt):
                             vt = None
-                        etype = vt
+                        dtype = vt
             elif issubclass(origin, Mapping):
-                argc = ArgType.DICT
+                typec = ArgTypeClass.DICT
                 if hasattr(arg_type, '__args__'):
                     args = getattr(arg_type, '__args__')
                     if args and len(args) == 2:
@@ -122,33 +147,26 @@ def resolve_arg_type(arg_type: Optional[type]):
                             kt = None
                         if not inspect.isclass(vt):
                             vt = None
-                        etype = (kt, vt)
+                        dtype = (kt, vt)
             elif issubclass(origin, Set):
-                argc = ArgType.SET
+                typec = ArgTypeClass.SET
                 if hasattr(arg_type, '__args__'):
                     args = getattr(arg_type, '__args__')
                     if args and len(args) == 1:
                         vt = args[0]
                         if not inspect.isclass(vt):
                             vt = None
-                        etype = vt
-        if argc is None:
+                        dtype = vt
+        if typec is None:
             raise ValueError(f'Unsupported generic argument type: {arg_type}')
-        return argc, etype
+        return ArgTypeResult(typec, dtype)
 
     if not inspect.isclass(arg_type):
         raise ValueError(f'Non-generic argument type must be a class, but got: {arg_type}')
     if issubclass(arg_type, List):
-        return ArgType.LIST, None
+        return ArgTypeResult(ArgTypeClass.LIST, None)
     if issubclass(arg_type, Mapping):
-        return ArgType.DICT, None
+        return ArgTypeResult(ArgTypeClass.DICT, None)
     if issubclass(arg_type, Set):
-        return ArgType.SET, None
-    return ArgType.SINGLE, arg_type
-
-
-class ArgType:
-    SINGLE = object()
-    DICT = object()
-    LIST = object()
-    SET = object()
+        return ArgTypeResult(ArgTypeClass.SET, None)
+    return ArgTypeResult(ArgTypeClass.CLASS, arg_type)

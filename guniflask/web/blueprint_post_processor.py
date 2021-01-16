@@ -9,7 +9,7 @@ from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.data_model.mapping import map_json, inspect_args, resolve_arg_type, ArgType
+from guniflask.data_model.mapping import map_json, inspect_args, analyze_arg_type
 from guniflask.web import request_annotation
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.web.filter_annotation import MethodDefFilter
@@ -112,8 +112,8 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 else:
                     if arg in type_hints:
                         arg_type = type_hints[arg]
-                        argc, etype = resolve_arg_type(arg_type)
-                        if argc is ArgType.DICT:
+                        arg_ = analyze_arg_type(arg_type)
+                        if arg_.is_dict():
                             annotation = RequestBody()
                         else:
                             annotation = RequestParam()
@@ -158,13 +158,13 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
 
             if isinstance(p, RequestParamInfo):
                 if name in request.args:
-                    argc, etype = resolve_arg_type(p.dtype)
-                    if argc is ArgType.LIST:
+                    arg_ = analyze_arg_type(p.dtype)
+                    if arg_.is_list():
                         v = request.args.getlist(name)
-                        if etype:
+                        if arg_.arg_type:
                             for i in range(len(v)):
-                                v[i] = self._read_value(v[i], etype)
-                    elif argc is ArgType.SINGLE:
+                                v[i] = self._read_value(v[i], arg_.arg_type)
+                    elif arg_.is_class():
                         v = request.args.get(name)
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
@@ -185,13 +185,13 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     else:
                         result[k] = file
             elif isinstance(p, FormValueInfo):
-                argc, etype = resolve_arg_type(p.dtype)
-                if argc is ArgType.LIST:
+                arg_ = analyze_arg_type(p.dtype)
+                if arg_.is_list():
                     v = request.form.getlist(name)
-                    if etype:
+                    if arg_.arg_type:
                         for i in range(len(v)):
-                            v[i] = self._read_value(v[i], etype)
-                elif argc is ArgType.SINGLE:
+                            v[i] = self._read_value(v[i], arg_.arg_type)
+                elif arg_.is_class():
                     v = request.form.get(name)
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
@@ -200,13 +200,13 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 if v is not None:
                     result[k] = v
             elif isinstance(p, RequestHeaderInfo):
-                argc, etype = resolve_arg_type(p.dtype)
-                if argc is ArgType.LIST:
+                arg_ = analyze_arg_type(p.dtype)
+                if arg_.is_list():
                     v = request.headers.getlist(name)
-                    if etype:
+                    if arg_.arg_type:
                         for i in range(len(v)):
-                            v[i] = self._read_value(v[i], etype)
-                elif argc is ArgType.SINGLE:
+                            v[i] = self._read_value(v[i], arg_.arg_type)
+                elif arg_.is_class():
                     v = request.headers.get(name)
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
