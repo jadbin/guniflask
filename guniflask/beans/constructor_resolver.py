@@ -2,7 +2,7 @@ import inspect
 
 from guniflask.beans.errors import NoUniqueBeanDefinitionError, BeansError
 from guniflask.beans.factory import BeanFactory
-from guniflask.data_model.mapping import inspect_args, analyze_arg_type
+from guniflask.data_model.typing import inspect_args, analyze_arg_type
 
 
 class ConstructorResolver:
@@ -33,20 +33,18 @@ class ConstructorResolver:
         bean = None
         arg_ = analyze_arg_type(required_type)
 
-        if arg_.arg_type is None:
+        if arg_.outer_type is None:
             try:
                 bean = self._bean_factory.get_bean(arg)
             except BeansError:
                 pass
-        else:
-            candidates = self._bean_factory.get_beans_of_type(arg_.arg_type)
-            if arg_.is_dict():
-                bean = candidates
-            elif arg_.is_list():
+        elif inspect.isclass(arg_.outer_type):
+            candidates = self._bean_factory.get_beans_of_type(arg_.outer_type)
+            if arg_.is_list():
                 bean = list(candidates.values())
             elif arg_.is_set():
                 bean = set(candidates.values())
-            elif arg_.is_class():
+            elif arg_.is_singleton():
                 if len(candidates) == 1:
                     bean = list(candidates.values())[0]
                 elif len(candidates) > 1:

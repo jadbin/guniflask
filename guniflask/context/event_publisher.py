@@ -3,7 +3,7 @@ from typing import Type
 from guniflask.beans.factory import BeanFactory
 from guniflask.context.event import ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.data_model.mapping import inspect_args
+from guniflask.data_model.typing import inspect_args
 
 
 class ApplicationEventPublisher:

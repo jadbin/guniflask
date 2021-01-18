@@ -1,9 +1,9 @@
 import inspect
-from typing import List, Set, Mapping, Dict, Union
+from typing import List, Set, Mapping, Dict
 
 import pytest
 
-from guniflask.data_model.mapping import map_json, analyze_arg_type, inspect_args
+from guniflask.data_model.typing import parse_json, analyze_arg_type, inspect_args
 
 
 class Person:
@@ -24,13 +24,14 @@ class Student(Person):
     graduated: bool = False
 
 
-def test_map_simple_data():
-    assert map_json('1', dtype=int) == 1
-    assert map_json([1, 2, 3]) == [1, 2, 3]
-    assert map_json({'key': 'value'}) == {'key': 'value'}
+def test_parse_simple_data():
+    assert parse_json('1', dtype=int) == 1
+    assert parse_json('1', dtype=List[int]) == [1]
+    assert parse_json([1, 2, 3]) == [1, 2, 3]
+    assert parse_json({'key': 'value'}) == {'key': 'value'}
 
 
-def test_map_object_data():
+def test_parse_object_data():
     student_data = dict(
         name='Bob',
         age=12,
@@ -54,7 +55,7 @@ def test_map_object_data():
         )
     )
 
-    student = map_json(student_data, Student)
+    student = parse_json(student_data, Student)
 
     assert isinstance(student, Student)
     assert student.name == 'Bob'
@@ -62,7 +63,7 @@ def test_map_object_data():
     assert student.graduated is True
     assert student.hobbies == ['Programming', 'Piano']
     assert student.scores == {'Math': 100}
-    assert student.secret is None
+    assert not hasattr(student, 'secret')
 
     assert isinstance(student.parents, list) and len(student.parents) == 2
     for parent in student.parents:
@@ -81,68 +82,65 @@ def test_map_object_data():
     assert mentor.classes == {'English', 'Math'}
 
 
-def test_resolve_arg_type():
+def test_analyze_arg_type():
     arg_ = analyze_arg_type(None)
-    assert arg_.is_class() and arg_.arg_type is None
+    assert arg_.is_singleton() and arg_.outer_type is None
 
     with pytest.raises(ValueError):
         analyze_arg_type('')
 
-    with pytest.raises(ValueError):
-        analyze_arg_type(Union[int, str])
-
     arg_ = analyze_arg_type(list)
-    assert arg_.is_list() and arg_.arg_type is None
+    assert arg_.is_list() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(set)
-    assert arg_.is_set() and arg_.arg_type is None
+    assert arg_.is_set() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(dict)
-    assert arg_.is_dict() and arg_.arg_type is None
+    assert arg_.is_dict() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(int)
-    assert arg_.is_class() and arg_.arg_type is int
+    assert arg_.is_singleton() and arg_.outer_type is int
 
     arg_ = analyze_arg_type(str)
-    assert arg_.is_class() and arg_.arg_type is str
+    assert arg_.is_singleton() and arg_.outer_type is str
 
     arg_ = analyze_arg_type(List)
-    assert arg_.is_list() and arg_.arg_type is None
+    assert arg_.is_list() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(Set)
-    assert arg_.is_set() and arg_.arg_type is None
+    assert arg_.is_set() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(Mapping)
-    assert arg_.is_dict() and arg_.arg_type == (None, None)
+    assert arg_.is_dict() and arg_.outer_type == (None, None)
 
     arg_ = analyze_arg_type(Dict)
-    assert arg_.is_dict() and arg_.arg_type == (None, None)
+    assert arg_.is_dict() and arg_.outer_type == (None, None)
 
     class A:
         pass
 
     arg_ = analyze_arg_type(A)
-    assert arg_.is_class() and arg_.arg_type is A
+    assert arg_.is_singleton() and arg_.outer_type is A
 
     arg_ = analyze_arg_type(List[A])
-    assert arg_.is_list() and arg_.arg_type is A
+    assert arg_.is_list() and arg_.outer_type is A
     arg_ = analyze_arg_type(List[str])
-    assert arg_.is_list() and arg_.arg_type is str
+    assert arg_.is_list() and arg_.outer_type is str
 
     arg_ = analyze_arg_type(Set[A])
-    assert arg_.is_set() and arg_.arg_type is A
+    assert arg_.is_set() and arg_.outer_type is A
     arg_ = analyze_arg_type(Set[str])
-    assert arg_.is_set() and arg_.arg_type is str
+    assert arg_.is_set() and arg_.outer_type is str
 
     arg_ = analyze_arg_type(Mapping[str, A])
-    assert arg_.is_dict() and arg_.arg_type == (str, A)
+    assert arg_.is_dict() and arg_.outer_type == (str, A)
     arg_ = analyze_arg_type(Mapping[str, str])
-    assert arg_.is_dict() and arg_.arg_type == (str, str)
+    assert arg_.is_dict() and arg_.outer_type == (str, str)
 
     arg_ = analyze_arg_type(Dict[str, A])
-    assert arg_.is_dict() and arg_.arg_type == (str, A)
+    assert arg_.is_dict() and arg_.outer_type == (str, A)
     arg_ = analyze_arg_type(Dict[str, str])
-    assert arg_.is_dict() and arg_.arg_type == (str, str)
+    assert arg_.is_dict() and arg_.outer_type == (str, str)
 
 
 def test_inspect_args():

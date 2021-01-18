@@ -1,3 +1,4 @@
+import datetime as dt
 import inspect
 from functools import update_wrapper
 
@@ -9,7 +10,8 @@ from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
 from guniflask.context.event import ContextRefreshedEvent, ApplicationEvent
 from guniflask.context.event_listener import ApplicationEventListener
-from guniflask.data_model.mapping import map_json, inspect_args, analyze_arg_type
+from guniflask.data_model.typing import parse_json, inspect_args, analyze_arg_type
+from guniflask.utils.datatime import convert_to_datetime
 from guniflask.web import request_annotation
 from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.web.filter_annotation import MethodDefFilter
@@ -161,10 +163,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     arg_ = analyze_arg_type(p.dtype)
                     if arg_.is_list():
                         v = request.args.getlist(name)
-                        if arg_.arg_type:
+                        if arg_.outer_type:
                             for i in range(len(v)):
-                                v[i] = self._read_value(v[i], arg_.arg_type)
-                    elif arg_.is_class():
+                                v[i] = self._read_value(v[i], arg_.outer_type)
+                    elif arg_.is_singleton():
                         v = request.args.get(name)
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
@@ -174,7 +176,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
                 data = request.json
-                v = map_json(data, dtype=p.dtype)
+                v = parse_json(data, dtype=p.dtype)
                 if v is not None:
                     result[k] = v
             elif isinstance(p, FilePartInfo):
@@ -188,10 +190,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 arg_ = analyze_arg_type(p.dtype)
                 if arg_.is_list():
                     v = request.form.getlist(name)
-                    if arg_.arg_type:
+                    if arg_.outer_type:
                         for i in range(len(v)):
-                            v[i] = self._read_value(v[i], arg_.arg_type)
-                elif arg_.is_class():
+                            v[i] = self._read_value(v[i], arg_.outer_type)
+                elif arg_.is_singleton():
                     v = request.form.get(name)
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
@@ -203,10 +205,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 arg_ = analyze_arg_type(p.dtype)
                 if arg_.is_list():
                     v = request.headers.getlist(name)
-                    if arg_.arg_type:
+                    if arg_.outer_type:
                         for i in range(len(v)):
-                            v[i] = self._read_value(v[i], arg_.arg_type)
-                elif arg_.is_class():
+                            v[i] = self._read_value(v[i], arg_.outer_type)
+                elif arg_.is_singleton():
                     v = request.headers.get(name)
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
@@ -244,6 +246,8 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     return True
                 if v in ("False", "false"):
                     return False
+        elif dtype == dt.datetime:
+            return convert_to_datetime(v)
         else:
             try:
                 return dtype(v)

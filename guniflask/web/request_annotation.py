@@ -25,13 +25,13 @@ def RequestParam(name: str = None,
                  dtype: type = None,
                  description: str = None,
                  required: bool = None,
-                 **extract: Any) -> Any:
+                 **extra: Any) -> Any:
     return RequestParamInfo(name=name,
                             default=default,
                             dtype=dtype,
                             description=description,
                             required=required,
-                            **extract)
+                            **extra)
 
 
 class RequestParamInfo(FieldInfo):
@@ -43,13 +43,13 @@ def PathVariable(name: str = None,
                  dtype: type = None,
                  description: str = None,
                  required: bool = None,
-                 **extract: Any) -> Any:
+                 **extra: Any) -> Any:
     return PathVariableInfo(name=name,
                             default=default,
                             dtype=dtype,
                             description=description,
                             required=required,
-                            **extract)
+                            **extra)
 
 
 class PathVariableInfo(FieldInfo):
@@ -61,13 +61,13 @@ def RequestBody(name: str = None,
                 dtype: type = None,
                 description: str = None,
                 required: bool = None,
-                **extract: Any) -> Any:
+                **extra: Any) -> Any:
     return RequestBodyInfo(name=name,
                            default=default,
                            dtype=dtype,
                            description=description,
                            required=required,
-                           **extract)
+                           **extra)
 
 
 class RequestBodyInfo(FieldInfo):
@@ -79,13 +79,13 @@ def RequestHeader(name: str = None,
                   dtype: type = None,
                   description: str = None,
                   required: bool = None,
-                  **extract: Any) -> Any:
+                  **extra: Any) -> Any:
     return RequestHeaderInfo(name=name,
                              default=default,
                              dtype=dtype,
                              description=description,
                              required=required,
-                             **extract)
+                             **extra)
 
 
 class RequestHeaderInfo(FieldInfo):
@@ -97,13 +97,13 @@ def CookieValue(name: str = None,
                 dtype: type = None,
                 description: str = None,
                 required: bool = None,
-                **extract: Any) -> Any:
+                **extra: Any) -> Any:
     return CookieValueInfo(name=name,
                            default=default,
                            dtype=dtype,
                            description=description,
                            required=required,
-                           **extract)
+                           **extra)
 
 
 class CookieValueInfo(FieldInfo):
@@ -115,13 +115,13 @@ def FormValue(name: str = None,
               dtype: type = None,
               description: str = None,
               required: bool = None,
-              **extract: Any) -> Any:
+              **extra: Any) -> Any:
     return FormValueInfo(name=name,
                          default=default,
                          dtype=dtype,
                          description=description,
                          required=required,
-                         **extract)
+                         **extra)
 
 
 class FormValueInfo(FieldInfo):
@@ -133,13 +133,13 @@ def FilePart(name: str = None,
              dtype: type = None,
              description: str = None,
              required: bool = None,
-             **extract: Any) -> Any:
+             **extra: Any) -> Any:
     return FilePartInfo(name=name,
                         default=default,
                         dtype=dtype,
                         description=description,
                         required=required,
-                        **extract)
+                        **extra)
 
 
 class FilePartInfo(FieldInfo):
