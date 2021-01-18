@@ -30,13 +30,13 @@ class PyTest(TestCommand):
 
 tests_require = read_requirements('test.txt')
 install_requires = [
-    'Flask>=1.1.1',
-    'SQLAlchemy>=1.3.13',
-    'Flask-Cors>=3.0.8',
-    'PyJWT>=1.7.1',
+    'Flask>=1.1.2',
+    'SQLAlchemy>=1.3.22',
+    'Flask-Cors>=3.0.10',
+    'PyJWT>=2.0.0'
     'APScheduler>=3.6.3',
-    'requests>=2.23.0',
-    'dnspython>=2.0.0',
+    'requests>=2.25.1',
+    'dnspython>=2.1.0',
     'python-dotenv>=0.15.0',
 ]
 
