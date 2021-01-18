@@ -1,7 +1,7 @@
 import os
 import re
 import sys
-from os.path import join, isfile
+from os.path import join, isfile, isdir
 
 from dotenv import load_dotenv
 
@@ -43,25 +43,35 @@ def load_app_env():
     load_profile_env(conf_dir, active_profiles)
 
 
-project_name_regex = re.compile(r'[a-zA-Z0-9_]+')
+app_name_regex = re.compile(r'[a-zA-Z0-9_]+')
 
 
-def infer_project_name(home_dir):
+def infer_app_name(home_dir):
     candidates = []
     for d in os.listdir(home_dir):
-        if project_name_regex.fullmatch(d) and isfile(join(home_dir, d, '__init__.py')) \
-                and isfile(join(home_dir, d, 'app.py')):
+        if app_name_regex.fullmatch(d) \
+                and _find_py_module(join(home_dir, d), '__init__') \
+                and _find_py_module(join(home_dir, d), 'app'):
             candidates.append(d)
     if len(candidates) == 0:
         return None
     if len(candidates) > 1:
-        raise RuntimeError(f'Cannot infer the project name, candidates: {candidates}')
+        raise RuntimeError(f'Cannot infer the app name, candidates: {candidates}')
     return candidates[0]
+
+
+def _find_py_module(path, name):
+    if not isdir(path):
+        return False
+    for s in os.listdir(path):
+        if s.startswith(name) and (s.endswith('.py') or s.endswith('.so')):
+            return True
+    return False
 
 
 def app_name_from_env():
     if not os.environ.get('GUNIFLASK_APP_NAME'):
-        project_name = infer_project_name(os.environ.get('GUNIFLASK_HOME'))
-        if project_name:
-            os.environ['GUNIFLASK_APP_NAME'] = project_name
+        app_name = infer_app_name(os.environ.get('GUNIFLASK_HOME'))
+        if app_name:
+            os.environ['GUNIFLASK_APP_NAME'] = app_name
     return os.environ.get('GUNIFLASK_APP_NAME')
