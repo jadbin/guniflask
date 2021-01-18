@@ -96,7 +96,7 @@ def test_analyze_arg_type():
     assert arg_.is_set() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(dict)
-    assert arg_.is_dict() and arg_.outer_type is None
+    assert arg_.is_dict() and arg_.outer_type == (None, None)
 
     arg_ = analyze_arg_type(int)
     assert arg_.is_singleton() and arg_.outer_type is int
@@ -111,10 +111,10 @@ def test_analyze_arg_type():
     assert arg_.is_set() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(Mapping)
-    assert arg_.is_dict() and arg_.outer_type is None
+    assert arg_.is_dict() and arg_.outer_type == (None, None)
 
     arg_ = analyze_arg_type(Dict)
-    assert arg_.is_dict() and arg_.outer_type is None
+    assert arg_.is_dict() and arg_.outer_type == (None, None)
 
     class A:
         pass
@@ -141,6 +141,12 @@ def test_analyze_arg_type():
     assert arg_.is_dict() and arg_.outer_type == (str, A)
     arg_ = analyze_arg_type(Dict[str, str])
     assert arg_.is_dict() and arg_.outer_type == (str, str)
+
+    arg_ = analyze_arg_type(Mapping[str, List[A]])
+    assert arg_.is_dict() and type(arg_.outer_type) == tuple
+    outer_type = arg_.outer_type
+    assert outer_type[0] == str
+    assert outer_type[1].is_list() and outer_type[1].outer_type == A
 
 
 def test_inspect_args():

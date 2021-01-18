@@ -155,11 +155,9 @@ class ArgType:
                     if args and len(args) == 2:
                         kt = args[0]
                         vt = args[1]
-                        if not inspect.isclass(kt):
-                            kt = None
-                        if not inspect.isclass(vt):
-                            vt = None
                         dtype = (self._get_arg_type(kt), self._get_arg_type(vt))
+                    else:
+                        dtype = (None, None)
                 elif issubclass(origin, Set):
                     shape = ArgTypeShape.SET
                     args = self._get_args(arg_type)
@@ -181,7 +179,7 @@ class ArgType:
             self.outer_type = None
         elif issubclass(arg_type, Mapping):
             self.shape = ArgTypeShape.DICT
-            self.outer_type = None
+            self.outer_type = (None, None)
         elif issubclass(arg_type, Set):
             self.shape = ArgTypeShape.SET
             self.outer_type = None
@@ -192,7 +190,10 @@ class ArgType:
             return getattr(arg_type, '__args__')
 
     def _get_arg_type(self, arg_type):
-        result = self.__class__(arg_type)
+        try:
+            result = self.__class__(arg_type)
+        except Exception:
+            result = self.__class__(None)
         if result.is_singleton():
             return result.outer_type
         return result
