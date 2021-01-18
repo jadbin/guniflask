@@ -111,10 +111,10 @@ def test_analyze_arg_type():
     assert arg_.is_set() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(Mapping)
-    assert arg_.is_dict() and arg_.outer_type == (None, None)
+    assert arg_.is_dict() and arg_.outer_type is None
 
     arg_ = analyze_arg_type(Dict)
-    assert arg_.is_dict() and arg_.outer_type == (None, None)
+    assert arg_.is_dict() and arg_.outer_type is None
 
     class A:
         pass
