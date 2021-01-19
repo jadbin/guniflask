@@ -7,10 +7,8 @@ from .authentication import Authentication
 from .authentication_manager import AuthenticationManager
 from .authentication_provider import AuthenticationProvider
 from .authentication_token import UserAuthentication
-from .authentication_user_details_service import AuthenticationUserDetailsService
 from .context import SecurityContext
 from .context import current_user
-from .dao_authentication_provider import DaoAuthenticationProvider
 from .errors import AuthenticationError
 from .errors import BadCredentialsError
 from .errors import InsufficientAuthenticationError
@@ -19,13 +17,9 @@ from .errors import UsernameNotFoundError
 from .jwt import JwtHelper
 from .jwt_manager import JwtManager
 from .password_encoder import PasswordEncoder
-from .preauth_provider import PreAuthenticatedProvider
 from .preauth_token import BearerTokenExtractor
 from .preauth_token import PreAuthenticatedToken
 from .provider_manager import ProviderManager
 from .user import User
 from .user_details import UserDetails
-from .user_details_authentication_provider import UserDetailsAuthenticationProvider
-from .user_details_by_name_service import UserDetailsByNameService
-from .user_details_service import UserDetailsService
 from .web_authentication_details import WebAuthenticationDetails

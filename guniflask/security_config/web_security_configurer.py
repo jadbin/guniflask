@@ -1,11 +1,7 @@
-from typing import List
-
 from guniflask.context.annotation import autowired
 from guniflask.context.bean_context import BeanContext, BeanContextAware
 from guniflask.security.authentication import Authentication
 from guniflask.security.authentication_manager import AuthenticationManager
-from guniflask.security.user_details import UserDetails
-from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security_config.authentication_config import AuthenticationConfiguration
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 from guniflask.security_config.http_security import HttpSecurity
@@ -73,31 +69,8 @@ class WebSecurityConfigurer(SecurityConfigurer, BeanContextAware):
         shared_objects = {}
         for k, v in self._local_authentication_builder.get_shared_objects():
             shared_objects[k] = v
-        shared_objects[UserDetailsService] = self._get_user_details_service()
         shared_objects[BeanContext] = self._context
         return shared_objects
-
-    def _get_user_details_service(self) -> UserDetailsService:
-        global_auth_builder = self._context.get_bean_of_type(AuthenticationManagerBuilder)
-        return UserDetailsServiceDelegator([self._local_authentication_builder, global_auth_builder])
-
-
-class UserDetailsServiceDelegator(UserDetailsService):
-    def __init__(self, delegate_builders: List[AuthenticationManagerBuilder]):
-        self._delegate_builders = delegate_builders
-        self._delegate: UserDetailsService = None
-
-    def load_user_by_username(self, username: str) -> UserDetails:
-        if self._delegate is None:
-            for builder in self._delegate_builders:
-                self._delegate = builder.default_user_details_service
-                if self._delegate:
-                    break
-            if self._delegate is None:
-                raise ValueError('User details service is required')
-            self._delegate_builders = None
-
-        return self._delegate.load_user_by_username(username)
 
 
 class AuthenticationManagerDelegator(AuthenticationManager):

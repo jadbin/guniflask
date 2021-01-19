@@ -3,7 +3,6 @@ from flask import current_app
 from guniflask.config.app_settings import settings
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_provider import AuthenticationProvider
-from guniflask.security.user_details_service import UserDetailsService
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
 from guniflask.security_config.cors_configurer import CorsConfigurer
 from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
@@ -33,10 +32,6 @@ class HttpSecurity(HttpSecurityBuilder):
             self.cors(cors)
 
         self.set_shared_object(AuthenticationManager, self._get_authentication_registry().build())
-
-    def with_user_details_service(self, user_details_service: UserDetailsService) -> 'HttpSecurity':
-        self._get_authentication_registry().with_user_details_service(user_details_service)
-        return self
 
     def with_authentication_provider(self, authentication_provider: AuthenticationProvider) -> 'HttpSecurity':
         self._get_authentication_registry().with_authentication_provider(authentication_provider)
