@@ -1,3 +1,4 @@
+import builtins
 import datetime as dt
 import inspect
 from collections import OrderedDict
@@ -171,6 +172,11 @@ class ArgType:
             self.shape = shape
             self.outer_type = dtype
             return
+
+        if isinstance(arg_type, str):
+            if hasattr(builtins, arg_type):
+                arg_type = getattr(builtins, arg_type)
+                self.outer_type = arg_type
 
         if not inspect.isclass(arg_type):
             raise ValueError(f'Non-generic argument type must be a class, but got: {arg_type}')
