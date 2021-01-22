@@ -1,5 +1,6 @@
 import datetime as dt
 import inspect
+import logging
 from functools import update_wrapper
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
@@ -17,6 +18,8 @@ from guniflask.web.bind_annotation import Blueprint, Route
 from guniflask.web.filter_annotation import MethodDefFilter
 from guniflask.web.request_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
     RequestBodyInfo, FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo, RequestBody
+
+log = logging.getLogger(__name__)
 
 
 class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
@@ -37,8 +40,16 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             annotation['blueprint'] = b
             for m in dir(bean):
                 method = getattr(bean, m)
-                self._resolve_route(b, method)
-                self._resolve_method_def_filter(b, method)
+                try:
+                    self._resolve_route(b, method)
+                    self._resolve_method_def_filter(b, method)
+                except Exception:
+                    log.error(
+                        "Failed to resolve the route function '%s' in blueprint '%s'",
+                        m,
+                        bean_type.__name__,
+                    )
+                    raise
             self.blueprints.append(b)
         return bean
 
