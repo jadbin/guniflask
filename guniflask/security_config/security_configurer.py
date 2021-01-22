@@ -1,9 +1,11 @@
+from typing import Optional
+
 from guniflask.security_config.security_builder import SecurityBuilder
 
 
 class SecurityConfigurer:
     def __init__(self):
-        self._security_builder: SecurityBuilder = None
+        self._security_builder: Optional[SecurityBuilder] = None
 
     def init(self, builder: SecurityBuilder):
         pass

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from guniflask.context.annotation import autowired
 from guniflask.context.bean_context import BeanContext, BeanContextAware
 from guniflask.security.authentication import Authentication
@@ -12,14 +14,14 @@ from guniflask.security_config.web_security import WebSecurity
 class WebSecurityConfigurer(SecurityConfigurer, BeanContextAware):
     def __init__(self):
         super().__init__()
-        self._authentication_configuration: AuthenticationConfiguration = None
+        self._authentication_configuration: Optional[AuthenticationConfiguration] = None
         self._authentication_builder = AuthenticationManagerBuilder()
         self._local_authentication_builder = AuthenticationManagerBuilder()
         self._enable_local_authentication = False
-        self._authentication_manager: AuthenticationManager = None
+        self._authentication_manager: Optional[AuthenticationManager] = None
         self._authentication_manager_initialized = False
-        self._http: HttpSecurity = None
-        self._context: BeanContext = None
+        self._http: Optional[HttpSecurity] = None
+        self._context: Optional[BeanContext] = None
 
     def init(self, web_security: WebSecurity):
         http = self._get_http()

@@ -1,5 +1,6 @@
 import logging
 from abc import ABCMeta, abstractmethod
+from typing import Optional
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -36,10 +37,10 @@ class ServiceDiscoveryConfigurer(metaclass=ABCMeta):
 class ConsulConfigurer(ServiceDiscoveryConfigurer):
 
     def __init__(self):
-        self._discovery_client: DiscoveryClient = None
-        self._load_balancer_client: LoadBalancerClient = None
+        self._discovery_client: Optional[DiscoveryClient] = None
+        self._load_balancer_client: Optional[LoadBalancerClient] = None
         self._register_scheduler = None
-        self._service_name: str = None
+        self._service_name: Optional[str] = None
 
     @property
     def discovery_client(self) -> DiscoveryClient:

@@ -1,5 +1,6 @@
 import inspect
 from collections import defaultdict
+from typing import Optional
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.constructor_resolver import ConstructorResolver
@@ -13,8 +14,8 @@ class AutowiredAnnotationBeanPostProcessor(BeanPostProcessor, BeanFactoryAware):
 
     def __init__(self):
         self._autowired_methods = defaultdict(list)
-        self._bean_factory: BeanFactory = None
-        self._constructor_resolver: ConstructorResolver = None
+        self._bean_factory: Optional[BeanFactory] = None
+        self._constructor_resolver: Optional[ConstructorResolver] = None
 
     def set_bean_factory(self, bean_factory: BeanFactory):
         self._bean_factory = bean_factory

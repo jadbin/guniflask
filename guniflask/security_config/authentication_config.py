@@ -1,3 +1,5 @@
+from typing import Optional
+
 from guniflask.context.annotation import configuration, bean
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security_config.authentication_manager_builder import AuthenticationManagerBuilder
@@ -6,7 +8,7 @@ from guniflask.security_config.authentication_manager_builder import Authenticat
 @configuration
 class AuthenticationConfiguration:
     def __init__(self):
-        self._authentication_manager: AuthenticationManager = None
+        self._authentication_manager: Optional[AuthenticationManager] = None
         self._authentication_manager_initialized = False
         self._authentication_manager_builder = AuthenticationManagerBuilder()
 

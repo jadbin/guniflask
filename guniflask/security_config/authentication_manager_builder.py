@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Optional
 
 from guniflask.security.authentication_manager import AuthenticationManager
 from guniflask.security.authentication_provider import AuthenticationProvider
@@ -10,7 +10,7 @@ from guniflask.security_config.provider_manager_builder import ProviderManagerBu
 class AuthenticationManagerBuilder(ConfiguredSecurityBuilder, ProviderManagerBuilder):
     def __init__(self):
         super().__init__()
-        self._parent_authentication_manager: AuthenticationManager = None
+        self._parent_authentication_manager: Optional[AuthenticationManager] = None
         self._authentication_providers: List[AuthenticationProvider] = []
 
     def _perform_build(self) -> Any:

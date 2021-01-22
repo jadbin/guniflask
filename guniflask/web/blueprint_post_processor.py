@@ -2,6 +2,7 @@ import datetime as dt
 import inspect
 import logging
 from functools import update_wrapper
+from typing import Optional
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
 from werkzeug.exceptions import BadRequest, InternalServerError
@@ -246,7 +247,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 result[k] = p.default
         return result
 
-    def _read_value(self, v: str, dtype: type):
+    def _read_value(self, v: Optional[str], dtype: type):
         if v is None:
             return
         if dtype == bool:
