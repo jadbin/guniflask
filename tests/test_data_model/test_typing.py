@@ -82,6 +82,20 @@ def test_parse_object_data():
     assert mentor.classes == {'English', 'Math'}
 
 
+def test_parse_list():
+    class Prop:
+        name: str
+        value: str
+
+    prop_list = parse_json({'name': 'name', 'value': 'Alice'}, List[Prop])
+    assert isinstance(prop_list, list) and len(prop_list) == 1
+    prop = prop_list[0]
+    assert prop.name == 'name' and prop.value == 'Alice'
+
+    prop_list = parse_json(None, List[Prop])
+    assert prop_list is None
+
+
 def test_analyze_arg_type():
     arg_ = analyze_arg_type(None)
     assert arg_.is_singleton() and arg_.outer_type is None

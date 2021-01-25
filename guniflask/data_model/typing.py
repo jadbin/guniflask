@@ -11,11 +11,13 @@ from guniflask.utils.datatime import convert_to_datetime
 def parse_json(source: Any, dtype: Any = None) -> Any:
     if dtype is None:
         return source
+    if source is None:
+        return
 
     target = None
     arg_ = ArgType(dtype)
 
-    if arg_.is_list() and not isinstance(source, List):
+    if (arg_.is_list() or arg_.is_set()) and not isinstance(source, List):
         source = [source]
 
     if isinstance(source, Mapping):
