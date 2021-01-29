@@ -5,6 +5,8 @@ from collections import OrderedDict
 from typing import Any, get_type_hints
 from typing import List, Set, Mapping, Optional, Union
 
+from pydantic import BaseModel
+
 from guniflask.utils.datatime import convert_to_datetime
 
 
@@ -22,6 +24,9 @@ def parse_json(source: Any, dtype: Any = None) -> Any:
 
     if isinstance(source, Mapping):
         if arg_.is_singleton():
+            if issubclass(arg_.outer_type, BaseModel):
+                return arg_.outer_type(**source)
+
             target = arg_.outer_type()
             type_hints = get_type_hints(arg_.outer_type)
             for k, v in source.items():

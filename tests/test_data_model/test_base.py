@@ -5,11 +5,11 @@ from guniflask.data_model import DataModel
 
 class Person(DataModel):
     name: str
-    age: int
+    age: int = None
 
 
 class Student(Person):
-    graduate: bool
+    graduate: bool = None
 
 
 def test_create_data_model():
@@ -39,7 +39,7 @@ class User(DataModel):
 
 class Article(DataModel):
     title: str
-    author: User
+    author: User = None
 
 
 def test_data_model_from_dict_with_many_to_one():

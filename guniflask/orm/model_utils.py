@@ -3,13 +3,18 @@ import datetime as dt
 import sqlalchemy
 
 from guniflask.utils.datatime import convert_to_datetime
+from guniflask.utils.rule import make_ignore_rule_for_field, make_include_rule_for_field, make_only_rule_for_field
 
 
 class DictRecursionError(Exception):
     pass
 
 
-def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __exists=None) -> dict:
+def model_to_dict(model, ignore=None, only=None, include=None):
+    return _model_to_dict(model, ignore=ignore, only=only, include=include)
+
+
+def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __exists=None) -> dict:
     if __exists is None:
         __exists = set()
     if model in __exists:
@@ -20,9 +25,9 @@ def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __ex
     relationships = mapper.relationships
     d = {}
     tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
-    ignore_set = _ignore_set(ignore)
-    only_set = _only_set(only)
-    include_set = _include_set(include)
+    ignore_set = make_ignore_rule_for_field(ignore)
+    only_set = make_only_rule_for_field(only)
+    include_set = make_include_rule_for_field(include)
     keys = list(col_attrs.keys())
     for k in relationships.keys():
         if _new_prefix(__prefix, k) in include_set:
@@ -46,7 +51,7 @@ def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __ex
                 if v:
                     if isinstance(v, (list, set)):
                         t = [
-                            model_to_dict(
+                            _model_to_dict(
                                 obj,
                                 ignore=ignore_set,
                                 only=only_set,
@@ -58,7 +63,7 @@ def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __ex
                         ]
                         v = t
                     else:
-                        v = model_to_dict(
+                        v = _model_to_dict(
                             v,
                             ignore=ignore_set,
                             only=only_set,
@@ -76,8 +81,8 @@ def model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __ex
 def result_to_dict(result, ignore=None, only=None) -> dict:
     res = {}
     tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
-    ignore_set = _ignore_set(ignore)
-    only_set = _only_set(only)
+    ignore_set = make_ignore_rule_for_field(ignore)
+    only_set = make_only_rule_for_field(only)
     for key in result.keys():
         if key not in ignore_set:
             if only and key not in only_set:
@@ -89,12 +94,16 @@ def result_to_dict(result, ignore=None, only=None) -> dict:
     return res
 
 
-def dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None, __prefix=''):
+def dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None):
+    return _dict_to_model(dict_obj, model_cls, ignore=ignore, only=only)
+
+
+def _dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None, __prefix=''):
     mapper = sqlalchemy.inspect(model_cls).mapper
     col_attrs = mapper.column_attrs
     relationships = mapper.relationships
-    ignore_set = _ignore_set(ignore)
-    only_set = _only_set(only)
+    ignore_set = make_ignore_rule_for_field(ignore)
+    only_set = make_only_rule_for_field(only)
     kwargs = {}
     for key in dict_obj:
         if key in col_attrs or key in relationships:
@@ -106,7 +115,7 @@ def dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None, __prefix=''
             if key in relationships:
                 if isinstance(v, dict):
                     obj_cls = relationships[key].mapper.class_
-                    v = dict_to_model(
+                    v = _dict_to_model(
                         v,
                         obj_cls,
                         ignore=ignore_set,
@@ -116,7 +125,7 @@ def dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None, __prefix=''
                 elif isinstance(v, (list, set)):
                     obj_cls = relationships[key].mapper.class_
                     t = [
-                        dict_to_model(
+                        _dict_to_model(
                             obj,
                             obj_cls,
                             ignore=ignore_set,
@@ -134,12 +143,16 @@ def dict_to_model(dict_obj: dict, model_cls, ignore=None, only=None, __prefix=''
     return model
 
 
-def update_model_by_dict(model, dict_obj: dict, ignore=None, only=None, __prefix=''):
+def update_model_by_dict(model, dict_obj: dict, ignore=None, only=None):
+    _update_model_by_dict(model, dict_obj, ignore=ignore, only=only)
+
+
+def _update_model_by_dict(model, dict_obj: dict, ignore=None, only=None, __prefix=''):
     mapper = sqlalchemy.inspect(model).mapper
     col_attrs = mapper.column_attrs
     relationships = mapper.relationships
-    ignore_set = _ignore_set(ignore)
-    only_set = _only_set(only)
+    ignore_set = make_ignore_rule_for_field(ignore)
+    only_set = make_only_rule_for_field(only)
     for key in dict_obj:
         if key in col_attrs or key in relationships:
             if _in_set(__prefix, key, ignore_set):
@@ -151,7 +164,7 @@ def update_model_by_dict(model, dict_obj: dict, ignore=None, only=None, __prefix
                 if isinstance(v, dict):
                     obj = getattr(model, key)
                     if obj:
-                        update_model_by_dict(
+                        _update_model_by_dict(
                             obj,
                             v,
                             ignore=ignore_set,
@@ -161,7 +174,7 @@ def update_model_by_dict(model, dict_obj: dict, ignore=None, only=None, __prefix
                         v = obj
                     else:
                         obj_cls = relationships[key].mapper.class_
-                        v = dict_to_model(
+                        v = _dict_to_model(
                             v,
                             obj_cls,
                             ignore=ignore_set,
@@ -175,36 +188,6 @@ def update_model_by_dict(model, dict_obj: dict, ignore=None, only=None, __prefix
                 if isinstance(col_attrs[key].class_attribute.type, sqlalchemy.DateTime):
                     v = convert_to_datetime(v)
             setattr(model, key, v)
-
-
-def _to_set(field):
-    if isinstance(field, str):
-        field = [i.strip() for i in field.split(',')]
-    return set(field or [])
-
-
-def _ignore_set(field):
-    if isinstance(field, set):
-        return field
-    return _to_set(field)
-
-
-def _include_set(field):
-    if isinstance(field, set):
-        return field
-    return _to_set(field)
-
-
-def _only_set(field):
-    if isinstance(field, set):
-        return field
-    s = _to_set(field)
-    for k in list(s):
-        if '.' in k:
-            t = k.split('.')
-            for i in range(1, len(t)):
-                s.add('.'.join(t[:i]))
-    return s
 
 
 def _in_set(prefix: str, key: str, s: set):

@@ -4,7 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import backref, relationship, sessionmaker
 
 from guniflask.orm import result_to_dict, BaseModelMixin
-from guniflask.orm.model_utils import _to_set, _ignore_set, _only_set
 
 Base = declarative_base()
 
@@ -190,18 +189,3 @@ def test_update_model_by_dict_with_list():
     user = User()
     with pytest.raises(RuntimeError):
         user.update_by_dict({'name': 'Bob', 'articles': [{'title': 'Title'}]})
-
-
-def test_to_set():
-    assert _to_set('a') == {'a'}
-    assert _to_set('a,b') == {'a', 'b'}
-    assert _to_set({'a'}) == {'a'}
-    assert _to_set(['a', 'b']) == {'a', 'b'}
-
-
-def test_ignore_set():
-    assert _ignore_set('a.b') == {'a.b'}
-
-
-def test_only_set():
-    assert _only_set('a.b') == {'a', 'a.b'}
