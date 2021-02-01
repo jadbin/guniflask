@@ -6,6 +6,7 @@ from typing import Any, get_type_hints
 from typing import List, Set, Mapping, Optional, Union
 
 from pydantic import BaseModel
+from pydantic.typing import get_origin, get_args
 
 from guniflask.utils.datatime import convert_to_datetime
 
@@ -129,18 +130,15 @@ class ArgType:
         if arg_type is None:
             return
 
-        if hasattr(arg_type, '__origin__'):
-            # handle generic type
-            origin = getattr(arg_type, '__origin__')
-            if origin is None:
-                origin = arg_type
-
+        origin = get_origin(arg_type)
+        if origin:
             shape = None
             dtype = None
 
             if origin is Union:
                 allow_types = []
-                for arg in self._get_args(arg_type):
+
+                for arg in get_args(arg_type):
                     if arg is not None:
                         allow_types.append(arg)
 
@@ -151,7 +149,7 @@ class ArgType:
             if inspect.isclass(origin):
                 if issubclass(origin, List):
                     shape = ArgTypeShape.LIST
-                    args = self._get_args(arg_type)
+                    args = get_args(arg_type)
                     if args and len(args) == 1:
                         vt = args[0]
                         if not inspect.isclass(vt):
@@ -159,7 +157,7 @@ class ArgType:
                         dtype = self._get_arg_type(vt)
                 elif issubclass(origin, Mapping):
                     shape = ArgTypeShape.DICT
-                    args = self._get_args(arg_type)
+                    args = get_args(arg_type)
                     if args and len(args) == 2:
                         kt = args[0]
                         vt = args[1]
@@ -168,7 +166,7 @@ class ArgType:
                         dtype = (None, None)
                 elif issubclass(origin, Set):
                     shape = ArgTypeShape.SET
-                    args = self._get_args(arg_type)
+                    args = get_args(arg_type)
                     if args and len(args) == 1:
                         vt = args[0]
                         if not inspect.isclass(vt):
@@ -196,11 +194,6 @@ class ArgType:
         elif issubclass(arg_type, Set):
             self.shape = ArgTypeShape.SET
             self.outer_type = None
-
-    @staticmethod
-    def _get_args(arg_type):
-        if hasattr(arg_type, '__args__'):
-            return getattr(arg_type, '__args__')
 
     def _get_arg_type(self, arg_type):
         try:
