@@ -3,10 +3,11 @@
 Changelog
 =========
 
-0.11.10 (2021-01-??)
+0.11.10 (2021-02-01)
 --------------------
 
 - 集成pydantic，DataModel继承pydantic的BaseModel
+- 项目模版生成 ``__version__`` ，用于标识应用版本
 
 0.11.9 (2021-01-25)
 -------------------
@@ -164,29 +165,3 @@ Changelog
 - init命令生成项目时移除了选择应用类型的步骤
 - 默认生成开启跨域的配置
 - 支持将服务注册到Consul
-
-0.7.2 (2020-04-15)
-------------------
-
-- 修复cors模块处理跨域的逻辑
-
-0.7.1 (2020-04-15)
-------------------
-
-- 修复Python3.7下自动创建bean时的参数类型解析问题
-- 自动生成的model的添加继承 ``guniflask.orm.BaseModelMixin`` ，注入数据转换的方法，同时实现在不影响原有功能的前提下pycharm中输入类方法时能够看到提示。
-- 移除guniflask.wrap_sqlalchemy_model配置项
-
-0.7.0 (2020-04-08)
-------------------
-
-- 将CLI相关功能分离到单独的项目guniflask-cli
-- 依赖注入支持list和dict形式
-- 添加@autowired，用于自动执行需要依赖注入的函数
-- 扩展Flask响应请求的函数的参数，支持声明URL中的查询参数、body中的json对象
-- 对于guniflask的内置扩展功能提供更为统一的配置方式
-- 减少了initdb和table2model命令的参数，model所在路径的修改、多数据库相关配置等统一在 ``table2model_dest`` 中设置
-- 为避免歧义，@roles_required修改为@has_any_role，@authorities_required修改为@has_any_authority，同时提供@has_role和@has_authority
-- JwtManager创建access token时对用户的自定义字段会作为User的属性
-- init命令将生成 foo/config 的目录，用于存放应用的配置
-- @global_singleton改为app级别的单例模式，当gunicorn启动多个worker时，只有一个worker下的单例会生效
