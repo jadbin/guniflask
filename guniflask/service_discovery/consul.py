@@ -1,4 +1,5 @@
-from typing import List, Union
+import logging
+from typing import List, Union, Optional
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 import dns.message
@@ -6,10 +7,15 @@ import dns.query
 import dns.rdatatype
 import requests
 
+from guniflask.config.app_settings import Settings
+from guniflask.context.annotation import condition_on_setting, configuration
+from guniflask.service_discovery.config import ServiceDiscoveryConfigurer
 from guniflask.service_discovery.discovery_client import DiscoveryClient
 from guniflask.service_discovery.errors import ServiceDiscoveryError
 from guniflask.service_discovery.load_balancer_client import LoadBalancerClient
 from guniflask.service_discovery.service_instance import ServiceInstance
+
+log = logging.getLogger(__name__)
 
 
 class ConsulClientError(ServiceDiscoveryError):
@@ -121,3 +127,55 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         result = urlsplit(original_url)
         result = result._replace(netloc=f'{service_instance.host}:{service_instance.port}')
         return urlunsplit(result)
+
+
+@condition_on_setting('guniflask.consul')
+@configuration
+class ConsulConfigurer(ServiceDiscoveryConfigurer):
+
+    def __init__(self):
+        self._discovery_client: Optional[DiscoveryClient] = None
+        self._load_balancer_client: Optional[LoadBalancerClient] = None
+        self._service_name: Optional[str] = None
+
+    @property
+    def discovery_client(self) -> DiscoveryClient:
+        return self._discovery_client
+
+    @property
+    def load_balancer_client(self) -> LoadBalancerClient:
+        return self._load_balancer_client
+
+    def configure(self, service_name: str, app_settings: Settings):
+        config = app_settings.get_by_prefix('guniflask.consul')
+        self._service_name = service_name
+        self._register(config, app_settings)
+
+    def _register(self, config: dict, app_settings: Settings):
+        consul = ConsulClient(**config)
+        self._discovery_client = consul
+        self._load_balancer_client = consul
+        self._do_register(consul, app_settings)
+
+    def _do_register(self, consul: ConsulClient, app_settings: Settings):
+        local_ip = app_settings['ip_address']
+        port = app_settings['port']
+        service_id = f'{app_settings["app_name"]}-{local_ip}-{port}'
+        heath_url = f'http://{local_ip}:{port}/health?' \
+                    f'app_id={app_settings["app_id"]}'
+        try:
+            consul.register_service(
+                app_settings['app_name'],
+                service_id=service_id,
+                address=local_ip,
+                port=port,
+                check=consul.http_check(
+                    service_id,
+                    heath_url,
+                    check_id=service_id,
+                    interval='10s',
+                    deregister_after='10m',
+                )
+            )
+        except ConsulClientError as e:
+            log.error('Failed to register service to Consul at %s:%s: %s', consul.host, consul.port, e)

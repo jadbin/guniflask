@@ -1,4 +1,5 @@
 import inspect
+from importlib import import_module
 
 from guniflask.annotation import AnnotationMetadata, AnnotationUtils
 from guniflask.beans.definition import BeanDefinition
@@ -97,6 +98,9 @@ class ConfigurationClassBeanDefinitionReader:
         config_set = annotation['values']
         if config_set:
             for config_cls in config_set:
+                if isinstance(config_cls, str):
+                    _m, _c = config_cls.rsplit('.', maxsplit=1)
+                    config_cls = getattr(import_module(_m), _c)
                 config_cls_metadata = AnnotationUtils.get_annotation_metadata(config_cls)
                 if self._condition_evaluator.should_skip(config_cls_metadata):
                     continue
