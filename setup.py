@@ -39,6 +39,7 @@ install_requires = [
     'requests>=2.25.1',
     'dnspython>=2.1.0',
     'python-dotenv>=0.15.0',
+    'PyYAML>=5.4.1',
 ]
 
 

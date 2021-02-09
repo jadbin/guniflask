@@ -72,14 +72,29 @@ class Settings(MutableMapping):
 
     def update(self, __values=None, **kwargs):
         if __values is not None:
-            if isinstance(__values, Settings):
-                for name in __values:
+            for name in __values:
+                if isinstance(__values[name], MutableMapping):
+                    self[name] = Settings(__values[name])
+                else:
                     self[name] = __values[name]
-            else:
-                for name, value in __values.items():
-                    self[name] = value
         for k, v in kwargs.items():
-            self[k] = v
+            self[k] = Settings(v) if isinstance(v, MutableMapping) else v
+
+    def merge(self, __values=None):
+        if __values is not None:
+            for name in __values:
+                if isinstance(__values[name], MutableMapping):
+                    v = Settings(__values[name])
+                else:
+                    v = __values[name]
+
+                if name not in self:
+                    self[name] = v
+                else:
+                    if isinstance(self[name], Settings) and isinstance(v, MutableMapping):
+                        self[name].merge(v)
+                    else:
+                        self[name] = v
 
     def delete(self, name):
         del self.attributes[name]

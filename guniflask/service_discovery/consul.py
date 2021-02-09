@@ -1,3 +1,6 @@
+import base64
+import io
+import json
 import logging
 from typing import List, Union, Optional
 from urllib.parse import urlencode, urlsplit, urlunsplit
@@ -6,8 +9,9 @@ import dns.message
 import dns.query
 import dns.rdatatype
 import requests
+import yaml
 
-from guniflask.config.app_settings import Settings
+from guniflask.config.app_settings import Settings, settings
 from guniflask.context.annotation import condition_on_setting, configuration
 from guniflask.service_discovery.config import ServiceDiscoveryConfigurer
 from guniflask.service_discovery.discovery_client import DiscoveryClient
@@ -25,13 +29,26 @@ class ConsulClientError(ServiceDiscoveryError):
 class ConsulClient(DiscoveryClient, LoadBalancerClient):
     api_version = 'v1'
 
-    def __init__(self, host: str = '127.0.0.1', port: int = 8500, dns_port: int = 8600, scheme: str = 'http'):
+    def __init__(
+            self,
+            host: str = '127.0.0.1',
+            port: int = 8500,
+            dns_port: int = 8600,
+            scheme: str = 'http',
+            config_key: str = None,
+            config_format: str = 'yaml',
+    ):
         self.host = host
         self.port = port
         self.dns_port = dns_port
         self.scheme = scheme
         self.session = requests.Session()
         self.base_url = f'{scheme}://{host}:{port}/{self.api_version}'
+        self.config_key = config_key
+        self.config_format = config_format.lower()
+
+        assert self.config_format in {'yaml', 'json'}, \
+            f'unsupported Consul configuration format: {self.config_format}'
 
     def register_service(self, name: str,
                          service_id: str = None,
@@ -81,12 +98,19 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         return resp.json()
 
     @staticmethod
-    def http_check(name: str, url: str, check_id: str = None, interval: str = None, deregister_after: str = None):
-        return {'Name': name,
-                'CheckID': check_id,
-                'HTTP': url,
-                'Interval': interval,
-                'DeregisterCriticalServiceAfter': deregister_after}
+    def http_check(
+            name: str,
+            url: str,
+            check_id: str = None,
+            interval: str = None,
+            deregister_after: str = None):
+        return {
+            'Name': name,
+            'CheckID': check_id,
+            'HTTP': url,
+            'Interval': interval,
+            'DeregisterCriticalServiceAfter': deregister_after,
+        }
 
     def get_service_instances(self, service_name: str) -> List[ServiceInstance]:
         api_path = f'/agent/health/service/name/{service_name}'
@@ -128,6 +152,21 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         result = result._replace(netloc=f'{service_instance.host}:{service_instance.port}')
         return urlunsplit(result)
 
+    def get_configuration(self):
+        api_path = f'/kv/{self.config_key}'
+        url = f'{self.base_url}{api_path}'
+        try:
+            resp = self.session.get(url)
+            resp.raise_for_status()
+        except Exception as e:
+            raise ConsulClientError(e)
+        data = resp.json()[0]['Value']
+        s = base64.b64decode(data)
+        if self.config_format == 'yaml':
+            return yaml.safe_load(io.BytesIO(s))
+        if self.config_format == 'json':
+            return json.load(io.BytesIO(s))
+
 
 @condition_on_setting('guniflask.consul')
 @configuration
@@ -137,6 +176,7 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
         self._discovery_client: Optional[DiscoveryClient] = None
         self._load_balancer_client: Optional[LoadBalancerClient] = None
         self._service_name: Optional[str] = None
+        self._consul_client: Optional[ConsulClient] = None
 
     @property
     def discovery_client(self) -> DiscoveryClient:
@@ -151,11 +191,15 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
         self._service_name = service_name
         self._register(config, app_settings)
 
+        remote_settings = self._consul_client.get_configuration()
+        if remote_settings:
+            settings.merge(remote_settings)
+
     def _register(self, config: dict, app_settings: Settings):
-        consul = ConsulClient(**config)
-        self._discovery_client = consul
-        self._load_balancer_client = consul
-        self._do_register(consul, app_settings)
+        self._consul_client = ConsulClient(**config)
+        self._discovery_client = self._consul_client
+        self._load_balancer_client = self._consul_client
+        self._do_register(self._consul_client, app_settings)
 
     def _do_register(self, consul: ConsulClient, app_settings: Settings):
         local_ip = app_settings['ip_address']
