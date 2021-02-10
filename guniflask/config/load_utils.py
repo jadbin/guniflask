@@ -34,18 +34,18 @@ def load_profile_config(conf_dir, name, profiles=None, **kwargs) -> dict:
                 pc_file = join(conf_dir, name + '_' + profile + '.py')
                 if isfile(pc_file):
                     c = load_config(pc_file, **kwargs)
-                    _update_config(pc, c)
+                    _merge_config(pc, c)
         pc['active_profiles'] = list(profiles)
     return pc
 
 
-def _update_config(old: dict, new: dict):
+def _merge_config(old: dict, new: dict):
     for k, v in new.items():
         if k not in old:
             old[k] = v
         else:
             if isinstance(v, dict) and isinstance(old[k], dict):
-                _update_config(old[k], v)
+                _merge_config(old[k], v)
             else:
                 old[k] = v
 

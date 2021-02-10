@@ -4,7 +4,7 @@ from flask import Blueprint, Flask
 
 from guniflask.config.app_settings import Settings
 from guniflask.config.env import app_name_from_env
-from guniflask.config.loader import load_app_settings
+from guniflask.config.load_utils import load_app_settings
 from guniflask.security_config.authentication_config import AuthenticationConfiguration
 from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.service_discovery.config import ServiceDiscoveryConfiguration
