@@ -1,13 +1,33 @@
+import json
 import os
 import uuid
 from os.path import isfile, join
 
+import yaml
+
 from guniflask.utils.network import get_local_ip_address
 
 
-def load_config(fname, **kwargs) -> dict:
+def _load_config(fname, **kwargs) -> dict:
     if fname is None or not isfile(fname):
         raise FileNotFoundError(f"Cannot find configuration file '{fname}'")
+
+    s = {}
+    if fname.endswith('.py'):
+        s = _load_py_config(fname, **kwargs)
+    if fname.endswith('.yaml') or fname.endswith('.yml'):
+        s = _load_yaml_config(fname, **kwargs)
+    if fname.endswith('.json'):
+        s = _load_json_config(fname, **kwargs)
+
+    _s = {}
+    for name in s:
+        if not name.startswith('_'):
+            _s[name] = s[name]
+    return _s
+
+
+def _load_py_config(fname: str, **kwargs) -> dict:
     code = compile(open(fname, 'rb').read(), fname, 'exec')
     cfg = {
         "__builtins__": __builtins__,
@@ -21,21 +41,48 @@ def load_config(fname, **kwargs) -> dict:
     return cfg
 
 
-def load_profile_config(conf_dir, name, profiles=None, **kwargs) -> dict:
-    base_file = join(conf_dir, name + '.py')
-    if isfile(base_file):
-        pc = load_config(base_file, **kwargs)
-    else:
-        pc = {}
+def _load_yaml_config(fname: str, **kwargs) -> dict:
+    s = dict(**kwargs)
+    with open(fname, 'rb') as f:
+        s.update(yaml.safe_load(f))
+    return s
+
+
+def _load_json_config(fname: str, **kwargs) -> dict:
+    s = dict(**kwargs)
+    with open(fname, 'r') as f:
+        s.update(json.load(f))
+    return s
+
+
+def load_profile_config(conf_dir: str, name: str, **kwargs) -> dict:
+    _config_ext = ['.py', '.yaml', '.yml', '.json']
+
+    pc = {}
+    base_files = [join(conf_dir, name + ext) for ext in _config_ext]
+    for file in base_files:
+        try:
+            pc = _load_config(file, **kwargs)
+        except FileNotFoundError:
+            pass
+        else:
+            break
+
+    profiles = kwargs.get('active_profiles')
     if profiles:
         profiles = profiles.split(',')
         for profile in reversed(profiles):
             if profile:
-                pc_file = join(conf_dir, name + '_' + profile + '.py')
-                if isfile(pc_file):
-                    c = load_config(pc_file, **kwargs)
-                    _merge_config(pc, c)
-        pc['active_profiles'] = list(profiles)
+                files = [join(conf_dir, name + '_' + profile + ext) for ext in _config_ext]
+                for file in files:
+                    try:
+                        c = _load_config(file, **kwargs)
+                    except FileNotFoundError:
+                        pass
+                    else:
+                        _merge_config(pc, c)
+                        break
+
     return pc
 
 
@@ -53,21 +100,15 @@ def _merge_config(old: dict, new: dict):
 def load_app_settings(app_name) -> dict:
     c = {}
     conf_dir = os.environ.get('GUNIFLASK_CONF_DIR')
-    active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
     kwargs = get_settings_from_env()
     kwargs['app_name'] = app_name
     if conf_dir:
-        c = load_profile_config(conf_dir, app_name, profiles=active_profiles, **kwargs)
+        c = load_profile_config(conf_dir, app_name, **kwargs)
     if 'app_id' not in c:
         c['app_id'] = uuid.uuid4().hex
     if 'ip_address' not in c:
         c['ip_address'] = get_local_ip_address()
-
-    s = {}
-    for name in c:
-        if not name.startswith('_'):
-            s[name] = c[name]
-    return s
+    return c
 
 
 def get_settings_from_env() -> dict:
@@ -83,4 +124,6 @@ def get_settings_from_env() -> dict:
     if port:
         port = int(port)
     kwargs['port'] = port
+    active_profiles = os.environ.get('GUNIFLASK_ACTIVE_PROFILES')
+    kwargs['active_profiles'] = active_profiles
     return kwargs
