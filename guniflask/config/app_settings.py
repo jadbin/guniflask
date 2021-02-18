@@ -1,6 +1,5 @@
 import copy
 import logging
-from collections.abc import MutableMapping
 from typing import Union
 
 from flask import current_app
@@ -9,21 +8,13 @@ from werkzeug.local import LocalProxy
 log = logging.getLogger(__name__)
 
 
-class Settings(MutableMapping):
+class Settings(dict):
     def __init__(self, __values=None, **kwargs):
-        self.attributes = {}
+        super().__init__()
         self.update(__values, **kwargs)
 
     def __getitem__(self, name):
-        if name not in self:
-            return None
-        return self.attributes[name]
-
-    def __contains__(self, name):
-        return name in self.attributes
-
-    def get(self, name, default=None):
-        return self[name] if self[name] is not None else default
+        return self.get(name)
 
     def get_by_prefix(self, prefix, default=None):
         s = prefix.split('.')
@@ -60,9 +51,6 @@ class Settings(MutableMapping):
         v = self.get(name, default)
         return getlist(v)
 
-    def __setitem__(self, name, value):
-        self.attributes[name] = value
-
     def set(self, name, value):
         self[name] = value
 
@@ -73,17 +61,17 @@ class Settings(MutableMapping):
     def update(self, __values=None, **kwargs):
         if __values is not None:
             for name in __values:
-                if isinstance(__values[name], MutableMapping):
+                if isinstance(__values[name], dict):
                     self[name] = Settings(__values[name])
                 else:
                     self[name] = __values[name]
         for k, v in kwargs.items():
-            self[k] = Settings(v) if isinstance(v, MutableMapping) else v
+            self[k] = Settings(v) if isinstance(v, dict) else v
 
     def merge(self, __values=None):
         if __values is not None:
             for name in __values:
-                if isinstance(__values[name], MutableMapping):
+                if isinstance(__values[name], dict):
                     v = Settings(__values[name])
                 else:
                     v = __values[name]
@@ -91,25 +79,16 @@ class Settings(MutableMapping):
                 if name not in self:
                     self[name] = v
                 else:
-                    if isinstance(self[name], Settings) and isinstance(v, MutableMapping):
+                    if isinstance(self[name], Settings) and isinstance(v, dict):
                         self[name].merge(v)
                     else:
                         self[name] = v
 
     def delete(self, name):
-        del self.attributes[name]
-
-    def __delitem__(self, name):
-        del self.attributes[name]
+        del self[name]
 
     def copy(self):
         return copy.deepcopy(self)
-
-    def __iter__(self):
-        return iter(self.attributes)
-
-    def __len__(self):
-        return len(self.attributes)
 
 
 def getbool(v):
