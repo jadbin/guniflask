@@ -16,6 +16,9 @@ class Settings(dict):
     def __getitem__(self, name):
         return self.get(name)
 
+    def get(self, name, default=None):
+        return super().get(name, default)
+
     def get_by_prefix(self, prefix, default=None):
         s = prefix.split('.')
         obj = self
