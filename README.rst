@@ -1,4 +1,3 @@
-=========
 guniflask
 =========
 
@@ -12,12 +11,12 @@ guniflask
     :target: https://github.com/jadbin/guniflask/blob/master/LICENSE
 
 Overview
-========
+--------
 
 guniflask是自动化生成基于flask + gunicorn的服务端项目基础代码的构建工具。
 
 Installation
-============
+------------
 
 guniflask需要Python 3.6或更高版本的环境支持。
 
@@ -26,7 +25,7 @@ guniflask需要Python 3.6或更高版本的环境支持。
     $ pip install -U guniflask
 
 Getting Started
-===============
+---------------
 
 安装guniflask项目生成工具::
 
@@ -50,6 +49,6 @@ Getting Started
     $ bash bin/manage debug
 
 Documentation
-=============
+-------------
 
 https://guniflask.readthedocs.io/
