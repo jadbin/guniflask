@@ -152,7 +152,10 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         result = result._replace(netloc=f'{service_instance.host}:{service_instance.port}')
         return urlunsplit(result)
 
-    def get_configuration(self):
+    def get_configuration(self) -> Optional[dict]:
+        if not self.config_key:
+            return
+
         api_path = f'/kv/{self.config_key}'
         url = f'{self.base_url}{api_path}'
         try:
