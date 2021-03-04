@@ -104,8 +104,6 @@ def load_app_settings(app_name) -> dict:
     kwargs['app_name'] = app_name
     if conf_dir:
         c = load_profile_config(conf_dir, app_name, **kwargs)
-    if 'app_id' not in c:
-        c['app_id'] = uuid.uuid4().hex
     if 'ip_address' not in c:
         c['ip_address'] = get_local_ip_address()
     return c

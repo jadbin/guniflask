@@ -38,11 +38,6 @@ app_name
 
 运行的应用的名称，可以通过环境变量 ``GUNIFLASK_APP_NAME`` 指定运行的应用。
 
-app_id
-^^^^^^
-
-应用启动时为应用指定的唯一标识。
-
 .. _active_profiles:
 
 active_profiles
