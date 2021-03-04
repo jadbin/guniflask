@@ -141,3 +141,15 @@ def test_setdefault():
     assert c['k1'] == 'v1'
     c.setdefault('k1', 'v2')
     assert c['k1'] == 'v1'
+
+
+def test_in():
+    c = Settings({'k': 'v'})
+    assert 'k' in c
+    assert 'v' not in c
+
+
+def test_get_item():
+    c = Settings({'k': 'v'})
+    assert c['k'] == 'v'
+    assert c['v'] is None
