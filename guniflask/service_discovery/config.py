@@ -1,7 +1,7 @@
 import logging
 from abc import ABCMeta, abstractmethod
 
-from guniflask.config.app_settings import settings, Settings
+from guniflask.config import settings
 from guniflask.context.annotation import configuration, bean, include
 from guniflask.distributed.local_lock import ServiceLock
 from guniflask.service_discovery.discovery_client import DiscoveryClient
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 class ServiceDiscoveryConfigurer(metaclass=ABCMeta):
     @abstractmethod
-    def configure(self, service_name: str, app_settings: Settings) -> bool:
+    def configure(self, service_name: str) -> bool:
         pass  # pragma: no cover
 
     @property
@@ -63,7 +63,6 @@ class ServiceDiscoveryConfiguration:
         if not self._register_lock.acquire():
             return
 
-        app_settings = settings._get_current_object()
-        service_name = app_settings['app_name']
+        service_name = settings['app_name']
         if self._service_discovery_configurer is not None:
-            self._service_discovery_configurer.configure(service_name, app_settings)
+            self._service_discovery_configurer.configure(service_name)

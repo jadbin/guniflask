@@ -11,7 +11,7 @@ import dns.rdatatype
 import requests
 import yaml
 
-from guniflask.config.app_settings import Settings, settings
+from guniflask.config.app_settings import settings
 from guniflask.context.annotation import condition_on_setting, configuration
 from guniflask.service_discovery.config import ServiceDiscoveryConfigurer
 from guniflask.service_discovery.discovery_client import DiscoveryClient
@@ -44,11 +44,15 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         self.scheme = scheme
         self.session = requests.Session()
         self.base_url = f'{scheme}://{host}:{port}/{self.api_version}'
-        self.config_key = config_key
-        self.config_format = config_format.lower()
 
-        assert self.config_format in {'yaml', 'json'}, \
-            f'unsupported Consul configuration format: {self.config_format}'
+        config_format = config_format.lower()
+        assert config_format in {'yaml', 'json'}, \
+            f'unsupported Consul configuration format: {config_format}'
+        self.config_format = config_format
+        if config_key:
+            remote_settings = self.get_configuration(config_key)
+            if remote_settings:
+                settings.merge(remote_settings)
 
     def register_service(self, name: str,
                          service_id: str = None,
@@ -152,11 +156,13 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
         result = result._replace(netloc=f'{service_instance.host}:{service_instance.port}')
         return urlunsplit(result)
 
-    def get_configuration(self) -> Optional[dict]:
-        if not self.config_key:
+    def get_configuration(self, key: str, config_format: str = None) -> Optional[dict]:
+        if not key:
             return
+        if config_format is None:
+            config_format = self.config_format
 
-        api_path = f'/kv/{self.config_key}'
+        api_path = f'/kv/{key}'
         url = f'{self.base_url}{api_path}'
         try:
             resp = self.session.get(url)
@@ -165,9 +171,9 @@ class ConsulClient(DiscoveryClient, LoadBalancerClient):
             raise ConsulClientError(e)
         data = resp.json()[0]['Value']
         s = base64.b64decode(data)
-        if self.config_format == 'yaml':
+        if config_format == 'yaml':
             return yaml.safe_load(io.BytesIO(s))
-        if self.config_format == 'json':
+        if config_format == 'json':
             return json.load(io.BytesIO(s))
 
 
@@ -189,30 +195,26 @@ class ConsulConfigurer(ServiceDiscoveryConfigurer):
     def load_balancer_client(self) -> LoadBalancerClient:
         return self._load_balancer_client
 
-    def configure(self, service_name: str, app_settings: Settings):
-        config = app_settings.get_by_prefix('guniflask.consul')
+    def configure(self, service_name: str):
+        config = settings.get_by_prefix('guniflask.consul')
         self._service_name = service_name
-        self._register(config, app_settings)
+        self._register(config)
 
-        remote_settings = self._consul_client.get_configuration()
-        if remote_settings:
-            settings.merge(remote_settings)
-
-    def _register(self, config: dict, app_settings: Settings):
+    def _register(self, config: dict):
         self._consul_client = ConsulClient(**config)
         self._discovery_client = self._consul_client
         self._load_balancer_client = self._consul_client
-        self._do_register(self._consul_client, app_settings)
+        self._do_register(self._consul_client)
 
-    def _do_register(self, consul: ConsulClient, app_settings: Settings):
-        local_ip = app_settings['ip_address']
-        port = app_settings['port']
-        service_id = f'{app_settings["app_name"]}-{local_ip}-{port}'
+    def _do_register(self, consul: ConsulClient):
+        local_ip = settings['ip_address']
+        port = settings['port']
+        service_id = f'{settings["app_name"]}-{local_ip}-{port}'
         heath_url = f'http://{local_ip}:{port}/health?' \
-                    f'app_name={app_settings["app_name"]}'
+                    f'app_name={settings["app_name"]}'
         try:
             consul.register_service(
-                app_settings['app_name'],
+                settings['app_name'],
                 service_id=service_id,
                 address=local_ip,
                 port=port,
