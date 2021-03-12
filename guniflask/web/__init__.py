@@ -1,6 +1,7 @@
 from .bind_annotation import blueprint
 from .bind_annotation import delete_route
 from .bind_annotation import get_route
+from .bind_annotation import head_route
 from .bind_annotation import patch_route
 from .bind_annotation import post_route
 from .bind_annotation import put_route

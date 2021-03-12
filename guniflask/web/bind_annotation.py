@@ -40,6 +40,11 @@ def route(rule: str = None, **options):
     return wrap_func
 
 
+def head_route(rule: str = None, **options):
+    options['methods'] = ['HEAD']
+    return route(rule=rule, **options)
+
+
 def get_route(rule: str = None, **options):
     options['methods'] = ['GET']
     return route(rule=rule, **options)
