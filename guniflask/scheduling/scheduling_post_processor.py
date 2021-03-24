@@ -1,4 +1,5 @@
 import datetime as dt
+import inspect
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.factory import BeanFactory, BeanFactoryAware
@@ -19,11 +20,14 @@ class ScheduledPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializ
         self.bean_factory = bean_factory
 
     def post_process_after_initialization(self, bean, bean_name: str):
-        for m in dir(bean):
-            method = getattr(bean, m)
-            a = AnnotationUtils.get_annotation(method, Scheduled)
-            if a is not None:
-                self._scheduled_tasks.append((a, method))
+        bean_type = bean.__class__
+        for m in dir(bean_type):
+            func = getattr(bean_type, m)
+            if inspect.isfunction(func):
+                a = AnnotationUtils.get_annotation(func, Scheduled)
+                if a is not None:
+                    method = getattr(bean, m)
+                    self._scheduled_tasks.append((a, method))
         return bean
 
     def after_singletons_instantiated(self):

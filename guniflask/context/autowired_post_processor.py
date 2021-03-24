@@ -24,7 +24,7 @@ class AutowiredAnnotationBeanPostProcessor(BeanPostProcessor, BeanFactoryAware):
     def post_process_before_instantiation(self, bean_type: type, bean_name: str):
         for m in dir(bean_type):
             method = getattr(bean_type, m)
-            if inspect.ismethod(method) or inspect.isfunction(method):
+            if inspect.isfunction(method):
                 a = AnnotationUtils.get_annotation(method, Autowired)
                 if a is not None:
                     self._autowired_methods[bean_name].append(m)

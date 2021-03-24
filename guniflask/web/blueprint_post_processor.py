@@ -39,18 +39,20 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             b = FlaskBlueprint(bean_name, bean.__module__,
                                url_prefix=annotation['url_prefix'], **options)
             annotation['blueprint'] = b
-            for m in dir(bean):
-                method = getattr(bean, m)
-                try:
-                    self._resolve_route(b, method)
-                    self._resolve_method_def_filter(b, method)
-                except Exception:
-                    log.error(
-                        "Failed to resolve the route function '%s' in blueprint '%s'",
-                        m,
-                        bean_type.__name__,
-                    )
-                    raise
+            for m in dir(bean_type):
+                func = getattr(bean_type, m)
+                if inspect.isfunction(func):
+                    method = getattr(bean, m)
+                    try:
+                        self._resolve_route(b, method)
+                        self._resolve_method_def_filter(b, method)
+                    except Exception:
+                        log.error(
+                            "Failed to resolve the route function '%s' in blueprint '%s'",
+                            m,
+                            bean_type.__name__,
+                        )
+                        raise
             self.blueprints.append(b)
         return bean
 

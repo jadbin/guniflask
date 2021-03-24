@@ -1,3 +1,4 @@
+import inspect
 import logging
 from functools import partial, update_wrapper
 
@@ -21,11 +22,14 @@ class AsyncPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializingS
         self.bean_factory = bean_factory
 
     def post_process_after_initialization(self, bean, bean_name: str):
-        for m in dir(bean):
-            method = getattr(bean, m)
-            a = AnnotationUtils.get_annotation(method, AsyncRun)
-            if a is not None:
-                self._async_methods.append((a, bean, method))
+        bean_type = bean.__class__
+        for m in dir(bean_type):
+            func = getattr(bean_type, m)
+            if inspect.isfunction(func):
+                a = AnnotationUtils.get_annotation(func, AsyncRun)
+                if a is not None:
+                    method = getattr(bean, m)
+                    self._async_methods.append((a, bean, method))
         return bean
 
     def after_singletons_instantiated(self):

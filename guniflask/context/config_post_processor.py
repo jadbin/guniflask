@@ -75,10 +75,11 @@ class ConfigurationClassBeanDefinitionReader:
         meta_data = AnnotationUtils.get_annotation_metadata(source)
         if meta_data.is_annotated(Include):
             self._load_bean_definition_for_included_config(meta_data)
+
         for m in dir(source):
-            method = getattr(source, m)
-            if inspect.isfunction(method) or inspect.ismethod(method):
-                method_metadata = AnnotationUtils.get_annotation_metadata(method)
+            func = getattr(source, m)
+            if inspect.isfunction(func):
+                method_metadata = AnnotationUtils.get_annotation_metadata(func)
                 if method_metadata is not None and method_metadata.is_annotated(Bean):
                     self._load_bean_definition_for_bean_method(bean_name, method_metadata)
 
