@@ -11,9 +11,10 @@ Running guniflask
 
 .. code-block:: bash
 
-    $ mkdir foo && cd foo
+    $ mkdir <proj> && cd <proj>
     $ guniflask init
 
+其中 <proj> 表示项目名称。
 接下来会以对话的形式完成项目的初始配置，当选择默认设置时直接按Enter键即可。
 
 根据导引完成配置之后，会在项目根目录下生成项目的初始代码。
@@ -35,6 +36,3 @@ Running guniflask
 
 .. warning::
     建议在运行guniflask前使用Git等版本控制工具保存当前项目的所有更改，以免在生成项目文件的过程中替换了未保存的更改。
-
-.. note::
-    - 为了便于描述，在后续文档中我们用 ``foo`` 替代项目的实际名称。

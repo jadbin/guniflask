@@ -41,7 +41,7 @@ gunicorn配置项的详情可参考gunicorn文档: http://docs.gunicorn.org/en/s
 Auto Reloading
 --------------
 
-以debug模式启动项目时，如果 ``foo`` 模块中或 conf 文件夹中的代码发生了改变，app进程会自动重启并加载最新的代码。
+以debug模式启动项目时，如果python模块中或 conf 文件夹中的代码发生了改变，app进程会自动重启并加载最新的代码。
 
 .. note::
 

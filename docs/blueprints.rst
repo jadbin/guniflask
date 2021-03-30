@@ -11,7 +11,7 @@ Flask提供了blueprint的概念用于模块化构建服务端代码，详细文
 Declaring Blueprint
 -------------------
 
-项目用到的 ``Blueprint`` 可以在 ``foo`` 模块任意位置进行声明，项目启动时会自动将所有声明的 ``Blueprint`` 自动注册到Flask app中。
+项目用到的 ``Blueprint`` 可以在任意位置进行声明，项目启动时会自动将所有声明的 ``Blueprint`` 自动注册到Flask app中。
 
 Using @blueprint
 ----------------
