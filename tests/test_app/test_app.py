@@ -40,10 +40,6 @@ def get_json(resp):
 
 
 class TestRestApp:
-    def test_health_info(self, rest_client: FlaskClient):
-        data = get_json(rest_client.get('/health'))
-        assert data == {'status': 'UP'}
-
     def test_get_default_setting(self, rest_client: FlaskClient):
         data = get_json(rest_client.get('/settings/app_name'))
         assert data['app_name'] == 'rest_app'

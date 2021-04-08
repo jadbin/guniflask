@@ -37,7 +37,6 @@ install_requires = [
     'PyJWT>=2.0.0',
     'APScheduler>=3.6.3',
     'requests>=2.25.1',
-    'dnspython>=2.1.0',
     'python-dotenv>=0.15.0',
     'PyYAML>=5.4.1',
 ]
