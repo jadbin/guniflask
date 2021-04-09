@@ -81,12 +81,10 @@ class CurrentUser:
         self._user = SecurityContext.get_user()
 
     def __getattribute__(self, name):
-        if name.startswith('_'):
-            return getattr(self._user, name)
+        _user = super().__getattribute__('_user')
+        if hasattr(_user, name):
+            return getattr(_user, name)
         return super().__getattribute__(name)
-
-    def __getattr__(self, name):
-        return getattr(self.user, name)
 
     def has_authority(self, authority):
         return SecurityContext.has_authority(self._user, authority)
