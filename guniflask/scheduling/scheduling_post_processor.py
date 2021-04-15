@@ -46,7 +46,7 @@ class ScheduledPostProcessor(BeanPostProcessor, BeanFactoryAware, SmartInitializ
     def _schedule_task(self, scheduled: Scheduled, method):
         start_time = None
         if scheduled['initial_delay'] is not None:
-            start_time = dt.datetime.now() + dt.timedelta(seconds=scheduled['initial_delay'])
+            start_time = dt.datetime.now().astimezone() + dt.timedelta(seconds=scheduled['initial_delay'])
         if scheduled['cron'] is not None:
             self.task_scheduler.schedule_with_cron(method, scheduled['cron'], start_time=start_time)
         elif scheduled['interval'] is not None:

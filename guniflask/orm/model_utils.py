@@ -24,7 +24,7 @@ def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __e
     col_attrs = mapper.column_attrs
     relationships = mapper.relationships
     d = {}
-    tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
+    tz_info = dt.datetime.now().astimezone().tzinfo
     ignore_set = make_ignore_rule_for_field(ignore)
     only_set = make_only_rule_for_field(only)
     include_set = make_include_rule_for_field(include)
@@ -80,7 +80,7 @@ def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __e
 
 def result_to_dict(result, ignore=None, only=None) -> dict:
     res = {}
-    tz_info = dt.datetime.now(tz=dt.timezone.utc).astimezone().tzinfo
+    tz_info = dt.datetime.now().astimezone().tzinfo
     ignore_set = make_ignore_rule_for_field(ignore)
     only_set = make_only_rule_for_field(only)
     for key in result.keys():
