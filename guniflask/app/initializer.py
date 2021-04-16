@@ -9,6 +9,7 @@ from guniflask.security_config.authentication_config import AuthenticationConfig
 from guniflask.security_config.web_security_config import WebSecurityConfiguration
 from guniflask.utils.path import walk_modules
 from guniflask.web.context import WebApplicationContext
+from guniflask.web.health_check import HealthCheckConfiguration
 from guniflask.web.scheduling_config import WebAsyncConfiguration, WebSchedulingConfiguration
 
 
@@ -59,6 +60,7 @@ class AppInitializer:
         bean_context.register(WebSecurityConfiguration)
         bean_context.register(WebAsyncConfiguration)
         bean_context.register(WebSchedulingConfiguration)
+        bean_context.register(HealthCheckConfiguration)
 
     def _refresh_bean_context(self, app):
         if hasattr(app, 'bean_context'):
