@@ -25,7 +25,14 @@ class TaskScheduler(metaclass=ABCMeta):
 
 class DefaultTaskScheduler(TaskScheduler, SmartInitializingSingleton, DisposableBean):
     def __init__(self, scheduler=None):
-        self._scheduler = scheduler or BackgroundScheduler()
+        if scheduler is None:
+            try:
+                from apscheduler.schedulers.gevent import GeventScheduler
+                self._scheduler = GeventScheduler()
+            except ImportError:
+                self._scheduler = BackgroundScheduler()
+        else:
+            self._scheduler = scheduler
 
     @property
     def scheduler(self):
