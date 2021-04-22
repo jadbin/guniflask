@@ -2,7 +2,7 @@ import datetime as dt
 
 import sqlalchemy
 
-from guniflask.utils.datatime import convert_to_datetime
+from guniflask.utils.datatime import convert_to_datetime, local_tz_info
 from guniflask.utils.rule import make_ignore_rule_for_field, make_include_rule_for_field, make_only_rule_for_field
 
 
@@ -20,11 +20,12 @@ def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __e
     if model in __exists:
         raise DictRecursionError
     __exists.add(model)
+
     mapper = sqlalchemy.inspect(model).mapper
     col_attrs = mapper.column_attrs
     relationships = mapper.relationships
+
     d = {}
-    tz_info = dt.datetime.now().astimezone().tzinfo
     ignore_set = make_ignore_rule_for_field(ignore)
     only_set = make_only_rule_for_field(only)
     include_set = make_include_rule_for_field(include)
@@ -41,7 +42,7 @@ def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __e
         if key in col_attrs:
             v = getattr(model, key)
             if isinstance(v, dt.datetime) and v.tzinfo is None:
-                v = v.replace(tzinfo=tz_info)
+                v = v.replace(tzinfo=local_tz_info)
             d[key] = v
         elif key in relationships:
             if not hasattr(model, key):
@@ -80,7 +81,6 @@ def _model_to_dict(model, ignore=None, only=None, include=None, __prefix='', __e
 
 def result_to_dict(result, ignore=None, only=None) -> dict:
     res = {}
-    tz_info = dt.datetime.now().astimezone().tzinfo
     ignore_set = make_ignore_rule_for_field(ignore)
     only_set = make_only_rule_for_field(only)
     for key in result.keys():
@@ -89,7 +89,7 @@ def result_to_dict(result, ignore=None, only=None) -> dict:
                 continue
             v = getattr(result, key)
             if isinstance(v, dt.datetime) and v.tzinfo is None:
-                v = v.replace(tzinfo=tz_info)
+                v = v.replace(tzinfo=local_tz_info)
             res[key] = v
     return res
 
