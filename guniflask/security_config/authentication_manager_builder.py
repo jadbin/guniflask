@@ -14,8 +14,10 @@ class AuthenticationManagerBuilder(ConfiguredSecurityBuilder, ProviderManagerBui
         self._authentication_providers: List[AuthenticationProvider] = []
 
     def _perform_build(self) -> Any:
-        provider_manager = ProviderManager(parent=self._parent_authentication_manager,
-                                           providers=self._authentication_providers)
+        provider_manager = ProviderManager(
+            parent=self._parent_authentication_manager,
+            providers=self._authentication_providers,
+        )
         return provider_manager
 
     def with_authentication_provider(self, provider: AuthenticationProvider) -> 'AuthenticationManagerBuilder':

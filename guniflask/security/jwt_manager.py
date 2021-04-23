@@ -16,8 +16,15 @@ class JwtManager(AuthenticationManager):
     USERNAME = 'username'
     USERINFO = 'userinfo'
 
-    def __init__(self, secret='', public_key=None, private_key=None, algorithm=None,
-                 access_token_expires_in=12 * 60 * 60, refresh_token_expires_in=30 * 24 * 60 * 60):
+    def __init__(
+            self,
+            secret='',
+            public_key=None,
+            private_key=None,
+            algorithm=None,
+            access_token_expires_in=12 * 60 * 60,
+            refresh_token_expires_in=30 * 24 * 60 * 60,
+    ):
         self.secret = secret
         self.public_key = public_key
         self.private_key = private_key

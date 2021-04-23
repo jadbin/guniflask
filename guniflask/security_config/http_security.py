@@ -16,8 +16,9 @@ class HttpSecurity(HttpSecurityBuilder):
         super().__init__()
         assert authentication_builder is not None, 'Authentication builder is required'
         self.set_shared_object(AuthenticationManagerBuilder, authentication_builder)
-        for k, v in shared_objects.items():
-            self.set_shared_object(k, v)
+        if shared_objects:
+            for k, v in shared_objects.items():
+                self.set_shared_object(k, v)
         self._security_filter_chain = RequestFilterChain()
         self._blueprints = []
 
