@@ -1,8 +1,6 @@
-import getpass
 import os
-import tempfile
 from importlib import import_module
-from os.path import isfile, join, isdir, exists
+from os.path import isfile, join, isdir
 from pkgutil import iter_modules
 
 
@@ -30,14 +28,3 @@ def walk_files(path: str):
     elif isfile(path):
         files.append(path)
     return files
-
-
-def make_temp_dir(name: str):
-    temp_dir = join(
-        tempfile.gettempdir(),
-        f'guniflask.{getpass.getuser()}',
-        name,
-    )
-    if not exists(temp_dir):
-        os.makedirs(temp_dir, exist_ok=True)
-    return temp_dir
