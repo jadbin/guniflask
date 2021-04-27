@@ -173,7 +173,7 @@ class ArgType:
                             vt = None
                         dtype = self._get_arg_type(vt)
             if shape is None:
-                raise ValueError(f'Unsupported generic argument type: {arg_type}')
+                raise AssertionError(f'Unsupported generic argument type: {arg_type}')
             self.shape = shape
             self.outer_type = dtype
             return
@@ -184,7 +184,7 @@ class ArgType:
                 self.outer_type = arg_type
 
         if not inspect.isclass(arg_type):
-            raise ValueError(f'Non-generic argument type must be a class, but got: {arg_type}')
+            raise AssertionError(f'Non-generic argument type must be a class, but got: {arg_type}')
         if issubclass(arg_type, List):
             self.shape = ArgTypeShape.LIST
             self.outer_type = None

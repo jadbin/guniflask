@@ -8,6 +8,7 @@ from .bind_annotation import put_route
 from .bind_annotation import route
 from .context import WebApplicationContext
 from .cors import CorsFilter
+from .errors import RequestValidationError
 from .filter_annotation import after_request
 from .filter_annotation import app_after_request
 from .filter_annotation import app_before_request

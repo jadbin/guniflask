@@ -100,7 +100,7 @@ def test_analyze_arg_type():
     arg_ = analyze_arg_type(None)
     assert arg_.is_singleton() and arg_.outer_type is None
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         analyze_arg_type('')
 
     arg_ = analyze_arg_type(list)

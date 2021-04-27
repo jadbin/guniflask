@@ -5,7 +5,6 @@ from functools import update_wrapper
 from typing import Optional
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
-from werkzeug.exceptions import BadRequest, InternalServerError
 from werkzeug.routing import parse_rule
 
 from guniflask.annotation import AnnotationUtils
@@ -16,9 +15,13 @@ from guniflask.data_model.typing import parse_json, inspect_args, analyze_arg_ty
 from guniflask.utils.datatime import convert_to_datetime
 from guniflask.web import request_annotation
 from guniflask.web.bind_annotation import Blueprint, Route
+from guniflask.web.errors import RequestValidationError
 from guniflask.web.filter_annotation import MethodDefFilter
-from guniflask.web.request_annotation import FieldInfo, RequestParam, PathVariable, RequestParamInfo, PathVariableInfo, \
-    RequestBodyInfo, FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo, RequestBody
+from guniflask.web.request_annotation import FieldInfo
+from guniflask.web.request_annotation import FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo
+from guniflask.web.request_annotation import PathVariable, PathVariableInfo
+from guniflask.web.request_annotation import RequestBody, RequestBodyInfo
+from guniflask.web.request_annotation import RequestParam, RequestParamInfo
 
 log = logging.getLogger(__name__)
 
@@ -71,7 +74,10 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
         params, param_names = self._resolve_method_parameters(rule, method)
 
         def wrapper(**kwargs):
-            method_kwargs = self._resolve_method_kwargs(kwargs, params, param_names)
+            try:
+                method_kwargs = self._resolve_method_kwargs(kwargs, params, param_names)
+            except Exception as e:
+                raise RequestValidationError(e)
             return method(**method_kwargs)
 
         return update_wrapper(wrapper, method)
@@ -158,7 +164,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             if k in param_names:
                 k = param_names[k]
             if k not in params:
-                raise InternalServerError(f'Unhandled parameter: {k}={v}')
+                raise AssertionError(f'Unhandled parameter: {k}={v}')
             if params[k].dtype is not None:
                 try:
                     v = params[k].dtype(v)
@@ -170,7 +176,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 continue
             name = p.name or k
             if isinstance(p, PathVariableInfo):
-                raise InternalServerError(f'No such path variable: {name}')
+                raise AssertionError(f'No such path variable: {name}')
 
             if isinstance(p, RequestParamInfo):
                 if name in request.args:
@@ -185,7 +191,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                         if p.dtype is not None:
                             v = self._read_value(v, p.dtype)
                     else:
-                        raise BadRequest(f'Unsupported type of parameter "{name}": {p.dtype}')
+                        raise AssertionError(f'Unsupported type of parameter "{name}": {p.dtype}')
                     if v is not None:
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
@@ -212,7 +218,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
                 else:
-                    raise BadRequest(f'Unsupported type of parameter "{name}": {p.dtype}')
+                    raise AssertionError(f'Unsupported type of parameter "{name}": {p.dtype}')
                 if v is not None:
                     result[k] = v
             elif isinstance(p, RequestHeaderInfo):
@@ -227,7 +233,7 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     if p.dtype is not None:
                         v = self._read_value(v, p.dtype)
                 else:
-                    raise BadRequest(f'Unsupported type of header "{name}": {p.dtype}')
+                    raise AssertionError(f'Unsupported type of header "{name}": {p.dtype}')
                 if v is not None:
                     result[k] = v
                 v = self._read_value(request.headers.get(name), p.dtype)
@@ -243,9 +249,9 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             if k not in result:
                 if p.required:
                     if isinstance(p, RequestBodyInfo):
-                        raise BadRequest('Request body not given or in wrong format')
+                        raise AssertionError('Request body not given or in wrong format')
                     else:
-                        raise BadRequest(f'Parameter not given: {name}')
+                        raise AssertionError(f'Parameter not given: {name}')
                 result[k] = p.default
         return result
 
@@ -266,4 +272,4 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             try:
                 return dtype(v)
             except (ValueError, TypeError):
-                raise BadRequest(f'The expected type is "{dtype.__name__}": {v}')
+                raise AssertionError(f'Failed to read value, type: {dtype.__name__}, value: {v}')
