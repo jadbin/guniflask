@@ -80,18 +80,20 @@ class DataModel(BaseModel):
     @classmethod
     def from_orm(
             cls,
-            obj: BaseModelMixin,
+            obj: Any,
             ignore: Union[str, List[str], Set[str]] = None,
             only: Union[str, List[str], Set[str]] = None,
             include: Union[str, List[str], Set[str]] = None,
     ):
-        return cls.from_dict(
-            obj.to_dict(
-                ignore=ignore,
-                only=only,
-                include=include,
+        if isinstance(obj, BaseModelMixin):
+            return cls.from_dict(
+                obj.to_dict(
+                    ignore=ignore,
+                    only=only,
+                    include=include,
+                )
             )
-        )
+        return super().from_orm(obj)
 
 
 def _expand_rule_set(rule: Set[str]) -> dict:
