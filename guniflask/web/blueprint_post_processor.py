@@ -195,10 +195,12 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     if v is not None:
                         result[k] = v
             elif isinstance(p, RequestBodyInfo):
-                data = request.json
-                v = parse_json(data, dtype=p.dtype)
-                if v is not None:
-                    result[k] = v
+                if issubclass(p.dtype, bytes):
+                    result[k] = request.data
+                else:
+                    v = parse_json(request.json, dtype=p.dtype)
+                    if v is not None:
+                        result[k] = v
             elif isinstance(p, FilePartInfo):
                 file = request.files.get(name)
                 if file is not None:
