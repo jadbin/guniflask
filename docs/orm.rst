@@ -30,7 +30,7 @@ Table to Model
 Model |xhArr|  dict
 -------------------
 
-我们对 ``db.Model`` 注入了两个成员函数:
+我们通过让生成的model继承 ``BaseModelMixin`` 注入了两个成员函数:
 
-- ``from_dict(dict_obj)`` : classmethod，将 ``dict`` 数据转为 ``db.Model`` 。
-- ``to_dict()`` : method, 将 ``db.Model`` 转变为 ``dict`` 。
+- ``from_dict(dict_obj)`` : classmethod，将 ``dict`` 数据转为model 。
+- ``to_dict()`` : method, 将model转变为 ``dict`` 。

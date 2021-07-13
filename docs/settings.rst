@@ -84,16 +84,6 @@ cors
 
 跨域相关配置。
 
-jwt
-^^^
-
-基于JWT的认证。
-
-consul
-^^^^^^
-
-基于Consul的服务发现。
-
 .. _table2model_dest:
 
 table2model_dest
