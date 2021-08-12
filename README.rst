@@ -1,8 +1,8 @@
 guniflask
 =========
 
-.. image:: https://travis-ci.org/jadbin/guniflask.svg?branch=master
-    :target: https://travis-ci.org/jadbin/guniflask
+.. image:: https://travis-ci.com/jadbin/guniflask.svg?branch=master
+    :target: https://travis-ci.com/jadbin/guniflask
 
 .. image:: https://coveralls.io/repos/github/jadbin/guniflask/badge.svg?branch=master
     :target: https://coveralls.io/github/jadbin/guniflask?branch=master
