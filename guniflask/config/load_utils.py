@@ -1,11 +1,8 @@
 import json
 import os
-import uuid
 from os.path import isfile, join
 
 import yaml
-
-from guniflask.utils.network import get_local_ip_address
 
 
 def _load_config(fname, **kwargs) -> dict:
@@ -104,8 +101,6 @@ def load_app_settings(app_name) -> dict:
     kwargs['app_name'] = app_name
     if conf_dir:
         c = load_profile_config(conf_dir, app_name, **kwargs)
-    if 'ip_address' not in c:
-        c['ip_address'] = get_local_ip_address()
     return c
 
 
