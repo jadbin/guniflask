@@ -54,7 +54,7 @@ class SecurityContext:
 
     @classmethod
     def has_role(cls, user: User, role: str):
-        return cls.has_any_role(user, role)
+        return cls.has_any_role(user, [role])
 
     @classmethod
     def has_any_role(cls, user, roles: Collection[str]):
