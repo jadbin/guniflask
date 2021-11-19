@@ -5,6 +5,7 @@ from functools import update_wrapper
 from typing import Optional
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
+from pydantic.main import BaseModel
 from werkzeug.routing import parse_rule
 
 from guniflask.annotation import AnnotationUtils
@@ -179,21 +180,25 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                 raise AssertionError(f'No such path variable: {name}')
 
             if isinstance(p, RequestParamInfo):
-                if name in request.args:
-                    arg_ = analyze_arg_type(p.dtype)
-                    if arg_.is_list():
-                        v = request.args.getlist(name)
-                        if arg_.outer_type:
-                            for i in range(len(v)):
-                                v[i] = self._read_value(v[i], arg_.outer_type)
-                    elif arg_.is_singleton():
-                        v = request.args.get(name)
-                        if p.dtype is not None:
-                            v = self._read_value(v, p.dtype)
-                    else:
-                        raise AssertionError(f'Unsupported type of parameter "{name}": {p.dtype}')
-                    if v is not None:
-                        result[k] = v
+                if inspect.isclass(p.dtype) and issubclass(p.dtype, BaseModel):
+                    v = parse_json(request.args, dtype=p.dtype)
+                    result[k] = v
+                else:
+                    if name in request.args:
+                        arg_ = analyze_arg_type(p.dtype)
+                        if arg_.is_list():
+                            v = request.args.getlist(name)
+                            if arg_.outer_type:
+                                for i in range(len(v)):
+                                    v[i] = self._read_value(v[i], arg_.outer_type)
+                        elif arg_.is_singleton():
+                            v = request.args.get(name)
+                            if p.dtype is not None:
+                                v = self._read_value(v, p.dtype)
+                        else:
+                            raise AssertionError(f'Unsupported type of parameter "{name}": {p.dtype}')
+                        if v is not None:
+                            result[k] = v
             elif isinstance(p, RequestBodyInfo):
                 if inspect.isclass(p.dtype) and issubclass(p.dtype, bytes):
                     result[k] = request.data
