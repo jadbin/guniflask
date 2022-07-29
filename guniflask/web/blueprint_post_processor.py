@@ -6,7 +6,6 @@ from typing import Optional
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
 from pydantic.main import BaseModel
-from werkzeug.routing import parse_rule
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
@@ -20,7 +19,7 @@ from guniflask.web.errors import RequestValidationError
 from guniflask.web.filter_annotation import MethodDefFilter
 from guniflask.web.request_annotation import FieldInfo
 from guniflask.web.request_annotation import FilePartInfo, FormValueInfo, RequestHeaderInfo, CookieValueInfo
-from guniflask.web.request_annotation import PathVariable, PathVariableInfo
+from guniflask.web.request_annotation import PathVariableInfo
 from guniflask.web.request_annotation import RequestBody, RequestBodyInfo
 from guniflask.web.request_annotation import RequestParam, RequestParamInfo
 
@@ -107,18 +106,6 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
         params = {}
         param_names = {}
 
-        # resolve path variable in route
-        path_variable_type = {}
-        for converter, _, name in parse_rule(rule):
-            if converter is None:
-                continue
-            if converter == 'int':
-                path_variable_type[name] = int
-            elif converter == 'float':
-                path_variable_type[name] = float
-            else:
-                path_variable_type[name] = str
-
         args, type_hints = inspect_args(method)
 
         for arg, default in args.items():
@@ -130,18 +117,15 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
             if inspect.isfunction(default) and getattr(request_annotation, default.__name__, None) is default:
                 default = default()
             if not isinstance(default, FieldInfo):
-                if arg in path_variable_type:
-                    annotation = PathVariable(dtype=None if arg in type_hints else path_variable_type[arg])
-                else:
-                    if arg in type_hints:
-                        arg_type = type_hints[arg]
-                        arg_ = analyze_arg_type(arg_type)
-                        if arg_.is_dict():
-                            annotation = RequestBody()
-                        else:
-                            annotation = RequestParam()
+                if arg in type_hints:
+                    arg_type = type_hints[arg]
+                    arg_ = analyze_arg_type(arg_type)
+                    if arg_.is_dict():
+                        annotation = RequestBody()
                     else:
                         annotation = RequestParam()
+                else:
+                    annotation = RequestParam()
                 annotation.default = default
                 default = annotation
             if arg in type_hints and default.dtype is None:
