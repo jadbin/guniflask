@@ -3,6 +3,12 @@
 Changelog
 =========
 
+0.12.16 (2023-02-19)
+-------------------
+
+- 项目生成的依赖文件Flask-SQLAlchemy的最小版本为3.0.2
+- table2model: 生成的类默认带有 ``__table_args__ = {'implicit_returning': False}`` ，避免使用Hologres等部分数据库时commit session报错
+
 0.12.15 (2022-10-23)
 -------------------
 
