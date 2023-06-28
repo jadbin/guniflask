@@ -116,7 +116,7 @@ class TestRestApp:
         assert data['x'] == 'file'
 
     def test_post_cookie(self, rest_client: FlaskClient):
-        rest_client.set_cookie('localhost', 'x', '1')
+        rest_client.set_cookie(domain='localhost', key='x', value='1')
         data = get_json(
             rest_client.post(
                 '/post/cookie-int',
@@ -132,7 +132,7 @@ class TestRestApp:
         assert data['x'] == '1'
 
     def test_post_header(self, rest_client: FlaskClient):
-        rest_client.set_cookie('localhost', 'x', '1')
+        rest_client.set_cookie(domain='localhost', key='x', value='1')
         data = get_json(
             rest_client.post(
                 '/post/header-int',
@@ -171,7 +171,7 @@ class TestRestApp:
 class TestSchedulerApp:
     def test_schedule_task(self, scheduler_client: FlaskClient):
         scheduler_client.post('/async-add?x=1&y=2')
-        time.sleep(1.2)
+        time.sleep(2)
         data = get_json(scheduler_client.get('/scheduled'))
         assert data['result'] is True
         data = get_json(scheduler_client.get('/async-add'))

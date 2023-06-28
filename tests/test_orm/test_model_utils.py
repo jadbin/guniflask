@@ -1,10 +1,13 @@
 import pytest
 from sqlalchemy import create_engine, Column, String, Integer, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import backref, relationship, sessionmaker
 
 from guniflask.orm import result_to_dict, BaseModelMixin
 
+try:
+    from sqlalchemy.orm import declarative_base
+except Exception:
+    from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
