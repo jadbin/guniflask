@@ -1,6 +1,6 @@
 from typing import Optional, Collection, Union
 
-from flask import _request_ctx_stack
+from flask import g
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication import Authentication
@@ -16,33 +16,26 @@ class SecurityContext:
 
     @classmethod
     def get_authentication(cls) -> Optional[Authentication]:
-        ctx = _request_ctx_stack.top
-        if ctx is not None:
-            if not hasattr(ctx, cls.AUTHENTICATION):
-                return None
-            return getattr(ctx, cls.AUTHENTICATION)
+        if cls.AUTHENTICATION in g:
+            return getattr(g, cls.AUTHENTICATION)
 
     @classmethod
     def set_authentication(cls, authentication: Authentication):
-        ctx = _request_ctx_stack.top
-        if ctx is not None:
-            setattr(ctx, cls.AUTHENTICATION, authentication)
+        setattr(g, cls.AUTHENTICATION, authentication)
 
     @classmethod
     def get_user(cls) -> Optional[User]:
-        ctx = _request_ctx_stack.top
-        if ctx is not None:
-            if not hasattr(ctx, cls.USER):
-                user = None
-                auth = cls.get_authentication()
-                if auth is not None:
-                    if isinstance(auth, UserAuthentication):
-                        if isinstance(auth.principal, UserDetails):
-                            user = auth.principal
-                        else:
-                            user = User(username=auth.name, authorities=auth.authorities)
-                setattr(ctx, cls.USER, user)
-            return getattr(ctx, cls.USER)
+        if cls.USER not in g:
+            user = None
+            auth = cls.get_authentication()
+            if auth is not None:
+                if isinstance(auth, UserAuthentication):
+                    if isinstance(auth.principal, UserDetails):
+                        user = auth.principal
+                    else:
+                        user = User(username=auth.name, authorities=auth.authorities)
+            setattr(g, cls.USER, user)
+        return getattr(g, cls.USER)
 
     @classmethod
     def has_authority(cls, user: User, authority: str):
