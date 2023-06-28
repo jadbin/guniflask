@@ -83,7 +83,7 @@ def result_to_dict(result, ignore=None, only=None) -> dict:
     res = {}
     ignore_set = make_ignore_rule_for_field(ignore)
     only_set = make_only_rule_for_field(only)
-    for key in result.keys():
+    for key in result._mapping.keys():
         if key not in ignore_set:
             if only and key not in only_set:
                 continue
