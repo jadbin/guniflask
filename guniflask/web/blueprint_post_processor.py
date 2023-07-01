@@ -227,9 +227,6 @@ class BlueprintPostProcessor(BeanPostProcessor, ApplicationEventListener):
                     raise AssertionError(f'Unsupported type of header "{name}": {p.dtype}')
                 if v is not None:
                     result[k] = v
-                v = self._read_value(request.headers.get(name), p.dtype)
-                if v is not None:
-                    result[k] = v
             elif isinstance(p, CookieValueInfo):
                 v = request.cookies.get(name)
                 if v is not None:
