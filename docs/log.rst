@@ -6,7 +6,7 @@ Logging
 Getting Logger
 --------------
 
-guniflask将Flask的 ``app.logger`` 以及 ``<proj>`` 的logger 绑定到了gunicorn的 ``gunicorn.error`` 上。
+guniflask将Flask的 ``app.logger`` 以及 ``your_project`` 的logger 绑定到了gunicorn的 ``gunicorn.error`` 上。
 因此可以在获取了Flask的 ``app`` 对象后使用 ``app.logger`` 纪录日志。
 也可以在项目模块中按如下方式获取logger:
 

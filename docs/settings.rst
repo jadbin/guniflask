@@ -3,7 +3,7 @@
 Application Settings
 ====================
 
-项目的配置项在 conf/<proj>.py 文件中定义。
+项目的配置项在 conf/your_project.py 文件中定义。
 针对不同运行环境可以通过指定profile实现项目配置的切换，详见 :ref:`profile` 。
 
 Uppercase Settings
@@ -89,7 +89,7 @@ cors
 table2model_dest
 ^^^^^^^^^^^^^^^^
 
-- Default: ``'<proj>/models'``
+- Default: ``'your_project/models'``
 
 配置table2model生成结果存储的模块路径，路径为相对于项目根目录的相对路径。
 默认存储在项目根模块下的 ``models`` 模块中。
