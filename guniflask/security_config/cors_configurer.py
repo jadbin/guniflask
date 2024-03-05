@@ -5,11 +5,11 @@ from guniflask.web.cors import CorsFilter
 
 class CorsConfigurer(SecurityConfigurer):
 
-    def __init__(self, cors=None):
+    def __init__(self, options=None):
         super().__init__()
 
-        if isinstance(cors, dict):
-            self.cors_filter = CorsFilter(**cors)
+        if isinstance(options, dict):
+            self.cors_filter = CorsFilter(**options)
         else:
             self.cors_filter = CorsFilter()
 

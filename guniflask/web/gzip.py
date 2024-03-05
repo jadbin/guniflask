@@ -1,0 +1,49 @@
+from gzip import GzipFile
+from typing import List
+
+from gevent.libev.watcher import io
+from pydantic import BaseModel
+
+from guniflask.web.request_filter import RequestFilter
+
+
+class GzipOption(BaseModel):
+    compress_level: int = 6
+    compress_types: List[str] = None
+    compress_min_length: int = 1024
+
+
+DEFAULT_COMPRESS_TYPES = [
+    'application/json',
+    'text/css',
+    'text/html',
+    'text/javascript',
+    'text/xml',
+]
+
+
+class GzipFilter(RequestFilter):
+
+    def __init__(self, **kwargs):
+        self.option = GzipOption(**kwargs)
+        if not self.option.compress_types:
+            self.option.compress_types = DEFAULT_COMPRESS_TYPES
+
+    def after_request(self, response):
+        return self._gzip_compress(response)
+
+    def _gzip_compress(self, response):
+        if response.mimetype not in self.option.compress_types or response.content_length < self.option.compress_min_length:
+            return response
+
+        gzip_buffer = io.BytesIO()
+        with GzipFile(
+                mode='wb',
+                compresslevel=self.option.compress_level,
+                fileobj=gzip_buffer,
+        ) as gzip_file:
+            gzip_file.write(response.get_data())
+        response.set_data(gzip_buffer.getvalue())
+        response.headers['Content-Encoding'] = 'gzip'
+        response.headers['Content-Length'] = response.content_length
+        return response

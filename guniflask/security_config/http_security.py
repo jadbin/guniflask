@@ -7,6 +7,7 @@ from guniflask.security_config.authentication_manager_builder import Authenticat
 from guniflask.security_config.cors_configurer import CorsConfigurer
 from guniflask.security_config.http_basic_configurer import HttpBasicConfigurer
 from guniflask.security_config.http_security_builder import HttpSecurityBuilder
+from guniflask.web.gzip import GzipFilter
 from guniflask.web.request_filter import RequestFilter, RequestFilterChain
 
 
@@ -28,9 +29,16 @@ class HttpSecurity(HttpSecurityBuilder):
         app.after_request(self._security_filter_chain.after_request)
 
     def _before_configure(self):
-        cors = settings.get_by_prefix('guniflask.cors')
-        if cors is not None:
-            self.cors(cors)
+        cors_config = settings.get_by_prefix('guniflask.cors')
+        if cors_config is not None:
+            self.cors(cors_config)
+
+        gzip_config = settings.get_by_prefix('guniflask.gzip_on')
+        if gzip_config:
+            if isinstance(gzip_config, dict):
+                self.add_request_filter(GzipFilter(**gzip_config))
+            else:
+                self.add_request_filter(GzipFilter())
 
         self.set_shared_object(AuthenticationManager, self._get_authentication_registry().build())
 
