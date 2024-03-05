@@ -33,7 +33,9 @@ class GzipFilter(RequestFilter):
         return self._gzip_compress(response)
 
     def _gzip_compress(self, response):
-        if response.mimetype not in self.option.compress_types or response.content_length < self.option.compress_min_length:
+        if response.mimetype not in self.option.compress_types \
+                or response.content_length < self.option.compress_min_length \
+                or "Content-Encoding" in response.headers:
             return response
 
         gzip_buffer = io.BytesIO()
