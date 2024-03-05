@@ -1,3 +1,4 @@
+import gzip
 import io
 import json
 import os
@@ -36,6 +37,8 @@ def clear_env():
 
 def get_json(resp):
     assert resp.status_code == 200
+    if resp.headers.get('Content-Encoding') == 'gzip':
+        resp.set_data(gzip.decompress(resp.data))
     return resp.get_json()
 
 
@@ -166,6 +169,21 @@ class TestRestApp:
         )
         assert data['username'] == 'root'
         assert data['authorities'] == ['role_admin']
+
+    def test_gzip(self, rest_client: FlaskClient):
+        resp = rest_client.get(
+            '/gzip/json-512',
+        )
+        assert 'Content-Encoding' not in resp.headers
+        data = get_json(resp)
+        assert len(data['result']) == 512
+
+        resp = rest_client.get(
+            '/gzip/json-1024',
+        )
+        assert resp.headers.get('Content-Encoding') == 'gzip'
+        data = get_json(resp)
+        assert len(data['result']) == 1024
 
 
 class TestSchedulerApp:

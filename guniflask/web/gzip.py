@@ -1,7 +1,6 @@
-from gzip import GzipFile
+import gzip
 from typing import List
 
-from gevent.libev.watcher import io
 from pydantic import BaseModel
 
 from guniflask.web.request_filter import RequestFilter
@@ -38,14 +37,12 @@ class GzipFilter(RequestFilter):
                 or "Content-Encoding" in response.headers:
             return response
 
-        gzip_buffer = io.BytesIO()
-        with GzipFile(
-                mode='wb',
+        response.set_data(
+            gzip.compress(
+                response.get_data(),
                 compresslevel=self.option.compress_level,
-                fileobj=gzip_buffer,
-        ) as gzip_file:
-            gzip_file.write(response.get_data())
-        response.set_data(gzip_buffer.getvalue())
+            )
+        )
         response.headers['Content-Encoding'] = 'gzip'
         response.headers['Content-Length'] = response.content_length
         return response
