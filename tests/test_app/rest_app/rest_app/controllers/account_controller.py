@@ -14,6 +14,11 @@ class AccountController:
         return self.accounts.login(username, password)
 
     @has_role('admin')
-    @get_route('/accounts/<username>')
-    def get_account_info(self, username: str):
-        return self.accounts.get(username)
+    @get_route('/accounts/account-info')
+    def get_account_info(self):
+        return self.accounts.get_account_info()
+
+    @has_role('admin')
+    @get_route('/accounts/account-info-gevent')
+    def get_account_info_by_gevent(self):
+        return self.accounts.get_account_info_by_gevent()

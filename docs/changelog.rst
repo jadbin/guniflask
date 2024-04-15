@@ -7,6 +7,7 @@ Changelog
 -------------------
 
 - 增加guniflask.gzip_on配置，开启后自动对json等类型的response进行压缩
+- 修复 ``run_with_context`` 修饰的函数中无法通过 ``current_user`` 获取用户信息的问题
 
 0.12.18 (2023-07-01)
 -------------------

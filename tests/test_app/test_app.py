@@ -161,9 +161,19 @@ class TestRestApp:
         assert data['username'] == 'root'
         assert 'access_token' in data
         token = data['access_token']
+
         data = get_json(
             rest_client.get(
-                '/accounts/root',
+                '/accounts/account-info',
+                headers={'Authorization': 'Bearer ' + token},
+            )
+        )
+        assert data['username'] == 'root'
+        assert data['authorities'] == ['role_admin']
+
+        data = get_json(
+            rest_client.get(
+                '/accounts/account-info-gevent',
                 headers={'Authorization': 'Bearer ' + token},
             )
         )

@@ -1,6 +1,9 @@
+import gevent
 from flask import abort
-from guniflask.context import service
 
+from guniflask.context import service
+from guniflask.security import current_user
+from guniflask.utils.context import run_with_context
 from ..config.jwt_config import jwt_manager
 
 
@@ -13,7 +16,7 @@ class AccountService:
         }
     }
 
-    def login(self, username: str, password: str):
+    def login(self, username: str, password: str) -> dict:
         if username not in self.accounts or self.accounts[username]['password'] != password:
             return abort(403)
         account = self.accounts[username]
@@ -23,10 +26,20 @@ class AccountService:
             'access_token': token,
         }
 
-    def get(self, username: str):
-        if username not in self.accounts:
-            return abort(404)
+    def get_account_info(self) -> dict:
+        return self._do_get_account_info()
+
+    def get_account_info_by_gevent(self) -> dict:
+        job = gevent.spawn(
+            run_with_context(
+                self._do_get_account_info
+            )
+        )
+        gevent.wait([job])
+        return job.get()
+
+    def _do_get_account_info(self) -> dict:
         return {
-            'username': username,
-            'authorities': self.accounts[username]['authorities']
+            'username': current_user.username,
+            'authorities': list(current_user.authorities),
         }

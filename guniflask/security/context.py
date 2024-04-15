@@ -1,6 +1,6 @@
 from typing import Optional, Collection, Union
 
-from flask import g
+from flask.globals import request
 from werkzeug.local import LocalProxy
 
 from guniflask.security.authentication import Authentication
@@ -16,16 +16,16 @@ class SecurityContext:
 
     @classmethod
     def get_authentication(cls) -> Optional[Authentication]:
-        if cls.AUTHENTICATION in g:
-            return getattr(g, cls.AUTHENTICATION)
+        if hasattr(request, cls.AUTHENTICATION):
+            return getattr(request, cls.AUTHENTICATION)
 
     @classmethod
     def set_authentication(cls, authentication: Authentication):
-        setattr(g, cls.AUTHENTICATION, authentication)
+        setattr(request, cls.AUTHENTICATION, authentication)
 
     @classmethod
     def get_user(cls) -> Optional[User]:
-        if cls.USER not in g:
+        if not hasattr(request, cls.USER):
             user = None
             auth = cls.get_authentication()
             if auth is not None:
@@ -34,8 +34,8 @@ class SecurityContext:
                         user = auth.principal
                     else:
                         user = User(username=auth.name, authorities=auth.authorities)
-            setattr(g, cls.USER, user)
-        return getattr(g, cls.USER)
+            setattr(request, cls.USER, user)
+        return getattr(request, cls.USER)
 
     @classmethod
     def has_authority(cls, user: User, authority: str):
