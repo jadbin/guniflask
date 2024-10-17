@@ -53,8 +53,8 @@ class DefaultTaskScheduler(TaskScheduler, SmartInitializingSingleton, Disposable
         self._scheduler.add_job(task, trigger=cron_trigger)
 
     def schedule_with_fixed_interval(self, task, interval: int, start_time: dt.datetime = None):
-        interval_trigger = IntervalTrigger(seconds=interval, start_date=start_time)
-        self._scheduler.add_job(task, trigger=interval_trigger)
+        interval_trigger = IntervalTrigger(seconds=interval, start_date=start_time, jitter=10)
+        self._scheduler.add_job(task, trigger=interval_trigger, misfire_grace_time=30)
 
     def start(self):
         self._scheduler.start(paused=False)
