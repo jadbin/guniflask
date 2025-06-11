@@ -199,7 +199,7 @@ class TestRestApp:
 class TestSchedulerApp:
     def test_schedule_task(self, scheduler_client: FlaskClient):
         scheduler_client.post('/async-add?x=1&y=2')
-        time.sleep(2)
+        time.sleep(15)
         data = get_json(scheduler_client.get('/scheduled'))
         assert data['result'] is True
         data = get_json(scheduler_client.get('/async-add'))

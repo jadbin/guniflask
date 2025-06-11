@@ -1,5 +1,5 @@
 import gzip
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel
 
@@ -8,7 +8,7 @@ from guniflask.web.request_filter import RequestFilter
 
 class GzipOption(BaseModel):
     compress_level: int = 6
-    compress_types: List[str] = None
+    compress_types: Union[List[str], None] = None
     compress_min_length: int = 1024
 
 

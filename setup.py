@@ -31,13 +31,13 @@ class PyTest(TestCommand):
 tests_require = read_requirements('test.txt')
 install_requires = [
     'Flask>=1.1.2',
-    'pydantic>=1.7.3,<2',
+    'pydantic>=2.11.5,<3',
     'SQLAlchemy>=1.3.22',
     'Flask-Cors>=3.0.10',
     'PyJWT>=2.0.0,<2.6.0',
     'APScheduler>=3.6.3',
     'requests>=2.25.1',
-    'python-dotenv>=0.15.0',
+    'python-dotenv>=1.1.0',
     'PyYAML>=5.4.1',
 ]
 

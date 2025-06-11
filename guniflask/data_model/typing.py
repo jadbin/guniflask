@@ -6,7 +6,7 @@ from typing import Any, get_type_hints
 from typing import List, Set, Mapping, Optional, Union
 
 from pydantic import BaseModel
-from pydantic.typing import get_origin, get_args
+from pydantic.v1.typing import get_origin, get_args
 
 from guniflask.utils.datatime import convert_to_datetime
 

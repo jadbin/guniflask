@@ -5,7 +5,7 @@ from functools import update_wrapper
 from typing import Optional
 
 from flask import Blueprint as FlaskBlueprint, request, current_app
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 
 from guniflask.annotation import AnnotationUtils
 from guniflask.beans.post_processor import BeanPostProcessor
