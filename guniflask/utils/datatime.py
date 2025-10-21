@@ -6,4 +6,6 @@ local_tz_info = dt.datetime.now().astimezone().tzinfo
 
 
 def convert_to_datetime(s):
+    if not s:
+        return
     return parse_datetime(s).astimezone()
