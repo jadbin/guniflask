@@ -33,7 +33,7 @@ install_requires = [
     'Flask>=1.1.2',
     'pydantic>=2.11.5,<3',
     'SQLAlchemy>=1.3.22',
-    'Flask-Cors>=3.0.10',
+    'flask-cors>=3.0.10,<=6.0.2',
     'PyJWT>=2.0.0,<2.6.0',
     'APScheduler>=3.6.3',
     'requests>=2.25.1',
